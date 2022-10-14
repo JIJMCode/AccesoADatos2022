@@ -1,9 +1,13 @@
 package com.jose.ejercicio_1_28_2022;
 
-import java.io.Console;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
+
+import com.jose.ejercicio_1_28_2022.Entidades.WeatherRegistryComplex;
+import com.jose.ejercicio_1_28_2022.Utilidades.InternetUtils;
+import com.jose.ejercicio_1_28_2022.Utilidades.JsonUtils;
 
 /**
  * Hello world!
@@ -15,6 +19,7 @@ public class App
     static Scanner teclado = new Scanner(System.in);
     static Date fechaInicio;
     static Date fechaFin;
+    static String token = "871a1c2012aa13906ae6b27ae2aff30b";
     
 	public static void main( String[] args ) throws Exception
     {
@@ -34,10 +39,11 @@ public class App
         System.out.println( "6. Comparar entre dos fuentes, los datos de fallecidos y casos confirmados en una fecha." ); 
         
         opcion = teclado.nextInt();
-
+        
+        
         switch (opcion) {
 	    	case 1:
-	    		caso1();
+	    		pedirLatitud();
 	    		break;
 	    	case 2:
 	    		caso2();
@@ -90,7 +96,19 @@ public class App
 		}
 	}
     
-    private static void caso1(){System.out.println("caso1");repetir();}
+    private static void pedirLatitud(){
+    	System.out.println("Introducir latitud");
+    	String latitud = teclado.next();
+    	System.out.println("Introducir longitud");
+    	String longitud = teclado.next();
+    	String requestUrl = "https://api.openweathermap.org/data/2.5/weather?lat="+latitud+"&lon="+longitud+"&appid="+token;
+
+    	String jsonRequest = InternetUtils.readUrl(requestUrl);
+    	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
+    	System.out.println(response.toString());
+    	repetir();
+    }
+    
     private static void caso2(){System.out.println("caso2");repetir();}
     private static void caso3(){System.out.println("caso3");repetir();}
     private static void caso4(){System.out.println("caso4");repetir();}
