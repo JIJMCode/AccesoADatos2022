@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.jose.ejercicio_1_28_2022.Entidades.WeatherRegistryComplex;
+import com.jose.ejercicio_1_28_2022.Utilidades.FormatUtils;
 import com.jose.ejercicio_1_28_2022.Utilidades.InternetUtils;
 import com.jose.ejercicio_1_28_2022.Utilidades.JsonUtils;
 
@@ -19,7 +20,8 @@ public class App
     static Scanner teclado = new Scanner(System.in);
     static Date fechaInicio;
     static Date fechaFin;
-    static String token = "871a1c2012aa13906ae6b27ae2aff30b";
+    static String urlBase = "https://api.openweathermap.org/data/2.5/weather?";
+    static String token = "&appid=871a1c2012aa13906ae6b27ae2aff30b";
     
 	public static void main( String[] args ) throws Exception
     {
@@ -46,7 +48,7 @@ public class App
 	    		pedirLatitud();
 	    		break;
 	    	case 2:
-	    		caso2();
+	    		pedirLocalidad();
 	    		break;
 	    	case 3:
 				caso3();
@@ -97,19 +99,41 @@ public class App
 	}
     
     private static void pedirLatitud(){
-    	System.out.println("Introducir latitud");
-    	String latitud = teclado.next();
-    	System.out.println("Introducir longitud");
-    	String longitud = teclado.next();
-    	String requestUrl = "https://api.openweathermap.org/data/2.5/weather?lat="+latitud+"&lon="+longitud+"&appid="+token;
-
-    	String jsonRequest = InternetUtils.readUrl(requestUrl);
+    	Scanner tecladoCoordenadas = new Scanner(System.in);
+    	String urlLongitude = "&lon=";
+    	String urlLatitude = "lat=";
+    	String latitud;
+    	do {
+    		System.out.println("Introducir latitud");
+        	latitud = teclado.next();       	
+		} while (!FormatUtils.validarCoordenada(latitud, "latitude"));
+    	
+    	String longitud;
+    	do {
+        	System.out.println("Introducir longitud");
+        	longitud = teclado.next();
+		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
+   	
+    	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + token;
     	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
     	System.out.println(response.toString());
+    	tecladoCoordenadas.close();
     	repetir();
     }
     
-    private static void caso2(){System.out.println("caso2");repetir();}
+    private static void pedirLocalidad(){
+    	String urlCity = "q=";
+    	System.out.println("Introducir localidad");
+    	Scanner tecladoLocalidad = new Scanner(System.in);
+    	String localidad = tecladoLocalidad.nextLine();
+    	String requestUrl = urlBase + urlCity + localidad + token;
+    	
+    	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
+    	System.out.println(response.toString());
+    	tecladoLocalidad.close();
+    	repetir();
+    }
+    
     private static void caso3(){System.out.println("caso3");repetir();}
     private static void caso4(){System.out.println("caso4");repetir();}
     private static void caso5(){System.out.println("caso5");repetir();}
