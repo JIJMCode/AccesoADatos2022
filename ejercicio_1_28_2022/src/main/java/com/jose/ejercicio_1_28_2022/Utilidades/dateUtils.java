@@ -3,6 +3,7 @@ package com.jose.ejercicio_1_28_2022.Utilidades;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -70,7 +71,6 @@ public class dateUtils {
 
 	        CharSequence date = fecha.subSequence(0, 10);
 	        
-
 	    	Date objDate;
 
 	    	try{
@@ -81,6 +81,23 @@ public class dateUtils {
 	        	}
 	 	        
 			return objDate; 
+		}
+	    
+	    public static Date comprobarFecha4(String fecha) {
+	    	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss +0000 z");
+	    	LocalDateTime dateTime = LocalDateTime.parse(fecha, dtf);
+	    	Instant instantDate;
+	    	Date objDate2;
+	    	
+	    	try{
+	        	instantDate = dateTime.toInstant(ZoneOffset.UTC);
+	        	objDate2 = Date.from(instantDate);
+	        } catch (Exception e){ 
+	        	System.out.println("Formato de fecha incorrecto");
+	        	return null;
+	        }
+	 	        
+			return objDate2; 
 		}
 
 	    public static Date removeTime(Date date) {      

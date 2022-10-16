@@ -44,12 +44,11 @@ public class App
         System.out.println( "5. Saber cuantos días ha habido más PCR's positivas en hombres que en mujeres, y viceversa." ); 
         System.out.println( "6. Comparar entre dos fuentes, los datos de fallecidos y casos confirmados en una fecha." ); 
         
-        opcion = teclado.nextInt();
-        
-        
+        opcion = Integer.parseInt(teclado.next());
+                
         switch (opcion) {
 	    	case 1:
-	    		pedirLatitud();
+	    		pedirCoordenadas();
 	    		break;
 	    	case 2:
 	    		pedirLocalidad();
@@ -102,7 +101,10 @@ public class App
 		}
 	}
     
-    private static void pedirLatitud(){
+    /**
+	 * Pedir latitud y longitud y mostrar: nombre, temperatura, humedad y lista de weather
+	 */
+    private static void pedirCoordenadas(){
     	Scanner tecladoCoordenadas = new Scanner(System.in);
     	String urlLongitude = "&lon=";
     	String urlLatitude = "lat=";
@@ -125,6 +127,9 @@ public class App
     	repetir();
     }
     
+    /**
+	 * Pedir nombre localidad y mostrar: nombre, temperatura, humedad y lista de weather
+	 */
     private static void pedirLocalidad(){
     	String urlCity = "q=";
     	System.out.println("Introducir localidad:");
@@ -155,9 +160,9 @@ public class App
             fechaFin = dateUtils.comprobarFecha(teclado.nextLine());
 		}
         
-        /*Instant instant = fechaFin.toInstant();
+        Instant instant = fechaFin.toInstant();
         Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
-        fechaFin = Date.from(nextDay);*/
+        fechaFin = Date.from(nextDay);
 	}
     
     /**
@@ -168,12 +173,14 @@ public class App
         fechaFin = null;
 	}
 
-	
+    /**
+	 * Pedir 2 fechas y mostrar la evolución de la temperatura
+	 * en los dias comprendidos entre "fechaInicio" y "fechaFin"
+	 */
 	private static void leerRangoFichero(){
     	pedirDosFechas();
     	
-    	List<String> lineas = Ficheros.leerFichero8(".","datos.csv");
-    	
+    	List<String> lineas = Ficheros.leerFichero8(".","datos.csv");    	
     	List<RegistroTemp> registros = new ArrayList<>();
     	
     	lineas.stream()
@@ -181,24 +188,14 @@ public class App
 		.forEach(i ->  {String[] parts = i.split(",");
 			RegistroTemp consulta = new RegistroTemp
 										(
-												dateUtils.comprobarFecha3(parts[5]),
+												dateUtils.comprobarFecha4(parts[5]),
 												Double.parseDouble(parts[6].replace(",", "."))	
 										);
 			if (consulta.getFecha().compareTo(fechaInicio) >= 0 && consulta.getFecha().compareTo(fechaFin) <= 0) {
 				registros.add(consulta);
 			}
-			/*if (consulta.getFecha().compareTo(fechaInicio) == 0) {
-				registros.add(consulta);
-			} */
 		});
     	
-    	/*List<RegistroTemp> registrosFiltrados = registros.stream()
-    	.filter(x-> !x.getFecha().compateTo(fechaFin))
-    	.collect(Collectors.toList());*/
-    	
-    	/*.filter(x-> !x.getFecha().after(fechaFin))
-    	//.filter(x-> !x.getFecha().before(fechaInicio)*/
-
     	registros.sort(Comparator.comparing(RegistroTemp::getFecha));
     	registros.forEach(x->System.out.println(x));
     	    	
@@ -206,9 +203,9 @@ public class App
     	repetir();
     }
     
+	
+	
     private static void caso4(){System.out.println("caso4");repetir();}
     private static void caso5(){System.out.println("caso5");repetir();}
-    private static void caso6(){System.out.println("caso6");repetir();}
-    
-    
+    private static void caso6(){System.out.println("caso6");repetir();}    
 }

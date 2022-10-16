@@ -19,7 +19,6 @@ public class WeatherRegistryComplex {
 	String name;
 	int cod;
 
-
 public WeatherRegistryComplex() {
 	super();
 }
