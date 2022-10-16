@@ -104,13 +104,13 @@ public class App
     	String urlLatitude = "lat=";
     	String latitud;
     	do {
-    		System.out.println("Introducir latitud");
+    		System.out.println("Introducir latitud:");
         	latitud = teclado.next();       	
 		} while (!FormatUtils.validarCoordenada(latitud, "latitude"));
     	
     	String longitud;
     	do {
-        	System.out.println("Introducir longitud");
+        	System.out.println("Introducir longitud:");
         	longitud = teclado.next();
 		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
    	
@@ -123,7 +123,7 @@ public class App
     
     private static void pedirLocalidad(){
     	String urlCity = "q=";
-    	System.out.println("Introducir localidad");
+    	System.out.println("Introducir localidad:");
     	Scanner tecladoLocalidad = new Scanner(System.in);
     	String localidad = tecladoLocalidad.nextLine();
     	String requestUrl = urlBase + urlCity + localidad + token;
