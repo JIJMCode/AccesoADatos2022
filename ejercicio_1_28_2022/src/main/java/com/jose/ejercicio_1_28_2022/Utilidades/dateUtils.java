@@ -95,10 +95,29 @@ public class dateUtils {
 	        } catch (Exception e){ 
 	        	System.out.println("Formato de fecha incorrecto");
 	        	return null;
-	        }
+	        	}
 	 	        
 			return objDate2; 
 		}
+	    
+	    
+	    
+//	    public static Date comprobarFecha4(String fecha) {
+//	    	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss +0000 z");
+//	    	LocalDateTime dateTime = LocalDateTime.parse(fecha, dtf);
+//	    	Instant instantDate;
+//	    	Date objDate2;
+//	    	
+//	    	try{
+//	        	instantDate = dateTime.toInstant(ZoneOffset.UTC);
+//	        	objDate2 = Date.from(instantDate);
+//	        } catch (Exception e){ 
+//	        	System.out.println("Formato de fecha incorrecto");
+//	        	return null;
+//	        	}
+//	 	        
+//			return objDate2; 
+//		}
 
 	    public static Date removeTime(Date date) {      
 	    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -112,6 +131,5 @@ public class dateUtils {
 			}
 	        return dateWithoutTime; 
 	    }
-	    
 	    
 }

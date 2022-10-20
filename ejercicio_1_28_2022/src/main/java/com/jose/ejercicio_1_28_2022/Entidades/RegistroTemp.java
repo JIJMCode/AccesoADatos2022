@@ -33,6 +33,6 @@ public class RegistroTemp {
 
 	@Override
 	public String toString() {
-		return "RegistroTemp [Fecha= " + fecha + ", Temperatura= " + temp + "]"; //new SimpleDateFormat("dd-MM-yyyy").format(fecha)
+		return "RegistroTemp [Fecha= " + fecha + ", Temperatura= " + temp + "ºC]"; //new SimpleDateFormat("dd-MM-yyyy").format(fecha)
 	}
 }

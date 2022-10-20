@@ -2,8 +2,6 @@ package com.jose.ejercicio_1_28_2022.Entidades;
 
 import java.util.List;
 
-import com.jose.ejercicio_1_28_2022.Entidades.Fran.Asignatura;
-
 public class WeatherRegistryComplex {
 	Coord coord;
 	List<Weather> weather;
@@ -131,7 +129,7 @@ public void setCod(int cod) {
 
 @Override
 public String toString() {
-	return "Name=" + name + ", Temperature=" + (main.getTemp()-32)*5/9 + "ºC, Humidity=" + main.getHumidity() + "%, Weather=" + weather.toString() + ".";
+	return "Name=" + name + ", Temperature=" + (main.getTemp()-273.15) + "ºC, Humidity=" + main.getHumidity() + "%, Weather=" + weather.toString() + ".";
 }
 			
 }

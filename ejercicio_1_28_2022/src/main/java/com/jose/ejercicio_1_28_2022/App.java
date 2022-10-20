@@ -77,9 +77,9 @@ public class App
     private static void repetir() {
 		System.out.println("\nPulse C para continuar o S para salir\n");
 		
-		teclado = new Scanner(System.in);
+		Scanner tecladoRepetir = new Scanner(System.in);
 
-		String seleccion = teclado.next();
+		String seleccion = tecladoRepetir.next();
 		char caracter = seleccion.charAt(0);
 		
 		while (caracter != 'c' && caracter != 's') {
@@ -95,7 +95,7 @@ public class App
 			}
 			
 		}else {
-			teclado.close();
+			tecladoRepetir.close();
 			System.out.println("\nAplicación cerrada. Hasta pronto!!!");
 			System.exit(0);
 		}
@@ -132,16 +132,34 @@ public class App
 	 */
     private static void pedirLocalidad(){
     	String urlCity = "q=";
+    	String urlXml = "&mode=xml";
     	System.out.println("Introducir localidad:");
     	Scanner tecladoLocalidad = new Scanner(System.in);
     	String localidad = tecladoLocalidad.nextLine();
-    	String requestUrl = urlBase + urlCity + localidad + token;
+    	String requestUrl = urlBase + urlCity + localidad + urlXml + token;
     	
-    	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
-    	System.out.println(response.toString());
+    	String cadenaXml = InternetUtils.readUrl(requestUrl);
+    	
+    	WeatherRegistry result = XmlUtils.procesarMarcaDom(cadenaXml);
+ 
+    	System.out.println(result);
     	tecladoLocalidad.close();
     	repetir();
     }
+    
+//    private static void pedirLocalidad(){
+//    	String urlCity = "q=";
+//    	
+//    	System.out.println("Introducir localidad:");
+//    	Scanner tecladoLocalidad = new Scanner(System.in);
+//    	String localidad = tecladoLocalidad.nextLine();
+//    	String requestUrl = urlBase + urlCity + localidad + token;
+//    	
+//    	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
+//    	System.out.println(response.toString());
+//    	tecladoLocalidad.close();
+//    	repetir();
+//    }
     
 	/**
 	 * Método que pide 2 fechas por consola y comprueba que tienen el formato correcto

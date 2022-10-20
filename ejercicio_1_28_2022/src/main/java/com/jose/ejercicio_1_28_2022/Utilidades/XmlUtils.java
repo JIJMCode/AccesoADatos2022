@@ -1,9 +1,13 @@
 package com.jose.ejercicio_1_28_2022.Utilidades;
 
 import java.io.File;
+import java.io.StringReader;
+import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -16,10 +20,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.jose.ejercicio_1_28_2022.Entidades.Weather;
+import com.jose.ejercicio_1_28_2022.Entidades.WeatherRegistry;
+import com.jose.ejercicio_1_28_2022.Entidades.WeatherXml;
 import com.jose.ejercicio_1_28_2022.Entidades.Fran.*;
+
 public class XmlUtils {
 
 	public static List<Asignatura> procesarXmlSax(String directorio, String nombreArchivo) {
@@ -140,29 +149,98 @@ public class XmlUtils {
 		return null;
 	}
 	
-	public static List<Noticia> procesarMarcaDom(String cadena) {
-		List<Noticia> noticias = new ArrayList<Noticia>();
+//	public static WeatherRegistryComplex procesarMarcaDom(String cadena) {
+//		try {
+//			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
+//			doc.getDocumentElement().normalize();
+//			Node nNode = doc.getFirstChild();
+//			WeatherRegistry response;
+//			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+//				Element eElement = (Element) nNode;
+//				response = (new WeatherRegistry(
+//						eElement..getTagName("city").getAttributeNode("name").getTextContent(),
+//						eElement.getElementsByTagName("description").item(0).getTextContent(),
+//						eElement.getElementsByTagName("guid").item(0).getTextContent(),
+//						LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
+//			}
+//			return noticias;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+	
+//	public static List<Noticia> procesarMarcaDom(String cadena) {
+//		List<Noticia> noticias = new ArrayList<Noticia>();
+//		try {
+//			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+//			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
+//			doc.getDocumentElement().normalize();
+//			NodeList nList = doc.getElementsByTagName("item");
+//			for (int temp = 0; temp < nList.getLength(); temp++) {
+//				Node nNode = nList.item(temp);
+//				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+//					Element eElement = (Element) nNode;
+//					noticias.add(new Noticia(eElement.getElementsByTagName("title").item(0).getTextContent(),
+//							eElement.getElementsByTagName("description").item(0).getTextContent(),
+//							eElement.getElementsByTagName("guid").item(0).getTextContent(),
+//							LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
+//				}
+//			}
+//			return noticias;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+	
+	public static WeatherRegistry procesarMarcaDom(String cadena) {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
+			Document doc = dBuilder.parse(new InputSource(new StringReader(cadena)));  // Comprueba que es un XML valido
 			doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("item");
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-				Node nNode = nList.item(temp);
+			Node root = doc.getFirstChild();
+
+			String city = null;
+			String temp = null;
+			String humidity = null;
+			List<WeatherXml> weaderList = new ArrayList<WeatherXml>();
+			//String temp = eElement.getAttribute("city").toString();
+			//String humidity = eElement.getAttribute("city").toString();
+			//Node nNodeCity = nodeList.item(0);
+			if (root.getNodeType() == Node.ELEMENT_NODE) {
+				Element element = (Element) root;	
+				
+				Element elementCity = (Element) element.getElementsByTagName("city").item(0);			
+				city = elementCity.getAttribute("name");
+				Element elementTemp = (Element) element.getElementsByTagName("temperature").item(0);			
+				temp = elementTemp.getAttribute("value");
+				Element elementHumidity = (Element) element.getElementsByTagName("humidity").item(0);			
+				humidity = elementHumidity.getAttribute("value");
+				
+				NodeList nodeList = doc.getElementsByTagName("weather");
+				for (int cont = 0; cont < nodeList.getLength(); cont++) {
+				Node nNode = nodeList.item(cont);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
-					noticias.add(new Noticia(eElement.getElementsByTagName("title").item(0).getTextContent(),
-							eElement.getElementsByTagName("description").item(0).getTextContent(),
-							eElement.getElementsByTagName("guid").item(0).getTextContent(),
-							LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
+					weaderList.add(new WeatherXml(
+							eElement.getAttribute("number"),
+							eElement.getAttribute("value"),
+							eElement.getAttribute("icon")));
+					}
 				}
 			}
-			return noticias;
+				
+			return new WeatherRegistry(city,temp,humidity,weaderList);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 }
