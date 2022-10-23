@@ -242,14 +242,14 @@ public class Ficheros {
 	 * @param ruta ruta del fichero
 	 * @return String del fichero completo
 	 */
-	/*public static String leerFichero11(String rutaCompleta){
+	public static String leerFichero11(String rutaCompleta){
 		try {
 			return Files.readString(Paths.get(rutaCompleta),StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
-	}*/
+	}
 	
 	
 	public static boolean anyadirFichero(String directorio, String nombreFichero, List<String> lineas) {

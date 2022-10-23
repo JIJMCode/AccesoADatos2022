@@ -2,6 +2,7 @@ package com.jose.ejercicio_1_28_2022;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,7 +26,11 @@ public class App
     static Date fechaInicio;
     static Date fechaFin;
     static String urlBase = "https://api.openweathermap.org/data/2.5/weather?";
-    static String token = "&appid=871a1c2012aa13906ae6b27ae2aff30b";
+    static String tokenWeather = "&appid=871a1c2012aa13906ae6b27ae2aff30b";
+    static String urlBaseMarvel = "https://gateway.marvel.com:443/v1/public/characters?";
+    static String tokenMarvel = "apikey=";
+    static HistoricoBusqueda weatherComplexFind = null;
+    static HistoricoBusqueda weatherFind = null;
     
 	public static void main( String[] args ) throws Exception
     {
@@ -57,7 +62,7 @@ public class App
 				leerRangoFichero();
 	    		break;
 	    	case 4:
-	    		caso4();
+	    		serializarBusquedas();
 	    		break;
 	    	case 5:
 	    		caso5();
@@ -103,6 +108,7 @@ public class App
     
     /**
 	 * Pedir latitud y longitud y mostrar: nombre, temperatura, humedad y lista de weather
+	 * de la información obtenida de la API en JSON
 	 */
     private static void pedirCoordenadas(){
     	Scanner tecladoCoordenadas = new Scanner(System.in);
@@ -120,15 +126,22 @@ public class App
         	longitud = teclado.next();
 		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
    	
-    	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + token;
+    	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + tokenWeather;
     	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
     	System.out.println(response.toString());
+    	weatherComplexFind = new HistoricoBusqueda(
+	    						LocalDate.now(),
+					    		response.getName(),
+					    		response.getMain().getTemp(),
+					    		response.getMain().getHumidity());
+    	
     	tecladoCoordenadas.close();
     	repetir();
     }
     
     /**
 	 * Pedir nombre localidad y mostrar: nombre, temperatura, humedad y lista de weather
+	 * de la información obtenida de la API en XML
 	 */
     private static void pedirLocalidad(){
     	String urlCity = "q=";
@@ -136,61 +149,21 @@ public class App
     	System.out.println("Introducir localidad:");
     	Scanner tecladoLocalidad = new Scanner(System.in);
     	String localidad = tecladoLocalidad.nextLine();
-    	String requestUrl = urlBase + urlCity + localidad + urlXml + token;
+    	String requestUrl = urlBase + urlCity + localidad + urlXml + tokenWeather;
     	
     	String cadenaXml = InternetUtils.readUrl(requestUrl);
     	
-    	WeatherRegistry result = XmlUtils.procesarMarcaDom(cadenaXml);
- 
+    	WeatherRegistry result = XmlUtils.procesarRegistroXml(cadenaXml);
     	System.out.println(result);
+    	weatherComplexFind = new HistoricoBusqueda(
+	    		LocalDate.now(),
+	    		result.getCity(),
+	    		Double.parseDouble(result.getTemp()),
+	    		Double.parseDouble(result.getHumidity()));
     	tecladoLocalidad.close();
     	repetir();
     }
-    
-//    private static void pedirLocalidad(){
-//    	String urlCity = "q=";
-//    	
-//    	System.out.println("Introducir localidad:");
-//    	Scanner tecladoLocalidad = new Scanner(System.in);
-//    	String localidad = tecladoLocalidad.nextLine();
-//    	String requestUrl = urlBase + urlCity + localidad + token;
-//    	
-//    	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
-//    	System.out.println(response.toString());
-//    	tecladoLocalidad.close();
-//    	repetir();
-//    }
-    
-	/**
-	 * Método que pide 2 fechas por consola y comprueba que tienen el formato correcto
-	 */
-	private static void pedirDosFechas() {
-        //Scanner teclado2 = new Scanner(System.in);
-		teclado = new Scanner(System.in);
-		
-		while (fechaInicio == null) {
-	        System.out.println( "\nIntroduzca la primera fecha con formato dd/mm/yyyy:" );   
-	        fechaInicio = dateUtils.comprobarFecha(teclado.nextLine());
-		}
-
-        while (fechaFin == null) {
-            System.out.println( "\nIntroduzca la segunda fecha con formato dd/mm/yyyy:" );
-            fechaFin = dateUtils.comprobarFecha(teclado.nextLine());
-		}
-        
-        Instant instant = fechaFin.toInstant();
-        Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
-        fechaFin = Date.from(nextDay);
-	}
-    
-    /**
-	 * Vacia las variables "fechaInicio" y "fechaFin"
-	 */
-	private static void vaciarFechas() {
-        fechaInicio = null;
-        fechaFin = null;
-	}
-
+      
     /**
 	 * Pedir 2 fechas y mostrar la evolución de la temperatura
 	 * en los dias comprendidos entre "fechaInicio" y "fechaFin"
@@ -222,8 +195,73 @@ public class App
     }
     
 	
-	
-    private static void caso4(){System.out.println("caso4");repetir();}
+    private static void serializarBusquedas(){
+    	Ficheros.crearFichero("./busquedas.txt");
+    	
+    	List<String> lineasFichero = Ficheros.leerFichero8("./busquedas.txt");
+    	List<HistoricoBusqueda> listaBusquedas = new ArrayList<>();
+    	
+    	lineasFichero.stream().forEach(x -> {
+//    		String[] linea = x.split(",");
+//    		if(weatherComplexFind != null && linea[0].equals(weatherComplexFind.getDate().toString()) ||
+//    			weatherFind != null &&	linea[0].equals(weatherFind.getDate().toString()))
+//    			lineasFichero.remove(x);
+    		String[] lineas = x.split(",");
+    		HistoricoBusqueda busqueda = new HistoricoBusqueda(
+    	    		LocalDate.now(),
+    	    		lineas[1],
+    	    		Double.parseDouble(lineas[2]),
+    	    		Double.parseDouble(lineas[3]));
+    		
+    		listaBusquedas.add(busqueda);
+    	});
+    	
+    	
+    	if(weatherComplexFind != null || )
+    	
+//    	if(weatherComplexFind != null)
+//    		lineasFichero.add(weatherComplexFind.serializeString());
+//    	
+//    	if(weatherFind != null)
+//    		lineasFichero.add(weatherComplexFind.serializeString());
+    	
+    	
+    	System.out.println("fichero creado");repetir();
+    }
+    
+    
+    
+    
     private static void caso5(){System.out.println("caso5");repetir();}
     private static void caso6(){System.out.println("caso6");repetir();}    
+    
+	/**
+	 * Método que pide 2 fechas por consola y comprueba que tienen el formato correcto
+	 */
+	private static void pedirDosFechas() {
+        //Scanner teclado2 = new Scanner(System.in);
+		teclado = new Scanner(System.in);
+		
+		while (fechaInicio == null) {
+	        System.out.println( "\nIntroduzca la primera fecha con formato dd/mm/yyyy:" );   
+	        fechaInicio = dateUtils.comprobarFecha(teclado.nextLine());
+		}
+
+        while (fechaFin == null) {
+            System.out.println( "\nIntroduzca la segunda fecha con formato dd/mm/yyyy:" );
+            fechaFin = dateUtils.comprobarFecha(teclado.nextLine());
+		}
+        
+        Instant instant = fechaFin.toInstant();
+        Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
+        fechaFin = Date.from(nextDay);
+	}
+    
+    /**
+	 * Vacia las variables "fechaInicio" y "fechaFin"
+	 */
+	private static void vaciarFechas() {
+        fechaInicio = null;
+        fechaFin = null;
+	}
 }

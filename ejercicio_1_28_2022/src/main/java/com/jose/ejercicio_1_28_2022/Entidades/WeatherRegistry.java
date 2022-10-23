@@ -2,8 +2,6 @@ package com.jose.ejercicio_1_28_2022.Entidades;
 
 import java.util.List;
 
-import com.jose.ejercicio_1_28_2022.Entidades.Fran.Asignatura;
-
 public class WeatherRegistry {
 	String city;
 	String temp;
@@ -46,11 +44,11 @@ public class WeatherRegistry {
 		this.humidity = humidity;
 	}
 
-	public List getWheather() {
+	public List<Weather> getWheather() {
 		return wheather;
 	}
 
-	public void setWheather(List wheather) {
+	public void setWheather(List<Weather> wheather) {
 		this.wheather = wheather;
 	}
 

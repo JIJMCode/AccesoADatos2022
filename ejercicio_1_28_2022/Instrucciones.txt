@@ -1,0 +1,43 @@
+Ejercicio 01.28 - (EJERCICIO OBLIGATORIO). Curso 22-23
+Ejercicio Tema 1.
+ 
+
+Dados los datos de la página:
+
+https://openweathermap.org/api
+
+Podemos darnos de alta en la modalidad free para obtener una key en:
+
+https://openweathermap.org/price
+
+Una vez dados de alta y con la key asociada a nuestro usuario (debemos esperar unas horas para que esté realmente activa) ya podremos hacer solicitudes a la API. 
+
+Es una API que nos permite realizar llamadas relacionadas con el tiempo. En su versión gratuita nos permite 60 llamadas por minuto (1 millón al mes). Debemos realizar un programa con un menú con opciones donde se obtenga la siguiente información:
+
+1.       Nos solicite introducir latitud y longitud y nos muestre por pantalla la ciudad a la que pertenece (name), la temperatura (temp) y humedad actual (humidity), así como la información del array wheater. Obteniendo para ello la información en formato Json. Un ejemplo de llamada a la API sería: 
+
+https://api.openweathermap.org/data/2.5/weather?lat=38.3452&lon=-0.4815&appid={tu API Key}
+
+2.       Obtén la misma información del paso anterior (solicitando en este caso el nombre de la ciudad de la que quieres obtener la información). Investiga el parámetro para pedir por ciudad y para que el formato salga en XML, ya que debes utilizar este formato en este apartado.
+
+3.       Basado en el fichero que se adjunta en la práctica. Solicita un rango de fechas y obtén la evolución de la temperatura en cada uno de los días del rango. Debes saber leer y filtrar los datos que te interesan del fichero.
+
+4.       Serializa los datos obtenidos en la última búsqueda que hayas hecho en los apartados 1 o 2. Si ya tienes un dato del mismo día sustitúyelo, pero no guardes dos datos del mismo día.
+
+5.       DesSerializa los datos de las búsquedas guardadas y muéstralos por pantalla.
+
+ 6.       Busca otra API en Internet y realiza al menos una búsqueda sobre la misma en formato Json. Puedes usar una totalmente abierta o una que requiera obtener una Api Key.
+
+Además de la corrección de los datos devueltos (fundamental) también se tendrá en cuenta la validación de errores, limpieza de código, estructura de código, uso de clases para almacenar resultados y cualquier otro factor que mejore la programación.
+
+El proyecto debe ser en Maven con Java 11 (11.0.16).
+
+Como optativo para subir nota, se pueden realizar mejoras del estilo de un entorno gráfico para solicitar información y mostrar resultados o la generación de gráficos (ya sea a fichero o a la hora de mostrar los resultados) en los puntos que tenga sentido hacerlo.
+
+Nota : Utiliza la librería Xml que consideres oportuna (DOM o SAX) y la de Json que también consideres oportuna (Api de Modelos, Api de Streaming o Gson).
+
+Programas de ayuda:
+
+https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=es
+
+(Extensión para ver bien formateado el json en Google Chrome, Firefox lleva algo similar de serie)pedirLatitu

@@ -149,55 +149,32 @@ public class XmlUtils {
 		return null;
 	}
 	
-//	public static WeatherRegistryComplex procesarMarcaDom(String cadena) {
-//		try {
-//			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
-//			doc.getDocumentElement().normalize();
-//			Node nNode = doc.getFirstChild();
-//			WeatherRegistry response;
-//			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-//				Element eElement = (Element) nNode;
-//				response = (new WeatherRegistry(
-//						eElement..getTagName("city").getAttributeNode("name").getTextContent(),
-//						eElement.getElementsByTagName("description").item(0).getTextContent(),
-//						eElement.getElementsByTagName("guid").item(0).getTextContent(),
-//						LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
-//			}
-//			return noticias;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
+	public static List<Noticia> procesarMarcaDom(String cadena) {
+		List<Noticia> noticias = new ArrayList<Noticia>();
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
+			doc.getDocumentElement().normalize();
+			NodeList nList = doc.getElementsByTagName("item");
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				Node nNode = nList.item(temp);
+				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+					Element eElement = (Element) nNode;
+					noticias.add(new Noticia(eElement.getElementsByTagName("title").item(0).getTextContent(),
+							eElement.getElementsByTagName("description").item(0).getTextContent(),
+							eElement.getElementsByTagName("guid").item(0).getTextContent(),
+							LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
+				}
+			}
+			return noticias;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
-//	public static List<Noticia> procesarMarcaDom(String cadena) {
-//		List<Noticia> noticias = new ArrayList<Noticia>();
-//		try {
-//			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-//			Document doc = dBuilder.parse(cadena);  // Comprueba que es un XML valido
-//			doc.getDocumentElement().normalize();
-//			NodeList nList = doc.getElementsByTagName("item");
-//			for (int temp = 0; temp < nList.getLength(); temp++) {
-//				Node nNode = nList.item(temp);
-//				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-//					Element eElement = (Element) nNode;
-//					noticias.add(new Noticia(eElement.getElementsByTagName("title").item(0).getTextContent(),
-//							eElement.getElementsByTagName("description").item(0).getTextContent(),
-//							eElement.getElementsByTagName("guid").item(0).getTextContent(),
-//							LocalDate.parse(eElement.getElementsByTagName("pubDate").item(0).getTextContent(),DateTimeFormatter.RFC_1123_DATE_TIME)));
-//				}
-//			}
-//			return noticias;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
-	
-	public static WeatherRegistry procesarMarcaDom(String cadena) {
+	public static WeatherRegistry procesarRegistroXml(String cadena) {
 		try {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -209,9 +186,7 @@ public class XmlUtils {
 			String temp = null;
 			String humidity = null;
 			List<WeatherXml> weaderList = new ArrayList<WeatherXml>();
-			//String temp = eElement.getAttribute("city").toString();
-			//String humidity = eElement.getAttribute("city").toString();
-			//Node nNodeCity = nodeList.item(0);
+
 			if (root.getNodeType() == Node.ELEMENT_NODE) {
 				Element element = (Element) root;	
 				
