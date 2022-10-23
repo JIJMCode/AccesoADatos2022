@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import com.jose.ejercicio_1_28_2022.Entidades.HistoricoBusqueda;
 import com.jose.ejercicio_1_28_2022.Entidades.Fran.Persona;
 
 public class SerializacionUtils {
@@ -53,6 +54,22 @@ public class SerializacionUtils {
 		try {
 			ObjectOutputStream ficheroObjetos = new ObjectOutputStream(new FileOutputStream(fichero));
 			ficheroObjetos.writeObject(personas);  // Serializa
+			ficheroObjetos.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static boolean serializarListaBusquedas(String directorio, String nombreArchivo, List<HistoricoBusqueda> busquedas) {
+		
+		File fichero = new File(directorio + "/" + nombreArchivo);
+		try {
+			ObjectOutputStream ficheroObjetos = new ObjectOutputStream(new FileOutputStream(fichero));
+			ficheroObjetos.writeObject(busquedas.toString());  // Serializa
 			ficheroObjetos.close();
 			return true;
 		} catch (FileNotFoundException e) {

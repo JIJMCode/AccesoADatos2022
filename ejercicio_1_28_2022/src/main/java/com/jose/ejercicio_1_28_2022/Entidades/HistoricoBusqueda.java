@@ -1,8 +1,10 @@
 package com.jose.ejercicio_1_28_2022.Entidades;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class HistoricoBusqueda {
+@SuppressWarnings("serial")
+public class HistoricoBusqueda implements Serializable {
 	private LocalDate date;
 	private String city;
 	private Double temperature;
@@ -55,13 +57,14 @@ public class HistoricoBusqueda {
 
 	@Override
 	public String toString() {
-		return "HistoricoBusqueda [date=" + date + ", city=" + city + ", temperature=" + temperature + ", humidity="
-				+ humidity + "]";
-	}
-
-	public String serializeString() {
+//		return "HistoricoBusqueda [date=" + date + ", city=" + city + ", temperature=" + temperature + ", humidity="
+//				+ humidity + "]";
 		return date + "," + city + "," + temperature + "," + humidity;
 	}
+
+//	public String serializeString() {
+//		return date + "," + city + "," + temperature + "," + humidity;
+//	}
 
 
 

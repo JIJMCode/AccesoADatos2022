@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.jose.ejercicio_1_28_2022.Entidades.*;
@@ -42,14 +41,19 @@ public class App
      */
     private static void mostrarMenu() throws IOException {
         System.out.println( "\nMenú (Selecione una opción)" );
-        System.out.println( "1. Obtener PCR's realizadas entre dos fechas." );
-        System.out.println( "2. Obtener días con mayor número de fallecimientos entre dos fechas." );
-        System.out.println( "3. Incidencia acumulada en una fecha determinada." );
-        System.out.println( "4. Ver datos de incidencias registrados." );
-        System.out.println( "5. Saber cuantos días ha habido más PCR's positivas en hombres que en mujeres, y viceversa." ); 
-        System.out.println( "6. Comparar entre dos fuentes, los datos de fallecidos y casos confirmados en una fecha." ); 
+        System.out.println( "1. Obtener información en base a unas coordenadas." );
+        System.out.println( "2. Obtener información en una localidad determinada." );
+        System.out.println( "3. Obterner información en una fecha determinada." );
+        System.out.println( "4. Guardar datos de las búsquedas." );
+        System.out.println( "5. Mostrar búsquedas guardadas." ); 
+        System.out.println( "6. Obtener información de la API de Marvel" ); 
         
-        opcion = Integer.parseInt(teclado.next());
+        try {
+        	opcion = Integer.parseInt(teclado.next());
+        }catch (Exception e) {
+        	System.out.println( "\n***El valor introducido no es un número" );
+        }
+        
                 
         switch (opcion) {
 	    	case 1:
@@ -71,7 +75,7 @@ public class App
 	    		caso6();
 	    		break;
 	    	default:
-	            System.out.println( "\nDebe seleccionar una de las opciones propuestas." );
+	            System.out.println( "\n***Debe seleccionar una de las opciones propuestas." );
 	            mostrarMenu();
         }
     }
@@ -82,9 +86,9 @@ public class App
     private static void repetir() {
 		System.out.println("\nPulse C para continuar o S para salir\n");
 		
-		Scanner tecladoRepetir = new Scanner(System.in);
+		teclado = new Scanner(System.in);
 
-		String seleccion = tecladoRepetir.next();
+		String seleccion = teclado.next();
 		char caracter = seleccion.charAt(0);
 		
 		while (caracter != 'c' && caracter != 's') {
@@ -100,7 +104,7 @@ public class App
 			}
 			
 		}else {
-			tecladoRepetir.close();
+			teclado.close();
 			System.out.println("\nAplicación cerrada. Hasta pronto!!!");
 			System.exit(0);
 		}
@@ -111,7 +115,7 @@ public class App
 	 * de la información obtenida de la API en JSON
 	 */
     private static void pedirCoordenadas(){
-    	Scanner tecladoCoordenadas = new Scanner(System.in);
+		teclado = new Scanner(System.in);
     	String urlLongitude = "&lon=";
     	String urlLatitude = "lat=";
     	String latitud;
@@ -135,7 +139,7 @@ public class App
 					    		response.getMain().getTemp(),
 					    		response.getMain().getHumidity());
     	
-    	tecladoCoordenadas.close();
+    	//tecladoCoordenadas.close();
     	repetir();
     }
     
@@ -147,8 +151,8 @@ public class App
     	String urlCity = "q=";
     	String urlXml = "&mode=xml";
     	System.out.println("Introducir localidad:");
-    	Scanner tecladoLocalidad = new Scanner(System.in);
-    	String localidad = tecladoLocalidad.nextLine();
+		teclado = new Scanner(System.in);
+    	String localidad = teclado.next();
     	String requestUrl = urlBase + urlCity + localidad + urlXml + tokenWeather;
     	
     	String cadenaXml = InternetUtils.readUrl(requestUrl);
@@ -160,7 +164,9 @@ public class App
 	    		result.getCity(),
 	    		Double.parseDouble(result.getTemp()),
 	    		Double.parseDouble(result.getHumidity()));
-    	tecladoLocalidad.close();
+    	
+    	//teclado.close();
+    	
     	repetir();
     }
       
@@ -179,8 +185,8 @@ public class App
 		.forEach(i ->  {String[] parts = i.split(",");
 			RegistroTemp consulta = new RegistroTemp
 										(
-												dateUtils.comprobarFecha4(parts[5]),
-												Double.parseDouble(parts[6].replace(",", "."))	
+											dateUtils.comprobarFecha4(parts[5]),
+											Double.parseDouble(parts[6].replace(",", "."))	
 										);
 			if (consulta.getFecha().compareTo(fechaInicio) >= 0 && consulta.getFecha().compareTo(fechaFin) <= 0) {
 				registros.add(consulta);
@@ -196,37 +202,53 @@ public class App
     
 	
     private static void serializarBusquedas(){
-    	Ficheros.crearFichero("./busquedas.txt");
-    	
-    	List<String> lineasFichero = Ficheros.leerFichero8("./busquedas.txt");
-    	List<HistoricoBusqueda> listaBusquedas = new ArrayList<>();
-    	
-    	lineasFichero.stream().forEach(x -> {
-//    		String[] linea = x.split(",");
-//    		if(weatherComplexFind != null && linea[0].equals(weatherComplexFind.getDate().toString()) ||
-//    			weatherFind != null &&	linea[0].equals(weatherFind.getDate().toString()))
-//    			lineasFichero.remove(x);
-    		String[] lineas = x.split(",");
-    		HistoricoBusqueda busqueda = new HistoricoBusqueda(
-    	    		LocalDate.now(),
-    	    		lineas[1],
-    	    		Double.parseDouble(lineas[2]),
-    	    		Double.parseDouble(lineas[3]));
-    		
-    		listaBusquedas.add(busqueda);
-    	});
-    	
-    	
-    	if(weatherComplexFind != null || )
-    	
-//    	if(weatherComplexFind != null)
-//    		lineasFichero.add(weatherComplexFind.serializeString());
-//    	
-//    	if(weatherFind != null)
-//    		lineasFichero.add(weatherComplexFind.serializeString());
-    	
-    	
-    	System.out.println("fichero creado");repetir();
+    	try {
+        	Ficheros.crearFichero("./busquedas.txt");
+        	
+        	List<String> lineasFichero = Ficheros.leerFichero8("./busquedas.txt");
+        	List<HistoricoBusqueda> listaBusquedas = new ArrayList<>();
+        	List<HistoricoBusqueda> nuevaListaBusquedas = new ArrayList<>();
+        	
+        	if(lineasFichero != null )
+	        	lineasFichero.stream().forEach(x -> {
+	        		String[] lineas = x.split(",");
+	        		HistoricoBusqueda busqueda = new HistoricoBusqueda(
+	        	    		LocalDate.now(),
+	        	    		lineas[1],
+	        	    		Double.parseDouble(lineas[2]),
+	        	    		Double.parseDouble(lineas[3]));
+	        		
+	        		listaBusquedas.add(busqueda);
+	        	});
+        	
+        	if(weatherComplexFind != null) {
+        		nuevaListaBusquedas = listaBusquedas.stream()
+        		.filter(e -> e.getDate() != LocalDate.now())
+        		.collect(Collectors.toList());
+        		
+        		nuevaListaBusquedas.add(weatherComplexFind);
+        	}
+        	
+        	if(weatherFind != null) {
+        		nuevaListaBusquedas = listaBusquedas.stream()
+        		.filter(e -> e.getDate() != LocalDate.now())
+        		.collect(Collectors.toList());
+        		
+        		nuevaListaBusquedas.add(weatherFind);
+        	}
+        	
+        	if(nuevaListaBusquedas.isEmpty()) {
+        		System.out.println("No hay búsquedas para serializar.");repetir();   		
+        	} else {
+        		SerializacionUtils.serializarListaBusquedas(".", "busquedas.txt", nuevaListaBusquedas);
+        		System.out.println("Búsquedas recientes serializadas con éxito.");repetir();
+        	}   		
+    	} catch(Exception e) {
+    		System.out.println("ERROR");
+    		System.out.println(e.getMessage());
+    	}
+
+    	repetir();
     }
     
     
