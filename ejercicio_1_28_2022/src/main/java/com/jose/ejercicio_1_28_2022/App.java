@@ -28,8 +28,8 @@ public class App
     static String tokenWeather = "&appid=871a1c2012aa13906ae6b27ae2aff30b";
     static String urlBaseMarvel = "https://gateway.marvel.com:443/v1/public/characters?";
     static String tokenMarvel = "apikey=";
-    static HistoricoBusqueda weatherComplexFind = null;
-    static HistoricoBusqueda weatherFind = null;
+    static HistoricoBusqueda weatherLatLonFind = null;
+    static HistoricoBusqueda weatherCityFind = null;
     
 	public static void main( String[] args ) throws Exception
     {
@@ -69,7 +69,7 @@ public class App
 	    		serializarBusquedas();
 	    		break;
 	    	case 5:
-	    		caso5();
+	    		mostrarBusquedasGuardadas();
 	    		break;
 	    	case 6:
 	    		caso6();
@@ -133,7 +133,7 @@ public class App
     	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + tokenWeather;
     	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
     	System.out.println(response.toString());
-    	weatherComplexFind = new HistoricoBusqueda(
+    	weatherLatLonFind = new HistoricoBusqueda(
 	    						LocalDate.now(),
 					    		response.getName(),
 					    		response.getMain().getTemp(),
@@ -159,7 +159,7 @@ public class App
     	
     	WeatherRegistry result = XmlUtils.procesarRegistroXml(cadenaXml);
     	System.out.println(result);
-    	weatherComplexFind = new HistoricoBusqueda(
+    	weatherCityFind = new HistoricoBusqueda(
 	    		LocalDate.now(),
 	    		result.getCity(),
 	    		Double.parseDouble(result.getTemp()),
@@ -205,49 +205,34 @@ public class App
     	try {
         	Ficheros.crearFichero("./busquedas.dat");
         	
-//        	List<String> lineasFichero = Ficheros.leerFichero8("./busquedas.txt");
-//        	List<HistoricoBusqueda> listaBusquedas = new ArrayList<>();
-//       	
-//        	if(lineasFichero != null )
-//	        	lineasFichero.stream().forEach(x -> {
-//	        		String[] lineas = x.split(",");
-//	        		HistoricoBusqueda busqueda = new HistoricoBusqueda(
-//	        	    		LocalDate.now(),
-//	        	    		lineas[1],
-//	        	    		Double.parseDouble(lineas[2]),
-//	        	    		Double.parseDouble(lineas[3]));
-//	        		
-//	        		listaBusquedas.add(busqueda);
-//	        	});
-        	List<HistoricoBusqueda> listaBusquedas = new ArrayList<>();
-        	listaBusquedas = SerializacionUtils.desSerializarListaObjetos("./busquedas.dat");
-        	listaBusquedas.stream().forEach(x -> System.out.println(x));
-        	
+        	List<HistoricoBusqueda> listaBusquedasOld = SerializacionUtils.desSerializarListaObjetos("./busquedas.dat");       	
         	List<HistoricoBusqueda> nuevaListaBusquedas = new ArrayList<>();
+        	   	
+        	if(weatherLatLonFind != null) {
+        		nuevaListaBusquedas = listaBusquedasOld.stream()
+		        		.filter(e -> e.getDate() != LocalDate.now())
+		        		.collect(Collectors.toList());      		
+        		nuevaListaBusquedas.add(weatherLatLonFind);
+        	}
         	
-        	nuevaListaBusquedas.add(weatherFind);
+        	if(weatherCityFind != null)
+        	{
+        		if (nuevaListaBusquedas.isEmpty())
+	        		nuevaListaBusquedas = listaBusquedasOld.stream()
+					                		.filter(e -> !e.getDate().isEqual(LocalDate.now()))
+					                		.collect(Collectors.toList());
+        		
+        		System.out.println(LocalDate.now());
+        		
+        		nuevaListaBusquedas.add(weatherCityFind);
+        	}
         	
-//        	if(weatherComplexFind != null) {
-//        		nuevaListaBusquedas = listaBusquedas.stream()
-//        		.filter(e -> e.getDate() != LocalDate.now())
-//        		.collect(Collectors.toList());
-//        		
-//        		nuevaListaBusquedas.add(weatherComplexFind);
-//        	}
-//        	
-//        	if(weatherFind != null && nuevaListaBusquedas.isEmpty())
-//        	{
-//        		nuevaListaBusquedas = listaBusquedas.stream()
-//                		.filter(e -> e.getDate() != LocalDate.now())
-//                		.collect(Collectors.toList());
-//        		nuevaListaBusquedas.add(weatherFind);
-//        	}else {     		
-//        		nuevaListaBusquedas.add(weatherFind);
-//        	}
         	
         	if(nuevaListaBusquedas.isEmpty()) {
         		System.out.println("No hay búsquedas para serializar.");   		
         	} else {
+        		System.out.println("Serializando...");
+        		nuevaListaBusquedas.stream().forEach(e -> System.out.println("- " + e));
         		SerializacionUtils.serializarListaObjetos("./busquedas.dat", nuevaListaBusquedas);
         		System.out.println("Búsquedas recientes serializadas con éxito.");
         	}   		
@@ -259,10 +244,15 @@ public class App
     	repetir();
     }
     
+    private static void mostrarBusquedasGuardadas(){
+    	List<HistoricoBusqueda> listaBusquedas = SerializacionUtils.desSerializarListaObjetos("./busquedas.dat");
+    	
+    	listaBusquedas.stream().forEach(e -> System.out.println("- " + e));   	
+    	
+    	repetir();
+    }
     
     
-    
-    private static void caso5(){System.out.println("caso5");repetir();}
     private static void caso6(){System.out.println("caso6");repetir();}    
     
 	/**

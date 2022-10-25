@@ -222,7 +222,8 @@ public class SerializacionUtils {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("Fichero vacío");
 		}
 		return objetos;
 	}
