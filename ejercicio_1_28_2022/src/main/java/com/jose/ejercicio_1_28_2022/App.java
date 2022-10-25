@@ -139,7 +139,6 @@ public class App
 					    		response.getMain().getTemp(),
 					    		response.getMain().getHumidity());
     	
-    	//tecladoCoordenadas.close();
     	repetir();
     }
     
@@ -164,8 +163,6 @@ public class App
 	    		result.getCity(),
 	    		Double.parseDouble(result.getTemp()),
 	    		Double.parseDouble(result.getHumidity()));
-    	
-    	//teclado.close();
     	
     	repetir();
     }
@@ -206,34 +203,22 @@ public class App
         	Ficheros.crearFichero("./busquedas.dat");
         	
         	List<HistoricoBusqueda> listaBusquedasOld = SerializacionUtils.desSerializarListaObjetos("./busquedas.dat");       	
-        	List<HistoricoBusqueda> nuevaListaBusquedas = new ArrayList<>();
+        	List<HistoricoBusqueda> listaBusquedasNew = listaBusquedasOld.stream()
+        													.filter(e -> e.getDate() != LocalDate.now())
+        													.collect(Collectors.toList());
         	   	
-        	if(weatherLatLonFind != null) {
-        		nuevaListaBusquedas = listaBusquedasOld.stream()
-		        		.filter(e -> e.getDate() != LocalDate.now())
-		        		.collect(Collectors.toList());      		
-        		nuevaListaBusquedas.add(weatherLatLonFind);
-        	}
+        	if(weatherLatLonFind != null)
+        		listaBusquedasNew.add(weatherLatLonFind);
         	
         	if(weatherCityFind != null)
-        	{
-        		if (nuevaListaBusquedas.isEmpty())
-	        		nuevaListaBusquedas = listaBusquedasOld.stream()
-					                		.filter(e -> !e.getDate().isEqual(LocalDate.now()))
-					                		.collect(Collectors.toList());
-        		
-        		System.out.println(LocalDate.now());
-        		
-        		nuevaListaBusquedas.add(weatherCityFind);
-        	}
+        		listaBusquedasNew.add(weatherCityFind);      	
         	
-        	
-        	if(nuevaListaBusquedas.isEmpty()) {
+        	if(weatherLatLonFind == null && weatherCityFind == null) {
         		System.out.println("No hay búsquedas para serializar.");   		
         	} else {
         		System.out.println("Serializando...");
-        		nuevaListaBusquedas.stream().forEach(e -> System.out.println("- " + e));
-        		SerializacionUtils.serializarListaObjetos("./busquedas.dat", nuevaListaBusquedas);
+        		listaBusquedasNew.stream().forEach(e -> System.out.println("- " + e));
+        		SerializacionUtils.serializarListaObjetos("./busquedas.dat", listaBusquedasNew);
         		System.out.println("Búsquedas recientes serializadas con éxito.");
         	}   		
     	} catch(Exception e) {
