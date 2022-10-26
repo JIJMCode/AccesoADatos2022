@@ -15,7 +15,7 @@ import com.jose.ejercicio_1_28_2022.Entidades.*;
 import com.jose.ejercicio_1_28_2022.Utilidades.*;
 
 /**
- * Hello world!
+ * @author JOSE IGNACIO JIMENEZ MAYOR
  *
  */
 public class App 
@@ -30,6 +30,10 @@ public class App
     static String tokenMarvel = "apikey=";
     static HistoricoBusqueda weatherLatLonFind = null;
     static HistoricoBusqueda weatherCityFind = null;
+	static String urlBaseFutbol = "https://www.thesportsdb.com/api/v1/json/2/searchevents.php?e=";
+	static String equipoLocal = "";
+	static String equipoVisitante = "";
+	static String url_vs = "_vs_";
     
 	public static void main( String[] args ) throws Exception
     {
@@ -46,7 +50,7 @@ public class App
         System.out.println( "3. Obterner información en una fecha determinada." );
         System.out.println( "4. Guardar datos de las búsquedas." );
         System.out.println( "5. Mostrar búsquedas guardadas." ); 
-        System.out.println( "6. Obtener información de la API de Marvel" ); 
+        System.out.println( "6. Obtener enfrentamientos entre 2 equipos de fútbol" ); 
         
         try {
         	opcion = Integer.parseInt(teclado.next());
@@ -72,7 +76,7 @@ public class App
 	    		mostrarBusquedasGuardadas();
 	    		break;
 	    	case 6:
-	    		caso6();
+	    		enfrentamientosFutbol();
 	    		break;
 	    	default:
 	            System.out.println( "\n***Debe seleccionar una de las opciones propuestas." );
@@ -237,8 +241,38 @@ public class App
     	repetir();
     }
     
+    private static void enfrentamientosFutbol(){
+    	pedirDosEquiposFutbol();
+    	    	
+    	String urlFutbolCompleta = urlBaseFutbol + equipoLocal + url_vs + equipoVisitante;
+    	
+    	RootEventoFutbol evento = JsonUtils.devolverObjetoGsonGenerico(urlFutbolCompleta, RootEventoFutbol.class);
+    	evento.getEvent().stream().forEach(e -> System.out.println(e));
+    	
+    	repetir();
+    } 
     
-    private static void caso6(){System.out.println("caso6");repetir();}    
+	/**
+	 * Método que pide 2 fechas por consola y comprueba que tienen el formato correcto
+	 */
+	private static void pedirDosEquiposFutbol() {
+        //Scanner teclado2 = new Scanner(System.in);
+		teclado = new Scanner(System.in);
+		
+		try {
+			while (equipoLocal.isBlank()) {
+		        System.out.println( "\nIntroduzca el nombre del equipo local" );   
+		        equipoLocal = teclado.nextLine();
+			}
+
+	        while (equipoVisitante.isBlank()) {
+	            System.out.println( "\nIntroduzca el nombre del equipo visitante" );
+	            equipoVisitante = teclado.nextLine();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
     
 	/**
 	 * Método que pide 2 fechas por consola y comprueba que tienen el formato correcto
