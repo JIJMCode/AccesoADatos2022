@@ -249,6 +249,12 @@ public class App
     	RootEventoFutbol evento = JsonUtils.devolverObjetoGsonGenerico(urlFutbolCompleta, RootEventoFutbol.class);
     	evento.getEvent().stream().forEach(e -> System.out.println(e));
     	
+    	int totalScoreHome = evento.getEvent().stream().mapToInt(e -> Integer.parseInt(e.getIntHomeScore())).sum();
+    	int totalScoreAway = evento.getEvent().stream().mapToInt(e -> Integer.parseInt(e.getIntAwayScore())).sum();
+    	
+    	System.out.println("Goles totales del " + evento.getEvent().stream().findFirst().get().getStrHomeTeam() + " = " + totalScoreHome);
+    	System.out.println("Goles totales del " + evento.getEvent().stream().findFirst().get().getStrAwayTeam() + " = " + totalScoreAway);
+    	
     	repetir();
     } 
     

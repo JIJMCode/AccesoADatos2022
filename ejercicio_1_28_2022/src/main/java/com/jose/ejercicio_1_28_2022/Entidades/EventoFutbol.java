@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class EventoFutbol {
 	private String strEvent;
+	private String strHomeTeam;
+	private String strAwayTeam;
 	private String strLeague;
 	private String strSeason;
 	private String dateEvent;
@@ -17,10 +19,12 @@ public class EventoFutbol {
 		super();
 	}
 
-	public EventoFutbol(String strEvent, String strLeague, String strSeason, String dateEvent, String intHomeScore,
-			String intAwayScore) {
+	public EventoFutbol(String strEvent, String strHomeTeam, String strAwayTeam, String strLeague, String strSeason,
+			String dateEvent, String intHomeScore,String intAwayScore) {
 		super();
 		this.strEvent = strEvent;
+		this.strHomeTeam = strHomeTeam;
+		this.strAwayTeam = strAwayTeam;
 		this.strLeague = strLeague;
 		this.strSeason = strSeason;
 		this.dateEvent = dateEvent;
@@ -74,6 +78,22 @@ public class EventoFutbol {
 
 	public void setIntAwayScore(String intAwayScore) {
 		this.intAwayScore = intAwayScore;
+	}
+
+	public String getStrHomeTeam() {
+		return strHomeTeam;
+	}
+
+	public void setStrHomeTeam(String strHomeTeam) {
+		this.strHomeTeam = strHomeTeam;
+	}
+
+	public String getStrAwayTeam() {
+		return strAwayTeam;
+	}
+
+	public void setStrAwayTeam(String strAwayTeam) {
+		this.strAwayTeam = strAwayTeam;
 	}
 
 	@Override
