@@ -129,7 +129,7 @@ public void setCod(int cod) {
 
 @Override
 public String toString() {
-	return "Name=" + name + ", Temperature=" + (main.getTemp()-273.15) + "ºC, Humidity=" + main.getHumidity() + "%, Weather=" + weather.toString() + ".";
+	return "Name=" + name + ", Temperature=" + Math.round(((main.getTemp()-273.15)*1000.0)/1000.0) + "ºC, Humidity=" + main.getHumidity() + "\n" + weather.toString();
 }
 			
 }

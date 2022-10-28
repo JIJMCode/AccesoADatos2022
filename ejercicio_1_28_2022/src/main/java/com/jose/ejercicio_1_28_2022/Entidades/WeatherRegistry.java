@@ -54,7 +54,7 @@ public class WeatherRegistry {
 
 	@Override
 	public String toString() {
-		return "WeatherRegistry:\n Ciudad: " + city + "\nTemperatura: " + Math.round(((Double.parseDouble(temp)-273.15)*100.0)/100.0) + "ºC\nHumedad: " + humidity +
-				"%\nWheather => " + "[" + wheather.toString()	+ "]";
+		return "WeatherRegistry:\nCiudad: " + city + "\nTemperatura: " + Math.round(((Double.parseDouble(temp)-273.15)*100.0)/100.0) +
+				"ºC\nHumedad: " + humidity + "%\n" + wheather.toString();
 	}
 }

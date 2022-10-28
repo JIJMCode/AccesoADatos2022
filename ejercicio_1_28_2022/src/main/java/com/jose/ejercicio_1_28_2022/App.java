@@ -189,7 +189,10 @@ public class App
 											dateUtils.comprobarFecha4(parts[5]),
 											Double.parseDouble(parts[6].replace(",", "."))	
 										);
-			if (consulta.getFecha().compareTo(fechaInicio) >= 0 && consulta.getFecha().compareTo(fechaFin) <= 0) {
+			boolean duplicado = registros.stream().anyMatch(x -> x.getFecha().equals(consulta.getFecha()));
+			if (consulta.getFecha().compareTo(fechaInicio) >= 0 &&
+				consulta.getFecha().compareTo(fechaFin) <= 0 &&
+				duplicado == false) {
 				registros.add(consulta);
 			}
 		});

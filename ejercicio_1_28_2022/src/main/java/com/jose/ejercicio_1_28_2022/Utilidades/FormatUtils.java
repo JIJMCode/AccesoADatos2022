@@ -6,8 +6,8 @@ public class FormatUtils {
 		try {
 			Double coordenada = Double.parseDouble(coord);
 			
-			if ((type.equalsIgnoreCase("latitude") && coordenada <= 90 && coordenada >= 90) ||
-				(type.equalsIgnoreCase("longitude") && coordenada <= 180 && coordenada >= -180))
+			if ((type.equalsIgnoreCase("latitude") && coordenada <= 90 || coordenada >= 90) ||
+				(type.equalsIgnoreCase("longitude") && coordenada <= 180 || coordenada >= -180))
 			{
 				result = true;
 			} else {
