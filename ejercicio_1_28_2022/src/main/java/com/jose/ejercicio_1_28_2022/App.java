@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -199,6 +200,7 @@ public class App
     	
     	registros.sort(Comparator.comparing(RegistroTemp::getFecha));
     	registros.forEach(x->System.out.println(x));
+    	System.out.println("Total de Registros: " + registros.size());
     	    	
     	vaciarFechas();
     	repetir();
@@ -212,13 +214,16 @@ public class App
         	List<HistoricoBusqueda> listaBusquedasOld = SerializacionUtils.desSerializarListaObjetos("./busquedas.dat");       	
         	List<HistoricoBusqueda> listaBusquedasNew = listaBusquedasOld.stream()
         													.filter(e -> e.getDate() != LocalDate.now())
+        													//.limit(3)
         													.collect(Collectors.toList());
         	   	
         	if(weatherLatLonFind != null)
-        		listaBusquedasNew.add(weatherLatLonFind);
+        		listaBusquedasNew = ListUtils.eliminarDuplicado(weatherLatLonFind, listaBusquedasNew);
         	
-        	if(weatherCityFind != null)
-        		listaBusquedasNew.add(weatherCityFind);      	
+
+        	if(weatherCityFind != null) {
+        		listaBusquedasNew = ListUtils.eliminarDuplicado(weatherCityFind, listaBusquedasNew);
+        	}      	
         	
         	if(weatherLatLonFind == null && weatherCityFind == null) {
         		System.out.println("No hay búsquedas para serializar.");   		
