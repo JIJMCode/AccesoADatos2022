@@ -52,6 +52,6 @@ public class Weather {
 
 	@Override
 	public String toString() {
-		return "\nWheather [Main=" + main + ", Description=" + description + "]";
+		return "Wheather [Main=" + main + ", Description=" + description + "]";
 	}
 }

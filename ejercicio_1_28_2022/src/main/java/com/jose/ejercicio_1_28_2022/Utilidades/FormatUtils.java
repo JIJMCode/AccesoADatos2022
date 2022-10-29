@@ -6,20 +6,19 @@ public class FormatUtils {
 		try {
 			Double coordenada = Double.parseDouble(coord);
 			
-			if ((type.equalsIgnoreCase("latitude") && coordenada <= 90 || coordenada >= 90) ||
-				(type.equalsIgnoreCase("longitude") && coordenada <= 180 || coordenada >= -180))
+			if ((type.equalsIgnoreCase("latitude") && coordenada <= 90 && coordenada >= -90) ||
+				(type.equalsIgnoreCase("longitude") && coordenada <= 180 && coordenada >= -180))
 			{
-				result = true;
+				return true;
 			} else {
-				result = false;				
+				String message = type.equalsIgnoreCase("latitude") ? Literals.errorLatitud : Literals.errorLongitud;
+				System.out.println(Literals.wrongFormat + message);
+				return false;				
 			}		
 		} 
 		catch (Exception e) {
-			result = false;
+			System.out.println("Formato incorrecto, pruebe a introducir de nuevo");
+			return false;
 		}
-		finally {
-			if (!result) {System.out.println("Formato incorrecto, pruebe a introducir de nuevo");}
-			return result;
-		}	
 	}	
 }

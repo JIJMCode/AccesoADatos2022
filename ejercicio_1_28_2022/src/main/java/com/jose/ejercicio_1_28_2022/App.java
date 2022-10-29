@@ -52,6 +52,7 @@ public class App
         System.out.println( "4. Guardar datos de las búsquedas." );
         System.out.println( "5. Mostrar búsquedas guardadas." ); 
         System.out.println( "6. Obtener enfrentamientos entre 2 equipos de fútbol" ); 
+        System.out.println( "0. Salir" ); 
         
         try {
         	opcion = Integer.parseInt(teclado.next());
@@ -61,8 +62,11 @@ public class App
         
                 
         switch (opcion) {
-	    	case 1:
-	    		pedirCoordenadas();
+	    	case 0:
+	    		cerrarApp();
+	    		break;
+	        case 1:
+	        	climaSegunCoordenadas();
 	    		break;
 	    	case 2:
 	    		pedirLocalidad();
@@ -115,26 +119,24 @@ public class App
 		}
 	}
     
+    private static void cerrarApp() {
+		teclado.close();
+		System.out.println("\nAplicación cerrada. Hasta pronto!!!");
+		System.exit(0);
+    } 
+    
+	static String latitud;
+	static String longitud;
+	static String urlLongitude = "&lon=";
+	static String urlLatitude = "lat=";
+	
     /**
 	 * Pedir latitud y longitud y mostrar: nombre, temperatura, humedad y lista de weather
 	 * de la información obtenida de la API en JSON
 	 */
-    private static void pedirCoordenadas(){
-		teclado = new Scanner(System.in);
-    	String urlLongitude = "&lon=";
-    	String urlLatitude = "lat=";
-    	String latitud;
-    	do {
-    		System.out.println("Introducir latitud:");
-        	latitud = teclado.next().replace(",", ".");
-		} while (!FormatUtils.validarCoordenada(latitud, "latitude"));
-    	
-    	String longitud;
-    	do {
-        	System.out.println("Introducir longitud:");
-        	longitud = teclado.next().replace(",", ".");
-		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
-   	
+    private static void climaSegunCoordenadas(){
+		pedirCoordenadas();
+		
     	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + tokenWeather;
     	WeatherRegistryComplex response = JsonUtils.devolverObjetoGsonGenerico(requestUrl, WeatherRegistryComplex.class);
     	System.out.println(response.toString());
@@ -145,6 +147,24 @@ public class App
 					    		response.getMain().getHumidity());
     	
     	repetir();
+    }
+    
+    /**
+	 * Pedir y validar latitud y longitud
+	 */
+    private static void pedirCoordenadas(){
+		teclado = new Scanner(System.in);
+  	
+    	do {
+    		System.out.println("Introducir latitud:");
+        	latitud = teclado.next().replace(",", ".");
+		} while (!FormatUtils.validarCoordenada(latitud, "latitude"));
+    	
+
+    	do {
+        	System.out.println("Introducir longitud:");
+        	longitud = teclado.next().replace(",", ".");
+		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
     }
     
     /**
@@ -183,7 +203,7 @@ public class App
     	List<RegistroTemp> registros = new ArrayList<>();
     	
     	lineas.stream()
-		.skip(2)
+		.skip(1)
 		.forEach(i ->  {String[] parts = i.split(",");
 			RegistroTemp consulta = new RegistroTemp
 										(
