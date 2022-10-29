@@ -126,13 +126,13 @@ public class App
     	String latitud;
     	do {
     		System.out.println("Introducir latitud:");
-        	latitud = teclado.next();       	
+        	latitud = teclado.next().replace(",", ".");
 		} while (!FormatUtils.validarCoordenada(latitud, "latitude"));
     	
     	String longitud;
     	do {
         	System.out.println("Introducir longitud:");
-        	longitud = teclado.next();
+        	longitud = teclado.next().replace(",", ".");
 		} while (!FormatUtils.validarCoordenada(longitud, "longitude"));
    	
     	String requestUrl = urlBase + urlLatitude + latitud + urlLongitude +longitud + tokenWeather;
@@ -156,7 +156,7 @@ public class App
     	String urlXml = "&mode=xml";
     	System.out.println("Introducir localidad:");
 		teclado = new Scanner(System.in);
-    	String localidad = teclado.next();
+    	String localidad = teclado.nextLine();
     	String requestUrl = urlBase + urlCity + localidad + urlXml + tokenWeather;
     	
     	String cadenaXml = InternetUtils.readUrl(requestUrl);
