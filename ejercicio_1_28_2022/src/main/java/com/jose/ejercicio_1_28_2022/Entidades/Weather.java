@@ -1,6 +1,9 @@
 package com.jose.ejercicio_1_28_2022.Entidades;
 
-public class Weather {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class Weather implements Serializable {
 	private int id;
 	private String main;
 	private String description;

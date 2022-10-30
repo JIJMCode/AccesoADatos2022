@@ -1,6 +1,9 @@
 package com.jose.ejercicio_1_28_2022.Entidades;
 
-public class WeatherXml {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public class WeatherXml implements Serializable {
 	private String main;
 	private String description;
 	private String icon;

@@ -6,18 +6,18 @@ public class WeatherRegistry {
 	String city;
 	String temp;
 	String humidity;
-	List wheather;
+	List weather;
 	
 	public WeatherRegistry() {
 		super();
 	}
 
-	public WeatherRegistry(String city, String temp, String humidity, List wheather) {
+	public WeatherRegistry(String city, String temp, String humidity, List weather) {
 		super();
 		this.city = city;
 		this.temp = temp;
 		this.humidity = humidity;
-		this.wheather = wheather;
+		this.weather = weather;
 	}
 
 	public String getCity() {
@@ -44,17 +44,17 @@ public class WeatherRegistry {
 		this.humidity = humidity;
 	}
 
-	public List<Weather> getWheather() {
-		return wheather;
+	public List<Weather> getweather() {
+		return weather;
 	}
 
-	public void setWheather(List<Weather> wheather) {
-		this.wheather = wheather;
+	public void setweather(List<Weather> weather) {
+		this.weather = weather;
 	}
 
 	@Override
 	public String toString() {
 		return "WeatherRegistry:\nCiudad: " + city + "\nTemperatura: " + Math.round(((Double.parseDouble(temp)-273.15)*100.0)/100.0) +
-				"ºC\nHumedad: " + humidity + "%\n" + wheather.toString();
+				"ºC\nHumedad: " + humidity + "%\n" + weather.toString();
 	}
 }
