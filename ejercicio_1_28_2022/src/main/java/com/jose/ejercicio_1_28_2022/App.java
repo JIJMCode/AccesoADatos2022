@@ -3,16 +3,12 @@ package com.jose.ejercicio_1_28_2022;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-
 import com.jose.ejercicio_1_28_2022.Entidades.*;
 import com.jose.ejercicio_1_28_2022.Utilidades.*;
 
