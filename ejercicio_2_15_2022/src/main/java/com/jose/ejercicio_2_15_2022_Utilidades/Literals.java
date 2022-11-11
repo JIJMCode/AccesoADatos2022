@@ -4,7 +4,7 @@ public class Literals {
 	public static String bdd_empty = "\nBase de datos reseteada.";
 	public static String bdd_full = "\nBase de datos cargada.";
 	public static String repeat_title = "\n==============================================\n= Pulse C para volver al MENU o S para salir =\n==============================================\n";
-	public static String url_get_categories = "https://v2.jokeapi.dev/categories";
+	public static String url_get_categories = "https://v2.jokeapi.dev/info";
 	public static String url_get_languages = "https://v2.jokeapi.dev/languages";
 //	public static String errorLongitud = "\nLa longitud debe ser un número entre -180 y 180, ambos inclusive.";
 //	public static String deleting = "Eliminando duplicado";

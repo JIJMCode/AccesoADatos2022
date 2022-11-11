@@ -183,6 +183,7 @@ public class utilsPostgre {
             ResultSet rs = statement.executeQuery(Literals.vaciarBddSQL);
             //ResultSet rs = null;
             
+            System.out.println(Literals.bdd_empty);
             rs.close();
             con.close();
         }catch(Exception e) {System.out.println(e.getMessage());}

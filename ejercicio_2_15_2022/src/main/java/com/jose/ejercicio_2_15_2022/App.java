@@ -24,6 +24,11 @@ public class App
 	static String equipoVisitante = "";
 	static String latitud;
 	static String longitud;
+    static List<String> categorias;
+    static List<String> flags;
+    static List<String> types;
+    static List<Language> idiomas = new ArrayList<Language>();
+    static List<Joke> chistes = new ArrayList<Joke>();
     
 	public static void main( String[] args ) throws Exception
     {
@@ -47,8 +52,7 @@ public class App
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
         }
-        
-                
+                        
         switch (opcion) {
 	        case 1:
 	        	resetearBdd();
@@ -106,12 +110,19 @@ public class App
 	 * Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
 	 */
 	protected static void cargaBdd() {
-    	categorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootCategories.class).getCategories();
+    	JokesInfo rootCategorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootInfo.class).getJokesInfo();
+		categorias = rootCategorias.getCategories();
+    	flags = rootCategorias.getFlags();
+    	types = rootCategorias.getTypes();
     	RootLanguages languages = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_languages, RootLanguages.class);
     	idiomas = languages.getPossibleLanguages().stream().filter(e-> languages.getLanguages().contains(e.getCode())).collect(Collectors.toList());
 //    	languages.getPossibleLanguages().stream().forEach(x-> {
 //    		if (languages.getLanguages().contains(x.getCode())) {
 //				idiomas.add(x);}});;
+    	idiomas.forEach(e-> {
+    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());
+    	});
+    	
     	
 //    	utilsJava.insertarPlanetasBdd("https://swapi.dev/api/planets/?format=json");
 //    	utilsJava.insertarEspeciesBdd("https://swapi.dev/api/species/?format=json");
@@ -125,14 +136,9 @@ public class App
 		idiomas.forEach(e-> System.out.println(e.getCode() + " - " + e.getName()));
         repetir();
     }
-    
-    static List<String> categorias;
-    static List<Language> idiomas = new ArrayList<Language>();
-    
-   
+     
     protected static void resetearBdd(){
     	//utilsPostgre.vaciarBdd();
-		//System.out.println(Literals.bdd_empty);
 		
 		cargaBdd();
     }
