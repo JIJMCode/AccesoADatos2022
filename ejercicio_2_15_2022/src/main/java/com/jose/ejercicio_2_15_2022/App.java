@@ -1,12 +1,15 @@
 package com.jose.ejercicio_2_15_2022;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
-import com.jose.ejercicio_2_15_2022_Utilidades.Literals;
-import com.jose.ejercicio_2_15_2022_Utilidades.utilsPostgre;
-
+import com.jose.ejercicio_2_15_2022_Utilidades.*;
+import com.jose.ejercicio_2_15_2022_Entidades.*;
 
 /**
  * @author Jose Ignacio Jimenez Mayor
@@ -26,7 +29,7 @@ public class App
     {
 		mostrarMenu();
     }
-    
+	   
     /**
      * Método que muestra el menú principal de la aplicación
      */
@@ -102,7 +105,14 @@ public class App
 	/**
 	 * Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
 	 */
-    protected static void cargaBdd() {
+	protected static void cargaBdd() {
+    	categorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootCategories.class).getCategories();
+    	RootLanguages languages = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_languages, RootLanguages.class);
+    	idiomas = languages.getPossibleLanguages().stream().filter(e-> languages.getLanguages().contains(e.getCode())).collect(Collectors.toList());
+//    	languages.getPossibleLanguages().stream().forEach(x-> {
+//    		if (languages.getLanguages().contains(x.getCode())) {
+//				idiomas.add(x);}});;
+    	
 //    	utilsJava.insertarPlanetasBdd("https://swapi.dev/api/planets/?format=json");
 //    	utilsJava.insertarEspeciesBdd("https://swapi.dev/api/species/?format=json");
 //    	utilsJava.insertarNavesBdd("https://swapi.dev/api/starships/?format=json");
@@ -112,13 +122,17 @@ public class App
 //    	utilsJava.insertarRelacionesPeliculasBdd("https://swapi.dev/api/films/?format=json");
 //    	utilsJava.insertarRelacionesPersonajesBdd("https://swapi.dev/api/people/?format=json");
 		System.out.println(Literals.bdd_full);
+		idiomas.forEach(e-> System.out.println(e.getCode() + " - " + e.getName()));
         repetir();
     }
     
+    static List<String> categorias;
+    static List<Language> idiomas = new ArrayList<Language>();
     
+   
     protected static void resetearBdd(){
-    	utilsPostgre.vaciarBdd();
-		System.out.println(Literals.bdd_empty);
+    	//utilsPostgre.vaciarBdd();
+		//System.out.println(Literals.bdd_empty);
 		
 		cargaBdd();
     }
