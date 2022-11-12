@@ -146,14 +146,13 @@ public class App
     }
      
     protected static void resetearBdd(){
-    	//utilsPostgre.vaciarBdd();
+    	utilsPostgre.vaciarBdd();
 		
-		cargaBdd();
+		//cargaBdd();
     }
+    
     protected static void anyadirChisteStatement(){}
     protected static void anyadirChistePreparedStatement(){}
     protected static void buscarPorTexto(){}
     protected static void chistesSinFlags(){}
-    
-
 }
