@@ -14,7 +14,7 @@ public class Literals {
 	public static String serialize_ok = "Búsquedas recientes serializadas con éxito.";
 	public static String error = "ERROR";
 	public static String history_list = "Lista de búsquedas almacenadas:";
-	public static String total_goals = "Goles totales del %s = %d";
+	public static String total_goals = "Goles totales del %s = %2s";
 	public static String insert_local = "\nIntroduzca el nombre del equipo local";
 	public static String insert_visitant = "\nIntroduzca el nombre del equipo visitante";
 	public static String insert_start_date = "\nIntroduzca la fecha inicial con formato dd/mm/yyyy:";

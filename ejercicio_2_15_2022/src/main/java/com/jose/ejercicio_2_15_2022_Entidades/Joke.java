@@ -1,6 +1,4 @@
-package com.jose.ejercicio_2_15_2022;
-
-import com.jose.ejercicio_2_15_2022_Entidades.Flags;
+package com.jose.ejercicio_2_15_2022_Entidades;
 
 public class Joke {
 	private int id;

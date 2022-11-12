@@ -110,31 +110,39 @@ public class App
 	 * Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
 	 */
 	protected static void cargaBdd() {
-    	JokesInfo rootCategorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootInfo.class).getJokesInfo();
-		categorias = rootCategorias.getCategories();
-    	flags = rootCategorias.getFlags();
-    	types = rootCategorias.getTypes();
-    	RootLanguages languages = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_languages, RootLanguages.class);
-    	idiomas = languages.getPossibleLanguages().stream().filter(e-> languages.getLanguages().contains(e.getCode())).collect(Collectors.toList());
-//    	languages.getPossibleLanguages().stream().forEach(x-> {
-//    		if (languages.getLanguages().contains(x.getCode())) {
-//				idiomas.add(x);}});;
-    	idiomas.forEach(e-> {
-    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());
-    	});
-    	
-    	
-//    	utilsJava.insertarPlanetasBdd("https://swapi.dev/api/planets/?format=json");
-//    	utilsJava.insertarEspeciesBdd("https://swapi.dev/api/species/?format=json");
-//    	utilsJava.insertarNavesBdd("https://swapi.dev/api/starships/?format=json");
-//    	utilsJava.insertarVehiculosBdd("https://swapi.dev/api/vehicles/?format=json");
-//  	utilsJava.insertarPeliculasBdd("https://swapi.dev/api/films/?format=json");
-//    	utilsJava.insertarPersonajesBdd("https://swapi.dev/api/people/?format=json");
-//    	utilsJava.insertarRelacionesPeliculasBdd("https://swapi.dev/api/films/?format=json");
-//    	utilsJava.insertarRelacionesPersonajesBdd("https://swapi.dev/api/people/?format=json");
-		System.out.println(Literals.bdd_full);
-		idiomas.forEach(e-> System.out.println(e.getCode() + " - " + e.getName()));
-        repetir();
+    	try {
+			JokesInfo rootCategorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootInfo.class).getJokesInfo();
+			categorias = rootCategorias.getCategories();
+	    	flags = rootCategorias.getFlags();
+	    	types = rootCategorias.getTypes();
+	    	RootLanguages languages = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_languages, RootLanguages.class);
+	    	idiomas = languages.getPossibleLanguages().stream().filter(e-> languages.getLanguages().contains(e.getCode())).collect(Collectors.toList());
+	    	idiomas.forEach(e-> {
+	    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());
+	    	});
+	    	
+	    	idiomas.forEach(x-> {
+	    		int count = 0;
+	    		do {
+	            	Joke chiste = JsonUtils.devolverObjetoGsonGenerico(String.format(Literals.url_get_joke, String.valueOf(count), x.getCode()), Joke.class);
+	            	System.out.println(chiste);
+					try {
+						Thread.sleep(550);
+					} catch (InterruptedException e1) {
+						System.out.println(e1.getMessage());
+						e1.printStackTrace();
+					}
+				} while (count<=x.getCount());
+	    	});
+	    	
+			System.out.println(Literals.bdd_full);
+			//idiomas.forEach(e-> System.out.println(e.getCode() + " - " + e.getName()));
+	        repetir();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
     }
      
     protected static void resetearBdd(){

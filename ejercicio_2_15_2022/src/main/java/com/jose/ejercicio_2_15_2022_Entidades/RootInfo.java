@@ -1,6 +1,4 @@
-package com.jose.ejercicio_2_15_2022;
-
-import com.jose.ejercicio_2_15_2022_Entidades.JokesInfo;
+package com.jose.ejercicio_2_15_2022_Entidades;
 
 public class RootInfo {
 	private JokesInfo jokes;
@@ -17,7 +15,5 @@ public class RootInfo {
 	 */
 	public void setJokesInfo(JokesInfo jokesInfo) {
 		this.jokes = jokesInfo;
-	}
-	
-	
+	}	
 }
