@@ -1,7 +1,6 @@
 package com.jose.ejercicio_2_15_2022;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,11 +23,16 @@ public class App
 	static String equipoVisitante = "";
 	static String latitud;
 	static String longitud;
-    static List<String> categorias;
-    static List<String> flags;
-    static List<String> types;
-    static List<Language> idiomas = new ArrayList<Language>();
-    static List<Joke> chistes = new ArrayList<Joke>();
+    static List<String> categorias = new ArrayList<>();
+    static List<String> flags = new ArrayList<>();
+    static List<String> types = new ArrayList<>();
+    static List<Language> idiomas = new ArrayList<>();
+    static List<Joke> chistes = new ArrayList<>();
+    static String insertCategorias = Literals.scriptInsertCategory;
+    static String insertFlags = Literals.scriptInsertFlag;
+    static String insertTypes = Literals.scriptInsertType;
+    static String insertLanguages = Literals.scriptInsertLanguage;
+    static int jokes_count;
     
 	public static void main( String[] args ) throws Exception
     {
@@ -80,14 +84,13 @@ public class App
 	 * tras cada consulta
 	 */
     private static void repetir() {
-
     	System.out.println();
-		
 		String seleccion = teclado.next();
 		char caracter = seleccion.charAt(0);
 		
 		while (caracter != 'c' && caracter != 's') {
-			System.out.println("\nInténtelo de nuevo, pulce C para ir al menú o S para salir\n");
+			System.out.println(Literals.choose_option);
+			System.out.println(Literals.repeat_title);
 			caracter = teclado.next().charAt(0);
 		}
 		
@@ -97,11 +100,10 @@ public class App
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
+			}	
 		}else {
 			teclado.close();
-			System.out.println("\nAplicación cerrada. Hasta pronto!!!");
+			System.out.println(Literals.app_closed);
 			System.exit(0);
 		}
 	}
@@ -111,32 +113,72 @@ public class App
 	 */
 	protected static void cargaBdd() {
     	try {
-			JokesInfo rootCategorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootInfo.class).getJokesInfo();
-			categorias = rootCategorias.getCategories();
-	    	flags = rootCategorias.getFlags();
-	    	types = rootCategorias.getTypes();
+		//Obtener datos
+    		JokesInfo rootCategorias = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_categories, RootInfo.class).getJokesInfo();
+		//Insertar categorías
+    		rootCategorias.getCategories().forEach(e-> {
+    			insertCategorias += (String.format(Literals.scriptCategory, e) + ", ");
+    			categorias.add(e);
+    		});
+			int numCategorias = utilsPostgre.cargarBdd((insertCategorias.substring(0, insertCategorias.length() - 2)) + ";");
+			System.out.println("Categorías añadidas: " + numCategorias);
+		//Insertar flags
+    		rootCategorias.getFlags().forEach(e-> {
+    			insertFlags += (String.format(Literals.scriptFlag, e) + ", ");
+    			flags.add(e);
+    		});
+			int numFlags = utilsPostgre.cargarBdd((insertFlags.substring(0, insertFlags.length() - 2)) + ";");
+			System.out.println("Flags añadidos: " + numFlags);
+		//Insertar types
+    		rootCategorias.getTypes().forEach(e-> {
+    			insertTypes += (String.format(Literals.scriptType, e) + ", ");
+    			types.add(e);
+    		});
+			int numTypes = utilsPostgre.cargarBdd((insertTypes.substring(0, insertTypes.length() - 2)) + ";");
+			System.out.println("Tipos añadidos: " + numTypes);
+		//Insertar idiomas
 	    	RootLanguages languages = JsonUtils.devolverObjetoGsonGenerico(Literals.url_get_languages, RootLanguages.class);
 	    	idiomas = languages.getPossibleLanguages().stream().filter(e-> languages.getLanguages().contains(e.getCode())).collect(Collectors.toList());
-	    	idiomas.forEach(e-> {
-	    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());
-	    	});
 	    	
-	    	idiomas.forEach(x-> {
-	    		int count = 0;
+	    	idiomas.forEach(e-> {
+	    		insertLanguages += (String.format(Literals.scriptLanguage, e.getCode(), e.getName()) + ", ");
+	    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());
+	    		});
+	    	int numLanguages = utilsPostgre.cargarBdd((insertLanguages.substring(0, insertLanguages.length() - 2)) + ";");
+			System.out.println("Idiomas añadidos: " + numLanguages);
+		//Insertar chistes
+			jokes_count = 0;
+			idiomas.forEach(x-> {
 	    		do {
-	            	Joke chiste = JsonUtils.devolverObjetoGsonGenerico(String.format(Literals.url_get_joke, String.valueOf(count), x.getCode()), Joke.class);
-	            	System.out.println(chiste);
-					try {
+	            //creación y grabació ndel chiste
+	    			Joke chiste = JsonUtils.devolverObjetoGsonGenerico(String.format(Literals.url_get_joke, String.valueOf(jokes_count), x.getCode()), Joke.class);
+	            	chistes.add(chiste);
+	    			String jokeFormatted = chiste.getJoke() == null ? null : chiste.getJoke().replace("'", "''");
+	            	String setupFormatted = chiste.getSetup() == null ? null : chiste.getSetup().replace("'", "''");
+	            	String deiveryFormatted = chiste.getDelivery() == null ? null : chiste.getDelivery().replace("'", "''");
+	            	String consultaJokeSql = String.format(Literals.scriptInsertJoke, chiste.getId(), chiste.getCategory(), chiste.getType(),
+	            							jokeFormatted, setupFormatted, deiveryFormatted, chiste.getLang());
+	            //creación y grabación de las relaciones del chiste con sus flags
+	            	consultaJokeSql += String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "nsfw", chiste.getFlags().getNsfw() ? 1 : 0);
+	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "religious", chiste.getFlags().getReligious());
+	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "political", chiste.getFlags().getPolitical());
+	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "racist", chiste.getFlags().getRacist());
+	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "sexist", chiste.getFlags().getSexist());
+	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "explicit", chiste.getFlags().getExplicit());
+	            	utilsPostgre.ejecutarConsultaBdd(String.format(consultaJokeSql));
+	            	jokes_count++;
+					//pausa para no superar el límite de peticiones a la API 
+	            	try {
 						Thread.sleep(550);
 					} catch (InterruptedException e1) {
 						System.out.println(e1.getMessage());
 						e1.printStackTrace();
 					}
-				} while (count<=x.getCount());
+				} while (jokes_count<=x.getCount());
 	    	});
-	    	
+			System.out.println("Chistes añadidos: " + jokes_count);
 			System.out.println(Literals.bdd_full);
-			//idiomas.forEach(e-> System.out.println(e.getCode() + " - " + e.getName()));
+	
 	        repetir();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -147,8 +189,8 @@ public class App
      
     protected static void resetearBdd(){
     	utilsPostgre.vaciarBdd();
-		
-		//cargaBdd();
+		cargaBdd();
+		repetir();
     }
     
     protected static void anyadirChisteStatement(){}

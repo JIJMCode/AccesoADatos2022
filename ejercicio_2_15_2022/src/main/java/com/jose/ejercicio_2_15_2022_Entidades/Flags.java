@@ -1,82 +1,82 @@
 package com.jose.ejercicio_2_15_2022_Entidades;
 
 public class Flags {
-	private String nsfw;
-	private String religious;
-	private String political;
-	private String racist;
-	private String sexist;
-	private String explicit;
+	private boolean nsfw;
+	private boolean religious;
+	private boolean political;
+	private boolean racist;
+	private boolean sexist;
+	private boolean explicit;
 	/**
 	 * @return the nsfw
 	 */
-	public String getNsfw() {
+	public boolean getNsfw() {
 		return nsfw;
 	}
 	/**
 	 * @param nsfw the nsfw to set
 	 */
-	public void setNsfw(String nsfw) {
+	public void setNsfw(boolean nsfw) {
 		this.nsfw = nsfw;
 	}
 	/**
 	 * @return the religious
 	 */
-	public String getReligious() {
+	public boolean getReligious() {
 		return religious;
 	}
 	/**
 	 * @param religious the religious to set
 	 */
-	public void setReligious(String religious) {
+	public void setReligious(boolean religious) {
 		this.religious = religious;
 	}
 	/**
 	 * @return the political
 	 */
-	public String getPolitical() {
+	public boolean getPolitical() {
 		return political;
 	}
 	/**
 	 * @param political the political to set
 	 */
-	public void setPolitical(String political) {
+	public void setPolitical(boolean political) {
 		this.political = political;
 	}
 	/**
 	 * @return the racist
 	 */
-	public String getRacist() {
+	public boolean getRacist() {
 		return racist;
 	}
 	/**
 	 * @param racist the racist to set
 	 */
-	public void setRacist(String racist) {
+	public void setRacist(boolean racist) {
 		this.racist = racist;
 	}
 	/**
 	 * @return the sexist
 	 */
-	public String getSexist() {
+	public boolean getSexist() {
 		return sexist;
 	}
 	/**
 	 * @param sexist the sexist to set
 	 */
-	public void setSexist(String sexist) {
+	public void setSexist(boolean sexist) {
 		this.sexist = sexist;
 	}
 	/**
 	 * @return the explicit
 	 */
-	public String getExplicit() {
+	public boolean getExplicit() {
 		return explicit;
 	}
 	/**
 	 * @param explicit the explicit to set
 	 */
-	public void setExplicit(String explicit) {
+	public void setExplicit(boolean explicit) {
 		this.explicit = explicit;
 	}
 	

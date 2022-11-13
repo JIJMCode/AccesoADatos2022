@@ -16,8 +16,8 @@ public class Literals {
 	public static String app_closed = "\nAplicación cerrada. Hasta pronto!!!";
 	
 	/*RESET BDD*/
-	public static String vaciarBddSQL = "delete from public.categories;\n" + "delete from public.types;\n" + "delete from public.language;\n" + "delete from public.flags;\n" + "delete from public.jokes_flags;\n" + "delete from public.jokes;" +
-							            "alter sequence seq_categories restart;" + "alter sequence seq_flags restart;" + "alter sequence seq_language restart;" + "alter sequence seq_types restart;";
+	public static String vaciarBddSQL = "delete from public.jokes_flags;\n" + "delete from public.jokes;" + "delete from public.categories;\n" + "delete from public.types;\n" + "delete from public.language;\n" + "delete from public.flags;\n" + 
+							            "alter sequence seq_categories restart;" + "alter sequence seq_flags restart;" + "alter sequence seq_types restart;";
 										//"alter sequence seq_jokes;"
 	public static String bdd_empty = "\nBase de datos reseteada.";
 	
@@ -25,10 +25,21 @@ public class Literals {
 	public static String url_get_categories = "https://v2.jokeapi.dev/info";
 	public static String url_get_languages = "https://v2.jokeapi.dev/languages";
 	public static String url_get_joke = "https://v2.jokeapi.dev/joke/Any?idRange= %s &lang= %s";
-    public static String scriptInsertJoke = "insert into public.jokes values ('%i','%s','%s','%s','%s','%s','%s');";
-    public static String scriptInsertCategory = "insert into public.categories values ('%i','%s');";
-    public static String scriptInsertFlag = "insert into public.flags values ('%i','%s');";
-    public static String scriptInsertType = "insert into public.types values ('%i','%s');";
-    public static String scriptInsertLanguage = "insert into public.languages values ('%s','%s');";
+    public static String scriptInsertCategory = "insert into public.categories values ";
+    public static String scriptCategory = "(nextval('seq_categories'),'%s')";
+    public static String scriptInsertFlag = "insert into public.flags values ";
+    public static String scriptFlag = "(nextval('seq_flags'),'%s')";
+    public static String scriptInsertType = "insert into public.types values ";
+    public static String scriptType = "(nextval('seq_types'),'%s')";
+    public static String scriptInsertLanguage = "insert into public.language values ";
+    public static String scriptLanguage = "('%s','%s')";
+    public static String scriptInsertJoke = "insert into public.jokes values (%d," //id
+    										+ "(select id from public.categories where category = '%s')," //category
+    										+ "(select id from public.types where type = '%s')," //type
+											+ "'%s'," //joke
+											+ "'%s'," //setup
+											+ "'%s'," //delivery
+											+ "'%s');"; //language
+    public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'),%b);"; 
 	public static String bdd_full = "\nBase de datos cargada.";
 }

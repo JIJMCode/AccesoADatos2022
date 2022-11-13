@@ -43,19 +43,19 @@ public class utilsPostgre {
 //	}
 	
 	public static void ejecutarConsultaBdd(String consulta) {
-//    	Connection con = null;
-//    	Statement statement = null;
-    	//ResultSet rs = null;
+    	Connection con = null;
+    	Statement statement = null;
+    	ResultSet rs = null;
     	try {
-//            Class.forName("org.postgresql.Driver");
-//            String url = "jdbc:postgresql://localhost:5432/swapi";
-//            String usuario = "postgres";
-//            String password = "postgre";
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost:5432/jokes";
+            String usuario = "postgres";
+            String password = "postgre";
             con = DriverManager.getConnection(url, usuario, password);
             statement = con.createStatement();
 
-            String sentenciaSQL = consulta;
-            rs = statement.executeQuery(sentenciaSQL);
+            //String sentenciaSQL = consulta;
+            rs = statement.executeQuery(consulta);
         }
     	catch(Exception e)
     	{
@@ -67,6 +67,33 @@ public class utilsPostgre {
     		DbUtils.closeQuietly(con);
     		DbUtils.closeQuietly(statement);
     	}
+    }
+	
+	public static int cargarBdd(String consulta) {
+    	Connection con = null;
+    	Statement statement = null;
+    	int rs = 0;
+    	try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://localhost:5432/jokes";
+            String usuario = "postgres";
+            String password = "postgre";
+            con = DriverManager.getConnection(url, usuario, password);
+            statement = con.createStatement();
+
+            //String sentenciaSQL = consulta;
+            rs = statement.executeUpdate(consulta);
+        }
+    	catch(Exception e)
+    	{
+    		System.out.println(e.getMessage());
+        }
+    	finally 
+    	{
+    		DbUtils.closeQuietly(con);
+    		DbUtils.closeQuietly(statement);
+    	}
+    	return rs;
     }
     
 //	public static List<FilmsByName> devolverSelectFilms(String sql) {
@@ -116,60 +143,60 @@ public class utilsPostgre {
 //		return null;
 //	}
 	
-	public static ResultSet ejecutarCSpeopleSinStarships(String metodo) {
-		conexion();
-		try {
-			cs = con.prepareCall("{call " + metodo + "}"); 													
-			return cs.executeQuery();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public static ResultSet ejecutarCSpeopleSinStarships(String metodo) {
+//		conexion();
+//		try {
+//			cs = con.prepareCall("{call " + metodo + "}"); 													
+//			return cs.executeQuery();
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
+//    
+//    public static List<Integer> obtenerListaIdBdd(String consulta) {
+//    	List<Integer> lista = new ArrayList<Integer>();
+//    	try {
+//            conexion();
+//    		Class.forName("org.postgresql.Driver");
+//
+//            Statement statement = con.createStatement();
+//            
+//            String sentenciaSQL = consulta;
+//            rs = statement.executeQuery(sentenciaSQL);
+//            
+//            while (rs.next()) {
+//            	lista.add(rs.getInt("codigo"));
+//            }
+//            rs.close();
+//            con.close();
+//        }catch(Exception e) {System.out.println(e.getMessage());}
+//    	
+//    	return lista;
+//    }
     
-    public static List<Integer> obtenerListaIdBdd(String consulta) {
-    	List<Integer> lista = new ArrayList<Integer>();
-    	try {
-            conexion();
-    		Class.forName("org.postgresql.Driver");
-
-            Statement statement = con.createStatement();
-            
-            String sentenciaSQL = consulta;
-            rs = statement.executeQuery(sentenciaSQL);
-            
-            while (rs.next()) {
-            	lista.add(rs.getInt("codigo"));
-            }
-            rs.close();
-            con.close();
-        }catch(Exception e) {System.out.println(e.getMessage());}
-    	
-    	return lista;
-    }
-    
-    public static Integer obtenerIdBdd(String consulta) {
-    	Integer id = -1;
-    	try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://localhost:5432/swapi";
-            String usuario = "postgres";
-            String password = "postgre";
-            Connection con = DriverManager.getConnection(url, usuario, password);
-            Statement statement = con.createStatement();
-
-            String sentenciaSQL = consulta;
-            ResultSet rs = statement.executeQuery(sentenciaSQL);
-            
-            while (rs.next()) {
-            	id = rs.getInt("codigo");
-            }
-            rs.close();
-            con.close();
-        }catch(Exception e) {System.out.println(e.getMessage());}
-    	
-    	return id;
-    }
+//    public static Integer obtenerIdBdd(String consulta) {
+//    	Integer id = -1;
+//    	try {
+//            Class.forName("org.postgresql.Driver");
+//            String url = "jdbc:postgresql://localhost:5432/swapi";
+//            String usuario = "postgres";
+//            String password = "postgre";
+//            Connection con = DriverManager.getConnection(url, usuario, password);
+//            Statement statement = con.createStatement();
+//
+//            String sentenciaSQL = consulta;
+//            ResultSet rs = statement.executeQuery(sentenciaSQL);
+//            
+//            while (rs.next()) {
+//            	id = rs.getInt("codigo");
+//            }
+//            rs.close();
+//            con.close();
+//        }catch(Exception e) {System.out.println(e.getMessage());}
+//    	
+//    	return id;
+//    }
   
     public static void vaciarBdd() {
     	try {
