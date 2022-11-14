@@ -47,6 +47,20 @@ public class JdbcUtils {
 		return null;
 	}
 	
+	public static int devolverId(String sql) {		
+		int id = -1;
+		try {
+			st = con.createStatement(); 
+			rs = st.executeQuery(sql);
+			if (rs.next()) {
+				id = rs.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}  	
+		return id;
+	}
+	
 	public static int StatementDML(String sql) {		
 		int registros = 0;
 		try {

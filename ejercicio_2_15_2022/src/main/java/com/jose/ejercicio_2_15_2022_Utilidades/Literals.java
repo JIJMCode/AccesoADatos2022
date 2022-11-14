@@ -9,11 +9,25 @@ public class Literals {
     public static String menu_4 = "4. Búsqueda de chistes por texto CallableStatement";
     public static String menu_5 = "5. Obtener chistes sin flags CallableStatement.";
     public static String menu_exit = "0. Salir"; 
+    public static String menu_yes_no = "1-. Sí\n2-. No\n"; 
 	public static String error_no_num = "\n***El valor introducido  no es un número";
 	public static String choose_option = "\n***Debe seleccionar una de las opciones propuestas.";
 	public static String repeat_title = "\n==============================================\n= Pulse C para volver al MENU o S para salir =\n==============================================\n";
 	public static String continue_exit = "\nPulse C para continuar o S para salir\n";
 	public static String app_closed = "\nAplicación cerrada. Hasta pronto!!!";
+	public static String new_joke = "Insertar chiste nuevo\n";
+	public static String new_joke_category = "Escriba el número de la categoría elegida:\n";	
+	public static String new_joke_type = "Escriba el número del tipo elegido:\n";
+	public static String new_joke_language = "Escriba el número del idioma elegido:\n";
+	public static String new_joke_joke = "Escriba el chiste:\n";
+	public static String new_joke_setup = "Escriba la primera parte del chiste:\n";
+	public static String new_joke_delivery = "Escriba la segunda parte del chiste:\n";
+	public static String new_joke_nsfw = "¿El chiste se puede considerar nsfw?\n";
+	public static String new_joke_religious = "¿El chiste es de temática religiosa?\n";
+	public static String new_joke_political = "¿El chiste es de temática política?\n";
+	public static String new_joke_racist = "¿El chiste se puede considerar racista?\n";
+	public static String new_joke_sexist = "¿El chiste se puede considerar sexista?\n";
+	public static String new_joke_explicit = "¿El chiste se puede considerar explícito?\n";
 	
 	/*RESET BDD*/
 	public static String vaciarBddSQL = "delete from public.jokes_flags;\n" + "delete from public.jokes;" + "delete from public.categories;\n" + "delete from public.types;\n" + "delete from public.language;\n" + "delete from public.flags;\n" + 
@@ -40,6 +54,14 @@ public class Literals {
 											+ "'%s'," //setup
 											+ "'%s'," //delivery
 											+ "'%s');"; //language
+    public static String scriptInsertNewJoke = "insert into public.jokes values ((nextval('seq_jokes')," //id
+											+ "(select id from public.categories where category = '%s')," //category
+											+ "(select id from public.types where type = '%s')," //type
+											+ "'%s'," //joke
+											+ "'%s'," //setup
+											+ "'%s'," //delivery
+											+ "'%s');"; //language
+    public static String scriptNewJokeId = "select MAX(id) from public.jokes";
     public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'),%b);"; 
 	public static String bdd_full = "\nBase de datos cargada.";
 }

@@ -15,7 +15,10 @@ import com.jose.ejercicio_2_15_2022_Entidades.*;
  */
 public class App 
 {
-    static int opcion;
+    static String url = "jdbc:postgresql://localhost:5432/jokes";
+    static String usuario = "postgres";
+    static String password = "postgre";
+	static int opcion;
     static Scanner teclado = new Scanner(System.in);
     static Date fechaInicio;
     static Date fechaFin;
@@ -33,6 +36,7 @@ public class App
     static String insertTypes = Literals.scriptInsertType;
     static String insertLanguages = Literals.scriptInsertLanguage;
     static int jokes_count;
+    static int menu_count;
     
 	public static void main( String[] args ) throws Exception
     {
@@ -159,7 +163,7 @@ public class App
 	            	String consultaJokeSql = String.format(Literals.scriptInsertJoke, chiste.getId(), chiste.getCategory(), chiste.getType(),
 	            							jokeFormatted, setupFormatted, deiveryFormatted, chiste.getLang());
 	            //creación y grabación de las relaciones del chiste con sus flags
-	            	consultaJokeSql += String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "nsfw", chiste.getFlags().getNsfw() ? 1 : 0);
+	            	consultaJokeSql += String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "nsfw", chiste.getFlags().getNsfw());
 	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "religious", chiste.getFlags().getReligious());
 	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "political", chiste.getFlags().getPolitical());
 	            	consultaJokeSql +=	String.format(Literals.scriptInsertJokesFlags, chiste.getId(), "racist", chiste.getFlags().getRacist());
@@ -193,7 +197,103 @@ public class App
 		repetir();
     }
     
-    protected static void anyadirChisteStatement(){}
+    protected static void menuNuevoChiste(){
+        try {
+        	Joke newJoke = new Joke();
+	    //solicitar categoría
+        	menu_count = 0;
+	    	System.out.println(Literals.new_joke); 
+	        System.out.println(Literals.new_joke_category);
+	        categorias.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e);
+	        	});
+        	int new_category = Integer.parseInt(teclado.next());
+        	newJoke.setCategory(new_category);
+    	//solicitar idioma
+        	menu_count = 0;
+	        System.out.println(Literals.new_joke_language);
+	        idiomas.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e.getName());
+	        	});
+        	int new_lang = Integer.parseInt(teclado.next());
+        	String new_language = idiomas.get(new_lang).getCode();
+        //solicitar tipo
+        	menu_count = 0;
+	        System.out.println(Literals.new_joke_category);
+	        types.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e);
+	        	});
+        	int new_type = Integer.parseInt(teclado.next());
+        	newJoke.setType(new_type);
+        //solicitar flags
+        	Flags newFlags = new Flags();
+	        System.out.println(Literals.new_joke_nsfw);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setNsfw(checkTrueFalse());
+	        System.out.println(Literals.new_joke_religious);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setReligious(checkTrueFalse());
+	        System.out.println(Literals.new_joke_political);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setPolitical(checkTrueFalse());
+	        System.out.println(Literals.new_joke_racist);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setRacist(checkTrueFalse());
+	        System.out.println(Literals.new_joke_sexist);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setSexist(checkTrueFalse());
+	        System.out.println(Literals.new_joke_explicit);
+	        System.out.println(Literals.menu_yes_no);       	
+	        newFlags.setExplicit(checkTrueFalse());
+        	newJoke.setFlags(newFlags);
+        //solicitar chiste
+        	menu_count = 0;
+        	String chiste;
+        	String setup;
+        	String delivery;
+        	do {
+            	if (new_type == 1) {
+        	        System.out.println(Literals.new_joke_joke);
+                	chiste = teclado.nextLine();
+                	newJoke.setJoke(chiste);
+    			} else {
+        	        System.out.println(Literals.new_joke_setup);
+        	        setup = teclado.nextLine();
+        	        newJoke.setSetup(setup);
+        	        System.out.println(Literals.new_joke_delivery);
+        	        delivery = teclado.nextLine();
+        	        newJoke.setDelivery(delivery);
+    			}
+			} while (new_type < 1 || new_type > 2);	
+        //almacenar chiste
+        	utilsPostgre.guardarChiste(newJoke);
+        	
+        }catch (Exception e) {
+        	System.out.println(Literals.error_no_num);
+        }
+    }
+       
+    public static boolean checkTrueFalse() {
+        int option;
+        do {
+    		try {
+	        	option = Integer.parseInt(teclado.next());
+    		} catch (Exception e) {
+    			option = 0;
+    		}
+		} while (option<1 || option>2);
+        
+        boolean result = option == 1 ? true : false;
+        
+        return result;
+    }
+    
+    protected static void anyadirChisteStatement(){
+    	menuNuevoChiste();
+    }
     protected static void anyadirChistePreparedStatement(){}
     protected static void buscarPorTexto(){}
     protected static void chistesSinFlags(){}

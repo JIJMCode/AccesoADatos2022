@@ -2,8 +2,8 @@ package com.jose.ejercicio_2_15_2022_Entidades;
 
 public class Joke {
 	private int id;
-	private String category;
-	private String type;
+	private int category;
+	private int type;
 	private String setup;
 	private String joke;
 	private String delivery;
@@ -24,25 +24,25 @@ public class Joke {
 	/**
 	 * @return the category
 	 */
-	public String getCategory() {
+	public int getCategory() {
 		return category;
 	}
 	/**
 	 * @param category the category to set
 	 */
-	public void setCategory(String category) {
+	public void setCategory(int category) {
 		this.category = category;
 	}
 	/**
 	 * @return the type
 	 */
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 	/**

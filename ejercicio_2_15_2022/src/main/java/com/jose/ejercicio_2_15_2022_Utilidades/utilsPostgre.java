@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.dbutils.DbUtils;
+
+import com.jose.ejercicio_2_15_2022_Entidades.Joke;
 import com.jose.ejercicio_2_15_2022_Utilidades.Literals;
 
 public class utilsPostgre {
@@ -68,6 +70,33 @@ public class utilsPostgre {
     		DbUtils.closeQuietly(statement);
     	}
     }
+	
+    public static void guardarChiste(Joke newJoke) {
+    	try {
+        	JdbcUtils.conexion(url, usuario, password);
+        	String insertNewJoke = String.format(Literals.scriptInsertNewJoke,newJoke.getCategory(),newJoke.getType(),newJoke.getJoke(),
+        										newJoke.getSetup(),newJoke.getDelivery(),newJoke.getLang());       	
+        	
+        	if (JdbcUtils.StatementDML(insertNewJoke)==1) {
+            	int newJokeId = JdbcUtils.devolverId(Literals.scriptNewJokeId);
+            	if (newJokeId>=0) {
+                	String insertNewFlags = "";
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "nsfw",newJoke.getFlags().getNsfw());
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "religious",newJoke.getFlags().getNsfw());
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "political",newJoke.getFlags().getNsfw());
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "racist",newJoke.getFlags().getNsfw());
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "sexist",newJoke.getFlags().getNsfw());
+                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "explicit",newJoke.getFlags().getNsfw());
+                	JdbcUtils.StatementDML(insertNewFlags);
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			JdbcUtils.desconexion();
+		}	
+    }
+	
 	
 	public static int cargarBdd(String consulta) {
     	Connection con = null;
