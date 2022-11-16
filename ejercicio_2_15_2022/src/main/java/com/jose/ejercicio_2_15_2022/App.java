@@ -102,6 +102,7 @@ public class App
 	 */
     private static void repetir() {
     	System.out.println();
+		System.out.println(Literals.repeat_title);
 		String seleccion = teclado.next();
 		char caracter = seleccion.charAt(0);
 		
