@@ -231,7 +231,7 @@ public class App
 	        	System.out.println(menu_count + "-. " + e.getName());
 	        	});
         	int new_lang = Integer.parseInt(teclado.next());
-        	String new_language = idiomas.get(new_lang).getCode();
+        	newJoke.setLang(new_lang);
         //solicitar tipo
         	menu_count = 0;
 	        System.out.println(Literals.new_joke_category);
@@ -248,7 +248,7 @@ public class App
 		        if (ValidateUtils.checkTrueFalse(teclado)) {newFlags.add(new Flag(e));}
 	        });
         	newJoke.setFlags(newFlags);
-        	newFlags.clear();
+        	
         //solicitar chiste
         	menu_count = 0;
         	String chiste;
@@ -270,7 +270,7 @@ public class App
 			} while (new_type < 1 || new_type > 2);	
         //almacenar chiste
         	utilsPostgre.guardarChiste(newJoke);
-        	
+        	newFlags.clear();
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
         }

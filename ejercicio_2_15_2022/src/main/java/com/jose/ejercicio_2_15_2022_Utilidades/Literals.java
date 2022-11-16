@@ -49,7 +49,14 @@ public class Literals {
 											+ "'%s'," //setup
 											+ "'%s'," //delivery
 											+ "(select id from public.language where code = '%s'));"; //language
-    public static String scriptNewJokeId = "select MAX(id) from public.jokes";
+    public static String scriptInsertNewJoke = "insert into jokes values (nextval('seq_jokes')," //id
+											+ "%d," /*category*/ + "%d," /*type*/
+											+ "'%s'," //joke
+											+ "'%s'," //setup
+											+ "'%s'," //delivery
+											+ "%d);"; //language
+    //public static String scriptNewJokeId = "select MAX(id) from public.jokes";
+    public static String scriptNewJokeId = "select * from public.jokes order by id desc limit 1";
     public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'));"; 
 	public static String bdd_full = "\nBase de datos cargada.";
 }

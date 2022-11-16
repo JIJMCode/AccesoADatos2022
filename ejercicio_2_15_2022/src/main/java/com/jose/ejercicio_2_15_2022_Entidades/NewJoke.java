@@ -9,7 +9,7 @@ public class NewJoke {
 	private String setup;
 	private String joke;
 	private String delivery;
-	private String lang;
+	private int lang;
 	private ArrayList<Flag> Flags;
 	/**
 	 * @return the id
@@ -86,13 +86,13 @@ public class NewJoke {
 	/**
 	 * @return the lang
 	 */
-	public String getLang() {
+	public int getLang() {
 		return lang;
 	}
 	/**
 	 * @param lang the lang to set
 	 */
-	public void setLang(String lang) {
+	public void setLang(int lang) {
 		this.lang = lang;
 	}
 	/**

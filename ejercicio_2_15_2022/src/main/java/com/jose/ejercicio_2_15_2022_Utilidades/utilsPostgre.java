@@ -76,16 +76,14 @@ public class utilsPostgre {
 	
     public static void guardarChiste(NewJoke newJoke) {
     	try {
-        	JdbcUtils.conexion(url, usuario, password);
-        	String insertNewJoke = String.format(Literals.scriptInsertJoke,newJoke.getCategory(),newJoke.getType(),newJoke.getJoke(),
+        	String insertNewJoke = String.format(Literals.scriptInsertNewJoke,newJoke.getCategory(),newJoke.getType(),newJoke.getJoke(),
         										newJoke.getSetup(),newJoke.getDelivery(),newJoke.getLang());       	
         	
-        	if (JdbcUtils.StatementDML(insertNewJoke)==1) {
-            	int newJokeId = JdbcUtils.devolverId(Literals.scriptNewJokeId);
-            	if (newJokeId>=0) {
-                	newJoke.getFlags().forEach(e -> {insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, e.getName());});
-                	JdbcUtils.StatementDML(insertNewFlags);
-				}
+        	ejecutarConsultaBdd(insertNewJoke);
+        	int newJokeId = JdbcUtils.devolverId(Literals.scriptNewJokeId);
+        	if (newJokeId>=0) {
+            	newJoke.getFlags().forEach(e -> {insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, e.getName());});
+            	ejecutarConsultaBdd(insertNewFlags);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -205,9 +203,9 @@ public class utilsPostgre {
 //    	Integer id = -1;
 //    	try {
 //            Class.forName("org.postgresql.Driver");
-//            String url = "jdbc:postgresql://localhost:5432/swapi";
-//            String usuario = "postgres";
-//            String password = "postgre";
+////            String url = "jdbc:postgresql://localhost:5432/swapi";
+////            String usuario = "postgres";
+////            String password = "postgre";
 //            Connection con = DriverManager.getConnection(url, usuario, password);
 //            Statement statement = con.createStatement();
 //
@@ -215,7 +213,7 @@ public class utilsPostgre {
 //            ResultSet rs = statement.executeQuery(sentenciaSQL);
 //            
 //            while (rs.next()) {
-//            	id = rs.getInt("codigo");
+//            	id = rs.getInt("id");
 //            }
 //            rs.close();
 //            con.close();

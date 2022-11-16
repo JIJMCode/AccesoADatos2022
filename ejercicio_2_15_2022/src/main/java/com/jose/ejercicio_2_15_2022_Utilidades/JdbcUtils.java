@@ -47,9 +47,15 @@ public class JdbcUtils {
 		return null;
 	}
 	
+    static String url = "jdbc:postgresql://localhost:5432/jokes";
+    static String usuario = "postgres";
+    static String password = "postgre";
+    
 	public static int devolverId(String sql) {		
+		
 		int id = -1;
 		try {
+			conexion(url, usuario, password);
 			st = con.createStatement(); 
 			rs = st.executeQuery(sql);
 			if (rs.next()) {
@@ -57,7 +63,8 @@ public class JdbcUtils {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}  	
+		}
+		desconexion();
 		return id;
 	}
 	
@@ -72,7 +79,6 @@ public class JdbcUtils {
 		return registros;
 	}
 
-	// https://stackoverflow.com/questions/22671697/try-try-with-resources-and-connection-statement-and-resultset-closing
 	public static ResultSet preparedStatementSelectCompleto(String uri, String user, String password,String sql,List<Object> parametros) {
 		if(parametros.size()!=countMatches(sql, '?'))
 			return null;
