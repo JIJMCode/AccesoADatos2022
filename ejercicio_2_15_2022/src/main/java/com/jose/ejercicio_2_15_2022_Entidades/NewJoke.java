@@ -1,14 +1,16 @@
 package com.jose.ejercicio_2_15_2022_Entidades;
 
-public class Joke {
+import java.util.ArrayList;
+
+public class NewJoke {
 	private int id;
-	private String category;
-	private String type;
-	private String joke;
+	private int category;
+	private int type;
 	private String setup;
+	private String joke;
 	private String delivery;
 	private String lang;
-	private Flags flags;
+	private ArrayList<Flag> Flags;
 	/**
 	 * @return the id
 	 */
@@ -24,25 +26,25 @@ public class Joke {
 	/**
 	 * @return the category
 	 */
-	public String getCategory() {
+	public int getCategory() {
 		return category;
 	}
 	/**
 	 * @param category the category to set
 	 */
-	public void setCategory(String category) {
+	public void setCategory(int category) {
 		this.category = category;
 	}
 	/**
 	 * @return the type
 	 */
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(String type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 	/**
@@ -96,15 +98,13 @@ public class Joke {
 	/**
 	 * @return the flags
 	 */
-	public Flags getFlags() {
-		return flags;
+	public ArrayList<Flag> getFlags() {
+		return Flags;
 	}
 	/**
 	 * @param flags the flags to set
 	 */
-	public void setFlags(Flags flags) {
-		flags = flags;
+	public void setFlags(ArrayList<Flag> flags) {
+		Flags = flags;
 	}
-
-	
 }

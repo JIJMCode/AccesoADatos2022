@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.dbutils.DbUtils;
 
 import com.jose.ejercicio_2_15_2022_Entidades.Joke;
+import com.jose.ejercicio_2_15_2022_Entidades.NewJoke;
 import com.jose.ejercicio_2_15_2022_Utilidades.Literals;
 
 public class utilsPostgre {
@@ -71,22 +72,18 @@ public class utilsPostgre {
     	}
     }
 	
-    public static void guardarChiste(Joke newJoke) {
+	static String insertNewFlags = "";
+	
+    public static void guardarChiste(NewJoke newJoke) {
     	try {
         	JdbcUtils.conexion(url, usuario, password);
-        	String insertNewJoke = String.format(Literals.scriptInsertNewJoke,newJoke.getCategory(),newJoke.getType(),newJoke.getJoke(),
+        	String insertNewJoke = String.format(Literals.scriptInsertJoke,newJoke.getCategory(),newJoke.getType(),newJoke.getJoke(),
         										newJoke.getSetup(),newJoke.getDelivery(),newJoke.getLang());       	
         	
         	if (JdbcUtils.StatementDML(insertNewJoke)==1) {
             	int newJokeId = JdbcUtils.devolverId(Literals.scriptNewJokeId);
             	if (newJokeId>=0) {
-                	String insertNewFlags = "";
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "nsfw",newJoke.getFlags().getNsfw());
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "religious",newJoke.getFlags().getNsfw());
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "political",newJoke.getFlags().getNsfw());
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "racist",newJoke.getFlags().getNsfw());
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "sexist",newJoke.getFlags().getNsfw());
-                	insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, "explicit",newJoke.getFlags().getNsfw());
+                	newJoke.getFlags().forEach(e -> {insertNewFlags += String.format(Literals.scriptInsertJokesFlags, newJokeId, e.getName());});
                 	JdbcUtils.StatementDML(insertNewFlags);
 				}
 			}
