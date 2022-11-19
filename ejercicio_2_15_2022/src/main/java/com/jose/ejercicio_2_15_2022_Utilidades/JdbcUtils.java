@@ -7,12 +7,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.List;
 
 
+
+
 public class JdbcUtils {
 	
+    static String url = "jdbc:postgresql://localhost:5432/jokes";
+    static String usuario = "postgres";
+    static String password = "postgre";
 	public static Connection con;
 	public static Statement st;
 	public static PreparedStatement ps;
@@ -46,13 +52,8 @@ public class JdbcUtils {
 		}  	
 		return null;
 	}
-	
-    static String url = "jdbc:postgresql://localhost:5432/jokes";
-    static String usuario = "postgres";
-    static String password = "postgre";
-    
-	public static int devolverId(String sql) {		
-		
+	   
+	public static int devolverId(String sql) {			
 		int id = -1;
 		try {
 			conexion(url, usuario, password);
@@ -175,20 +176,20 @@ public class JdbcUtils {
 	 * @param parametros Lista con los parámetros a cambiar por las '?'
 	 * @return Objeto que nos devuelve el Procedimiento almacenado de la Base de datos
 	 */
-	public static Object ejecutarCallableStatement(String metodo, int tipoDevuelto, List<Object> parametros) {
-		try {
-			cs = con.prepareCall("{call " + metodo + "}");
-			cs.registerOutParameter(1, tipoDevuelto); 													
-			for(int i=1;i<=countMatches(metodo, '?');i++) {
-				cs.setObject(i, parametros.get(i-1));
-			}
-			cs.execute();
-			return cs.getObject(1);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public static Object ejecutarCallableStatement(String metodo, int tipoDevuelto, List<Object> parametros) {
+//		try {
+//			cs = con.prepareCall("{call " + metodo + "}");
+//			//cs.registerOutParameter(2, tipoDevuelto); 													
+//			for(int i=1;i<=parametros.size();i++) {
+//				cs.setObject(i, parametros.get(i-1));
+//			}
+//			cs.execute();
+//			return cs.getObject(1);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Método genérico que llama a un CallableStatement y devuelve el resultado que nos envía la base de datos
@@ -197,11 +198,10 @@ public class JdbcUtils {
 	 * @param parametros Lista de objetos con los parámetros a cambiar por las '?'
 	 * @return Objeto que nos devuelve el Procedimiento almacenado de la Base de datos
 	 */
-	public static Object ejecutarCallableStatement(String metodo, int tipoDevuelto, Object... parametros) {
-		return ejecutarCallableStatement(metodo,tipoDevuelto,Arrays.asList(parametros));
-	}
+//	public static int ejecutarCallableStatement(String metodo, int tipoDevuelto, Object... parametros) {
+//		return (int) ejecutarCallableStatement(metodo,tipoDevuelto,Arrays.asList(parametros));
+//	}
 
-	
 	/**
 	 * Método genérico que llama a un CallableStatement y devuelve el resultado que nos envía la base de datos en un ResultSet
 	 * @param metodo Nombre del procedimiento almacenado en la base de datos junto con sus parámetros indicados por '?'
@@ -219,6 +219,21 @@ public class JdbcUtils {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static int ejemploCallableStatementV2(String nombreProcedimiento,Object...objects) {
+		try {
+			CallableStatement cStmt = con.prepareCall("{" + nombreProcedimiento +"}");
+			cStmt.registerOutParameter(1,Types.INTEGER);  // Registro que devolverá el PL
+			for(int i=1;i<=objects.length;i++)
+				cStmt.setObject(i, objects[i-1]); // Cambio las ? por sus valores
+			cStmt.execute(); // Ejecuto el PL
+			return cStmt.getInt(0);  // Obtengo el resultado
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	/**

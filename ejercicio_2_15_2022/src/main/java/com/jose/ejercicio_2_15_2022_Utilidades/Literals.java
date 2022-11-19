@@ -55,7 +55,13 @@ public class Literals {
 											+ "'%s'," //setup
 											+ "'%s'," //delivery
 											+ "%d);"; //language
-    //public static String scriptNewJokeId = "select MAX(id) from public.jokes";
+    public static String scriptInsertNewJokePs = "insert into jokes values (nextval('seq_jokes')," //id
+												+ "?," /*category*/ + "?," /*type*/
+												+ "?," //joke
+												+ "?," //setup
+												+ "?," //delivery
+												+ "?);"; //language
+    public static String jokePs = "Chiste añadido correctamente con PreparedStatement.";
     public static String scriptNewJokeId = "select * from public.jokes order by id desc limit 1";
     public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'));"; 
 	public static String bdd_full = "\nBase de datos cargada.";

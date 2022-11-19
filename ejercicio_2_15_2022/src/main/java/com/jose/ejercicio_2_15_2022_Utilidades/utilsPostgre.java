@@ -92,7 +92,6 @@ public class utilsPostgre {
 		}	
     }
 	
-	
 	public static int cargarBdd(String consulta) {
     	Connection con = null;
     	Statement statement = null;
@@ -167,16 +166,16 @@ public class utilsPostgre {
 //		return null;
 //	}
 	
-//	public static ResultSet ejecutarCSpeopleSinStarships(String metodo) {
-//		conexion();
-//		try {
-//			cs = con.prepareCall("{call " + metodo + "}"); 													
-//			return cs.executeQuery();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
+	public static ResultSet ejecutarCSpeopleSinStarships(String metodo) {
+		conexion();
+		try {
+			cs = con.prepareCall("{call " + metodo + "}"); 													
+			return cs.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 //    
 //    public static List<Integer> obtenerListaIdBdd(String consulta) {
 //    	List<Integer> lista = new ArrayList<Integer>();

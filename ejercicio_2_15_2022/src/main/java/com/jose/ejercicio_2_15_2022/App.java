@@ -1,6 +1,16 @@
 package com.jose.ejercicio_2_15_2022;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,33 +22,40 @@ import com.jose.ejercicio_2_15_2022_Entidades.*;
 
 /**
  * @author Jose Ignacio Jimenez Mayor
+ * ACCESO A DATOS 2022
  */
 public class App 
 {
-    static String url = "jdbc:postgresql://localhost:5432/jokes";
+    static Scanner teclado = new Scanner(System.in);
+	static Connection con;
+	static Statement st;
+	static PreparedStatement ps;
+	static ResultSet rs;	
+	static CallableStatement cs = null;
+	static String url = "jdbc:postgresql://localhost:5432/jokes";
     static String usuario = "postgres";
     static String password = "postgre";
-	static int opcion;
-    static Scanner teclado = new Scanner(System.in);
-    static Date fechaInicio;
-    static Date fechaFin;
 	static String equipoLocal = "";
 	static String equipoVisitante = "";
 	static String latitud;
 	static String longitud;
+    static String insertCategorias = Literals.scriptInsertCategory;
+    static String insertFlags = Literals.scriptInsertFlag;
+    static String insertTypes = Literals.scriptInsertType;
+    static String insertLanguages = Literals.scriptInsertLanguage;
+    static String consultaJokeSql;
+	static int opcion;
+    static int jokes_count;
+    static int menu_count;
     static List<String> categorias = new ArrayList<>();
     static List<String> flags = new ArrayList<>();
     static List<String> types = new ArrayList<>();
     static List<Language> idiomas = new ArrayList<>();
     static List<Joke> chistes = new ArrayList<>();
-    static String insertCategorias = Literals.scriptInsertCategory;
-    static String insertFlags = Literals.scriptInsertFlag;
-    static String insertTypes = Literals.scriptInsertType;
-    static String insertLanguages = Literals.scriptInsertLanguage;
-    static int jokes_count;
-    static int menu_count;
     static JokesInfo rootCategorias;
     static RootLanguages languages;
+    static ArrayList<Flag> newFlags = new ArrayList<>();
+    static BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
     
 	public static void main( String[] args ) throws Exception
     {
@@ -49,6 +66,10 @@ public class App
 		mostrarMenu();
     }
 	
+	/*
+	 * Método que rellen las listas cuando se obtiene la información de la API para
+	 * ser utilizadas por todos los métodos. 
+	 */
 	public static void rellenarListas() {
 		rootCategorias.getCategories().forEach(e-> {categorias.add(e);});		
 		rootCategorias.getFlags().forEach(e-> {	flags.add(e);});
@@ -85,10 +106,26 @@ public class App
 	    		anyadirChistePreparedStatement();
 	    		break;
 	    	case 4:
+			try {
 				buscarPorTexto();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    		break;
 	    	case 5:
-	    		chistesSinFlags();
+			try {
+				chistesSinFlags();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    		break;
 	    	default:
 	            System.out.println(Literals.choose_option);
@@ -99,10 +136,12 @@ public class App
 	/**
 	 * Método ofrece la posibilidad de volver al menú principal o salir de la aplicación,
 	 * tras cada consulta
+	 * @throws IOException 
 	 */
-    private static void repetir() {
+    private static void repetir() throws IOException {
     	System.out.println();
 		System.out.println(Literals.repeat_title);
+		//Scanner teclado = new Scanner(System.in);
 		String seleccion = teclado.next();
 		char caracter = seleccion.charAt(0);
 		
@@ -121,13 +160,12 @@ public class App
 			}	
 		}else {
 			teclado.close();
+			br.close();
 			System.out.println(Literals.app_closed);
 			System.exit(0);
 		}
 	}
-    
-    
-    static String consultaJokeSql;
+  
 	/**
 	 * Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
 	 */
@@ -199,17 +237,27 @@ public class App
     }
      
 	/**
-	 * Menú opción 2
-	 * Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
+	 * MENU  - Método que vacía la base de datos y vuelve a cargar todos los datos desde la api.
+	 * @throws IOException 
 	 */
-    protected static void resetearBdd(){
+    protected static void resetearBdd() throws IOException{
     	//utilsPostgre.vaciarBdd();
 		//cargaBdd();
 		repetir();
     }
+
+    /*
+     * MENU 2 - Añadir chiste Statement
+     * 	 * @throws IOException 
+     */ 
+    protected static void anyadirChisteStatement() throws IOException{
+    	menuNuevoChiste();
+    	repetir();
+    }
     
-    static ArrayList<Flag> newFlags = new ArrayList<>();
-    
+	/*
+	 * MENU 2 - Solictar datos usuario
+	 */    
     protected static void menuNuevoChiste(){
         try {
         	NewJoke newJoke = new NewJoke();
@@ -221,7 +269,7 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-        	int new_category = Integer.parseInt(teclado.next());
+        	int new_category = ValidateUtils.isNum(br, categorias.size());
         	newJoke.setCategory(new_category);
     	//solicitar idioma
         	menu_count = 0;
@@ -230,7 +278,7 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e.getName());
 	        	});
-        	int new_lang = Integer.parseInt(teclado.next());
+        	int new_lang = ValidateUtils.isNum(br, categorias.size());
         	newJoke.setLang(new_lang);
         //solicitar tipo
         	menu_count = 0;
@@ -239,13 +287,13 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-        	int new_type = Integer.parseInt(teclado.next());
+        	int new_type = ValidateUtils.isNum(br, categorias.size());
         	newJoke.setType(new_type);
         //solicitar flags     
 	        flags.forEach(e -> {
 		        System.out.println(String.format(Literals.new_flag_question,e));
 		        System.out.println(Literals.menu_yes_no);
-		        if (ValidateUtils.checkTrueFalse(teclado)) {newFlags.add(new Flag(e));}
+		        if (ValidateUtils.checkTrueFalse(br)) {newFlags.add(new Flag(e));}
 	        });
         	newJoke.setFlags(newFlags);
         	
@@ -257,14 +305,14 @@ public class App
         	do {
             	if (new_type == 1) {
         	        System.out.println(Literals.new_joke_joke);
-                	chiste = teclado.nextLine();
+                	chiste = br.readLine();
                 	newJoke.setJoke(chiste);
     			} else {
         	        System.out.println(Literals.new_joke_setup);
-        	        setup = teclado.nextLine();
+        	        setup = br.readLine();
         	        newJoke.setSetup(setup);
         	        System.out.println(Literals.new_joke_delivery);
-        	        delivery = teclado.nextLine();
+        	        delivery = br.readLine();
         	        newJoke.setDelivery(delivery);
     			}
 			} while (new_type < 1 || new_type > 2);	
@@ -275,11 +323,116 @@ public class App
         	System.out.println(Literals.error_no_num);
         }
     }
-        
-    protected static void anyadirChisteStatement(){
-    	menuNuevoChiste();
+      
+    /*
+     * MENU 3 - Añadir chiste PreparedStatement
+     */
+    protected static void anyadirChistePreparedStatement() throws IOException{
+        try {
+    		con = null;
+    		try {
+    			con = DriverManager.getConnection(url, usuario, password);
+    		} catch (SQLException e) {
+    			e.printStackTrace();
+    		} 
+    		
+        	PreparedStatement pstm = con.prepareStatement(Literals.scriptInsertNewJokePs);
+	    //solicitar categoría
+        	menu_count = 0;
+	    	System.out.println(Literals.new_joke); 
+	        System.out.println(Literals.new_joke_category);
+	        categorias.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e);
+	        	});
+	        int new_category = ValidateUtils.isNum(br, categorias.size());     
+        	pstm.setInt(1, new_category);
+    	//solicitar idioma
+        	menu_count = 0;
+	        System.out.println(Literals.new_joke_language);
+	        idiomas.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e.getName());
+	        	});
+	        int new_lang =  ValidateUtils.isNum(br, idiomas.size());
+        	pstm.setInt(6, new_lang);
+        //solicitar tipo
+        	menu_count = 0;
+	        System.out.println(Literals.new_joke_category);
+	        types.forEach(e-> {
+	        	menu_count++;
+	        	System.out.println(menu_count + "-. " + e);
+	        	});
+	        int new_type = ValidateUtils.isNum(br, types.size());   
+        	pstm.setInt(2, new_type);
+        //solicitar flags     
+	        flags.forEach(e -> {
+		        System.out.println(String.format(Literals.new_flag_question,e));
+		        System.out.println(Literals.menu_yes_no);
+		        if (ValidateUtils.checkTrueFalse(br)) {newFlags.add(new Flag(e));}
+	        });
+        	
+        //solicitar chiste
+        	menu_count = 0;
+        	String chiste;
+        	String setup;
+        	String delivery;
+        	if (new_type == 1) {
+    	        System.out.println(Literals.new_joke_joke);
+            	chiste = br.readLine();
+            	pstm.setString(3, chiste);
+            	pstm.setString(4, null);
+            	pstm.setString(5, null);
+			} else {
+            	pstm.setString(3, null);
+    	        System.out.println(Literals.new_joke_setup);
+    	        setup = br.readLine();
+            	pstm.setString(4, setup);
+    	        System.out.println(Literals.new_joke_delivery);
+    	        delivery = br.readLine();
+            	pstm.setString(5, delivery);
+			}	
+        //almacenar chiste
+        	int i = pstm.executeUpdate();
+        	if(i>0)
+        		System.out.println(Literals.jokePs);
+        	else
+        		System.out.println("No se ha podido añadir el chiste.");        		
+
+        	newFlags.clear();
+        }catch (Exception e) {
+        	System.out.println(e.getMessage());
+        }
+        repetir();
     }
-    protected static void anyadirChistePreparedStatement(){}
-    protected static void buscarPorTexto(){}
-    protected static void chistesSinFlags(){}
+    
+    /*
+     * MENU 4 - Búsqueda de chistes que contengan la cadena introducida por el usuario (CallableStatement)
+     */
+    protected static void buscarPorTexto() throws IOException, SQLException{
+        System.out.println(Literals.new_joke_delivery);
+        String consultaJokeSql = "JokesContains(?::varchar)";
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		String  texto = br.readLine();
+		JdbcUtils.conexion(url, usuario, password);
+		ResultSet rs = JdbcUtils.ejecutarCallableStatement(consultaJokeSql,texto);
+		if(rs.next())
+			System.out.println("\nHay " + rs.getInt(1) + " chistes que contienen la cadena '" + texto + "'.");
+		//br.close();
+		JdbcUtils.desconexion();
+		repetir();
+    }
+    
+    /*
+     * MENU 5 - Búsqueda de chistes que no tengan flags activos (CallableStatement)
+     */
+    protected static void chistesSinFlags() throws IOException, SQLException{
+        String consultaJokeSql = "JokesNoFlags2()";
+		JdbcUtils.conexion(url, usuario, password);
+		ResultSet rs = JdbcUtils.ejecutarCallableStatement(consultaJokeSql);
+		rs.next();
+		System.out.println("\nHay " + rs.getInt(1) + " chistes sin Flags.");
+		JdbcUtils.desconexion();
+    	repetir();
+    }
 }
