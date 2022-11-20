@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -32,9 +30,9 @@ public class App
 	static PreparedStatement ps;
 	static ResultSet rs;	
 	static CallableStatement cs = null;
-	static String url = "jdbc:postgresql://localhost:5432/jokes";
-    static String usuario = "postgres";
-    static String password = "postgre";
+	static String url = Literals.url;
+    static String usuario = Literals.usuario;
+    static String password = Literals.password;
 	static String equipoLocal = "";
 	static String equipoVisitante = "";
 	static String latitud;
@@ -174,21 +172,21 @@ public class App
 		//Insertar categorías
     		categorias.forEach(e-> {insertCategorias += (String.format(Literals.scriptCategory, e) + ", ");});
 			int numCategorias = utilsPostgre.cargarBdd((insertCategorias.substring(0, insertCategorias.length() - 2)) + ";");
-			System.out.println("Categorías añadidas: " + numCategorias);
+			System.out.println(Literals.addedCat + numCategorias);
 		//Insertar flags
     		flags.forEach(e-> {insertFlags += (String.format(Literals.scriptFlag, e) + ", ");});
 			int numFlags = utilsPostgre.cargarBdd((insertFlags.substring(0, insertFlags.length() - 2)) + ";");
-			System.out.println("Flags añadidos: " + numFlags);
+			System.out.println(Literals.addedFlags + numFlags);
 		//Insertar types
     		types.forEach(e-> {insertTypes += (String.format(Literals.scriptType, e) + ", ");});
 			int numTypes = utilsPostgre.cargarBdd((insertTypes.substring(0, insertTypes.length() - 2)) + ";");
-			System.out.println("Tipos añadidos: " + numTypes);
+			System.out.println(Literals.addedTypes + numTypes);
 		//Insertar idiomas    	
 	    	idiomas.forEach(e-> {
 	    		insertLanguages += (String.format(Literals.scriptLanguage, e.getCode(), e.getName()) + ", ");
 	    		e.setCount(rootCategorias.getSafeJokes().stream().filter(x->x.getLang().equals(e.getCode())).findFirst().get().getCount());});
 	    	int numLanguages = utilsPostgre.cargarBdd((insertLanguages.substring(0, insertLanguages.length() - 2)) + ";");
-			System.out.println("Idiomas añadidos: " + numLanguages);
+			System.out.println(Literals.addedLang + numLanguages);
 		//Insertar chistes
 			jokes_count = 0;
 			idiomas.forEach(x-> {
@@ -228,7 +226,7 @@ public class App
 					}
 				} while (jokes_count <= x.getCount());
 	    	});
-			System.out.println("Chistes añadidos: " + jokes_count);
+			System.out.println(Literals.addedJoke + jokes_count);
 			System.out.println(Literals.bdd_full);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -269,7 +267,7 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-        	int new_category = ValidateUtils.isNum(br, categorias.size());
+        	int new_category = ValidateUtils.isNum(teclado, categorias.size());
         	newJoke.setCategory(new_category);
     	//solicitar idioma
         	menu_count = 0;
@@ -278,22 +276,22 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e.getName());
 	        	});
-        	int new_lang = ValidateUtils.isNum(br, categorias.size());
+        	int new_lang = ValidateUtils.isNum(teclado, idiomas.size());
         	newJoke.setLang(new_lang);
         //solicitar tipo
         	menu_count = 0;
-	        System.out.println(Literals.new_joke_category);
+	        System.out.println(Literals.new_joke_type);
 	        types.forEach(e-> {
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-        	int new_type = ValidateUtils.isNum(br, categorias.size());
+        	int new_type = ValidateUtils.isNum(teclado, types.size());
         	newJoke.setType(new_type);
         //solicitar flags     
 	        flags.forEach(e -> {
 		        System.out.println(String.format(Literals.new_flag_question,e));
 		        System.out.println(Literals.menu_yes_no);
-		        if (ValidateUtils.checkTrueFalse(br)) {newFlags.add(new Flag(e));}
+		        if (ValidateUtils.checkTrueFalse(teclado)) {newFlags.add(new Flag(e));}
 	        });
         	newJoke.setFlags(newFlags);
         	
@@ -318,6 +316,7 @@ public class App
 			} while (new_type < 1 || new_type > 2);	
         //almacenar chiste
         	utilsPostgre.guardarChiste(newJoke);
+        	System.out.println(Literals.jokeSt);
         	newFlags.clear();
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
@@ -345,7 +344,7 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-	        int new_category = ValidateUtils.isNum(br, categorias.size());     
+	        int new_category = ValidateUtils.isNum(teclado, categorias.size());     
         	pstm.setInt(1, new_category);
     	//solicitar idioma
         	menu_count = 0;
@@ -354,7 +353,7 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e.getName());
 	        	});
-	        int new_lang =  ValidateUtils.isNum(br, idiomas.size());
+	        int new_lang =  ValidateUtils.isNum(teclado, idiomas.size());
         	pstm.setInt(6, new_lang);
         //solicitar tipo
         	menu_count = 0;
@@ -363,13 +362,13 @@ public class App
 	        	menu_count++;
 	        	System.out.println(menu_count + "-. " + e);
 	        	});
-	        int new_type = ValidateUtils.isNum(br, types.size());   
+	        int new_type = ValidateUtils.isNum(teclado, types.size());   
         	pstm.setInt(2, new_type);
         //solicitar flags     
 	        flags.forEach(e -> {
 		        System.out.println(String.format(Literals.new_flag_question,e));
 		        System.out.println(Literals.menu_yes_no);
-		        if (ValidateUtils.checkTrueFalse(br)) {newFlags.add(new Flag(e));}
+		        if (ValidateUtils.checkTrueFalse(teclado)) {newFlags.add(new Flag(e));}
 	        });
         	
         //solicitar chiste
@@ -394,10 +393,24 @@ public class App
 			}	
         //almacenar chiste
         	int i = pstm.executeUpdate();
-        	if(i>0)
+        	if(i>0) {
+        		PreparedStatement pstmFlags = con.prepareStatement(Literals.scriptInsertFlags);
+            	if (newFlags.size()>0) {
+	            	newFlags.forEach(e-> {
+	            		try {
+							pstmFlags.setString(1, e.getName());
+							int j = pstmFlags.executeUpdate();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+	            	});
+	            	
+				}
         		System.out.println(Literals.jokePs);
+        	}
         	else
-        		System.out.println("No se ha podido añadir el chiste.");        		
+        		System.out.println(Literals.jokeNotAdded);        		
 
         	newFlags.clear();
         }catch (Exception e) {
@@ -410,14 +423,13 @@ public class App
      * MENU 4 - Búsqueda de chistes que contengan la cadena introducida por el usuario (CallableStatement)
      */
     protected static void buscarPorTexto() throws IOException, SQLException{
-        System.out.println(Literals.new_joke_delivery);
-        String consultaJokeSql = "JokesContains(?::varchar)";
+        System.out.println(Literals.search_joke_by_text);
 		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 		String  texto = br.readLine();
 		JdbcUtils.conexion(url, usuario, password);
-		ResultSet rs = JdbcUtils.ejecutarCallableStatement(consultaJokeSql,texto);
+		ResultSet rs = JdbcUtils.ejecutarCallableStatement(Literals.func_jokesContainss,texto);
 		if(rs.next())
-			System.out.println("\nHay " + rs.getInt(1) + " chistes que contienen la cadena '" + texto + "'.");
+			System.out.println(String.format(Literals.jokeContains, rs.getInt(1), texto));
 		//br.close();
 		JdbcUtils.desconexion();
 		repetir();
@@ -427,12 +439,11 @@ public class App
      * MENU 5 - Búsqueda de chistes que no tengan flags activos (CallableStatement)
      */
     protected static void chistesSinFlags() throws IOException, SQLException{
-        String consultaJokeSql = "JokesNoFlags2()";
 		JdbcUtils.conexion(url, usuario, password);
-		ResultSet rs = JdbcUtils.ejecutarCallableStatement(consultaJokeSql);
+		ResultSet rs = JdbcUtils.ejecutarCallableStatement(Literals.func_jokesNoFlags);
 		rs.next();
-		System.out.println("\nHay " + rs.getInt(1) + " chistes sin Flags.");
+		System.out.println(String.format(Literals.jokesNoFlags, rs.getInt(1)));
 		JdbcUtils.desconexion();
-    	repetir();
+    	repetir();                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
     }
 }

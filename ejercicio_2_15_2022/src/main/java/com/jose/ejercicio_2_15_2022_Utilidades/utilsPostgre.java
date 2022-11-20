@@ -7,14 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.dbutils.DbUtils;
 
-import com.jose.ejercicio_2_15_2022_Entidades.Joke;
 import com.jose.ejercicio_2_15_2022_Entidades.NewJoke;
-import com.jose.ejercicio_2_15_2022_Utilidades.Literals;
 
 public class utilsPostgre {
 	private static final String url = "jdbc:postgresql://localhost:5432/swapi";
@@ -58,7 +53,7 @@ public class utilsPostgre {
             statement = con.createStatement();
 
             //String sentenciaSQL = consulta;
-            rs = statement.executeQuery(consulta);
+            int result = statement.executeUpdate(consulta);
         }
     	catch(Exception e)
     	{

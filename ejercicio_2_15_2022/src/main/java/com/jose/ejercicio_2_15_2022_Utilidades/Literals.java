@@ -1,6 +1,9 @@
 package com.jose.ejercicio_2_15_2022_Utilidades;
 
 public class Literals {
+	public static String url = "jdbc:postgresql://localhost:5432/jokes";
+    public static String usuario = "postgres";
+    public static String password = "postgre";
 	/*MENU*/
 	public static String menu_title = "\nMenú (Selecione una opción)";
     public static String menu_1 = "1. Resetear base de datos";
@@ -16,13 +19,14 @@ public class Literals {
 	public static String continue_exit = "\nPulse C para continuar o S para salir\n";
 	public static String app_closed = "\nAplicación cerrada. Hasta pronto!!!";
 	public static String new_joke = "Insertar chiste nuevo\n";
-	public static String new_joke_category = "Escriba el número de la categoría elegida:\n";	
-	public static String new_joke_type = "Escriba el número del tipo elegido:\n";
-	public static String new_joke_language = "Escriba el número del idioma elegido:\n";
-	public static String new_joke_joke = "Escriba el chiste:\n";
-	public static String new_joke_setup = "Escriba la primera parte del chiste:\n";
-	public static String new_joke_delivery = "Escriba la segunda parte del chiste:\n";
-	public static String new_flag_question = "¿El chiste se puede considerar de temática %s?\n";
+	public static String new_joke_category = "Escriba el número de la categoría elegida:";	
+	public static String new_joke_type = "Escriba el número del tipo elegido:";
+	public static String new_joke_language = "Escriba el número del idioma elegido:";
+	public static String new_joke_joke = "Escriba el chiste:";
+	public static String new_joke_setup = "Escriba la primera parte del chiste:";
+	public static String new_joke_delivery = "Escriba la segunda parte del chiste:";
+	public static String search_joke_by_text = "Escriba el texto que debe contener el chiste:";
+	public static String new_flag_question = "¿El chiste se puede considerar de temática %s?";
 	
 	/*RESET BDD*/
 	public static String vaciarBddSQL = "delete from public.jokes_flags;\n" + "delete from public.jokes;" + "delete from public.categories;\n" + "delete from public.types;\n" + "delete from public.language;\n" + "delete from public.flags;\n" + 
@@ -62,7 +66,20 @@ public class Literals {
 												+ "?," //delivery
 												+ "?);"; //language
     public static String jokePs = "Chiste añadido correctamente con PreparedStatement.";
+    public static String jokeSt = "Chiste añadido correctamente con Statement.";
+    public static String addedJoke = "Chistes añadidos: ";
+    public static String addedCat = "Categorías añadidas: ";
+    public static String addedLang = "Idiomas añadidos: ";
+    public static String addedTypes = "Tipos añadidos: ";
+    public static String addedFlags = "Flags añadidos: ";
+    public static String jokeNotAdded = "No se ha podido añadir el chiste.";
     public static String scriptNewJokeId = "select * from public.jokes order by id desc limit 1";
     public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'));"; 
+    public static String scriptInsertFlags = "insert into public.jokes_flags values ((select MAX(id) from jokes),(select id from public.flags where flag = ?));"; 
 	public static String bdd_full = "\nBase de datos cargada.";
+	public static String jokeContains = "\nHay %d chistes que contienen la cadena '%s'.";
+	public static String jokesNoFlags = "\nHay %d chistes sin Flags.";
+	public static String func_jokesContainss = "JokesContains(?::varchar)";
+	public static String func_jokesNoFlags = "JokesNoFlags2()";
+
 }
