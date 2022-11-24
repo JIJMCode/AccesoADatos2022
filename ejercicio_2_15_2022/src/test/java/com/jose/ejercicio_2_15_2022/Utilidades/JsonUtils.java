@@ -230,7 +230,7 @@ public class JsonUtils {
 
 			// List of primitive elements
 			JsonArray demarcation = gsonObj.get("demarcation").getAsJsonArray();
-			List listDemarcation = new ArrayList();
+			List<String> listDemarcation = new ArrayList<String>();
 			for (JsonElement demarc : demarcation) {
 				listDemarcation.add(demarc.getAsString());
 			}
