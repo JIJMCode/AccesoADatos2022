@@ -1,11 +1,16 @@
 package com.jose.ejercicio_3_10_2022;
 
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ManejadorBaseDatos {
 	Scanner sc = new Scanner(System.in);
@@ -188,6 +193,102 @@ public class ManejadorBaseDatos {
 		update(pruebaFuncionario);
 	}
 
+	private List<String> opcionesEnum(String nombreEnum) throws SQLException, ClassNotFoundException {
+		Connection con = conection();
+		Statement statement = con.createStatement();	
+		
+		List<String> enumOptions = new ArrayList<>();
+		
+		String sentenciaSQL = "select * from pg_enum where enumtypid = ";
+		
+		switch (nombreEnum) {
+		case "grupo":
+			sentenciaSQL += "25610;";
+			break;
+		case "tipoCliente":
+			sentenciaSQL += "25604;";
+			break;
+		case "estado":
+			sentenciaSQL += "25596;";
+			break;
+		default:
+			break;
+		}
+			
+		try {
+			ResultSet rs = statement.executeQuery(sentenciaSQL);
+			
+			while (rs.next()) {
+				enumOptions.add(rs.getString(1));
+			}
+		} catch (Exception e) {
+			System.out.println("Ha ocurrido un error;");
+			System.out.println(e.getMessage());
+		} finally {
+			con.close();
+		}
+
+		return enumOptions;
+	}
+	
+	public int validarCodigoDepartamento() {
+		int codigoDept = -1;
+		boolean numOk = false;
+		
+		while (!numOk) {
+			try {
+				System.out.println("El código de departamento debe ser un número entero compuesto por 5 dígitos");
+				codigoDept = App.sc.nextInt();
+				if(Integer.toString(codigoDept).length() == 5 && codigoDept>0) {
+					numOk = true;
+				}
+			}catch (Exception e) {
+				System.out.println("El código no es correcto.");
+			}
+		}
+
+		return codigoDept;
+	}
+	
+    private static final String Date_REGEX =
+            "^(?:(?:(?:0?[13578]|1[02])(\\/|-|\\.)31)\\1|" +
+            "(?:(?:0?[1,3-9]|1[0-2])(\\/|-|\\.)(?:29|30)\\2))" +
+            "(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:0?2(\\/|-|\\.)29\\3" +
+            "(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|" +
+            "[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|" +
+            "^(?:(?:0?[1-9])|(?:1[0-2]))(\\/|-|\\.)(?:0?[1-9]|1\\d|" +
+            "2[0-8])\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+
+    private static final Pattern Date_PATTERN = Pattern.compile(Date_REGEX);
+
+	public String validarFecha() {
+		String result = "";
+		try {
+			result = App.sc.next(Date_PATTERN);
+			//Matcher matcher = Date_PATTERN.matcher();
+		}catch(Exception e) {
+			System.out.println("Fecha errónea, debe introducir una fecha en formato dia/mes/año.");
+		}
+		
+		return result;
+	}
+	
+	public String validarOpcion(String nombreEnum) throws ClassNotFoundException, SQLException {
+		String result = "";
+		List<String> opcionesEnum = opcionesEnum(nombreEnum);
+		System.out.println("Elija una de las siguientes opciones");
+		opcionesEnum.forEach(x-> {System.out.println("- " + x);});
+		result = App.sc.nextLine();
+		while (!opcionesEnum.contains(result)) {
+			System.out.println("El valor introducido no es correcto.");
+			System.out.println("Elija una de las siguientes opciones");
+			opcionesEnum.forEach(x-> {System.out.println("- " + x);});
+			result = App.sc.nextLine();
+		}
+		
+		return result;
+	}
+	
 	private void createDataBase() throws 
 	ClassNotFoundException, SQLException 
 	{

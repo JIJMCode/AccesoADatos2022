@@ -2,6 +2,7 @@ package com.jose.ejercicio_3_10_2022;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -76,7 +77,7 @@ public class App {
 		System.out.println("0.-Salir");
 	}
 	
-	private static String pedirDatosUsuario (ManejadorBaseDatos manejador, String tipoPersona) {
+	private static String pedirDatosUsuario (ManejadorBaseDatos manejador, String tipoPersona) throws ClassNotFoundException, SQLException {
 		System.out.println("Introducir nombre:");
 		String nombre = sc.nextLine();
 		System.out.println("Introducir apellidos:");
@@ -101,29 +102,31 @@ public class App {
 		if (tipoPersona.equals("cliente")) {
 			System.out.println("Introducir número de cuenta:");
 			String nrocuenta = sc.nextLine();
-			System.out.println("Introducir estado:");
-			String estado = sc.nextLine();
+			System.out.println("Introducir un estado:");
+			String estado = manejador.validarOpcion("estado");
 			System.out.println("Introducir tipo de cliente:");
-			String tipoCliente = sc.nextLine();
+			String tipoCliente = manejador.validarOpcion("tipoCliente");
 			consultaSQL += "," + nrocuenta + ",";
 			consultaSQL += estado + ",";
 			consultaSQL += tipoCliente;
 			consultaCompleta = manejador.insertClientes + consultaSQL;
 		}else if (tipoPersona.equals("funcionario")) {
 			System.out.println("Introducir cargo:");
-			String cargo = sc.nextLine();
+			String grupo = manejador.validarOpcion("grupo");
 			System.out.println("Introducir departamento:");
-			String departamento = sc.nextLine();
+			int departamento = manejador.validarCodigoDepartamento();
+			String cargo = "(" + grupo + "," + departamento + ")";
 			System.out.println("Introducir fecha de ingreso:");
-			System.out.println("Introducir dia de ingreso:");
-			String diaIng = sc.nextLine();
-			System.out.println("Introducir mes de ingreso");
-			String mesIng = sc.nextLine();
-			System.out.println("Introducir año de ingreso:");;
-			String anyoIng = sc.nextLine();
+			String fecha = manejador.validarFecha();
+//			System.out.println("Introducir dia de ingreso:");
+//			String diaIng = sc.nextLine();
+//			System.out.println("Introducir mes de ingreso");
+//			String mesIng = sc.nextLine();
+//			System.out.println("Introducir año de ingreso:");;
+//			String anyoIng = sc.nextLine();
 			consultaSQL += "," + cargo + ",";
 			consultaSQL += telefono + ",";
-			consultaSQL += diaIng + "/" + mesIng + "/" + anyoIng;
+			consultaSQL += fecha;
 			consultaCompleta = manejador.insertFuncionarios + consultaSQL;
 		} else {
 			consultaCompleta = manejador.insertPersonas + consultaSQL;
@@ -148,7 +151,7 @@ public class App {
 		throws ClassNotFoundException, SQLException 
 	{
 		try {
-			manejador.update( pedirDatosUsuario(manejador, "cliente"));
+			manejador.update(pedirDatosUsuario(manejador, "cliente"));
 			System.out.println("Cliente insertado con éxito");
 		} catch (Exception e) {
 			System.out.println("Ha ocurrido un error, vuelva a intentarlo");
@@ -160,7 +163,7 @@ public class App {
 		throws ClassNotFoundException, SQLException 
 	{
 		try {
-			manejador.update( pedirDatosUsuario(manejador, "funcionario"));
+			manejador.update(pedirDatosUsuario(manejador, "funcionario"));
 			System.out.println("Funcionaro insertado con éxito");
 		} catch (Exception e) {
 			System.out.println("Ha ocurrido un error, vuelva a intentarlo");
