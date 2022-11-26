@@ -78,6 +78,7 @@ public class App {
 	}
 	
 	private static String pedirDatosUsuario (ManejadorBaseDatos manejador, String tipoPersona) throws ClassNotFoundException, SQLException {
+		consultaSQL = "";
 		System.out.println("Introducir nombre:");
 		String nombre = sc.nextLine();
 		System.out.println("Introducir apellidos:");
@@ -86,18 +87,13 @@ public class App {
 		String direccion = sc.nextLine();
 		System.out.println("Introducir teléfono:");
 		String telefono = sc.nextLine();
-		System.out.println("Introducir fecha de nacimiento:");
-		System.out.println("Introducir dia de nacimiento:");
-		String diaNac = sc.nextLine();
-		System.out.println("Introducir mes de nacimiento");
-		String mesNac = sc.nextLine();
-		System.out.println("Introducir año de nacimiento:");
-		String anyoNac = sc.nextLine();
-		consultaSQL += nombre + ",";
-		consultaSQL += apellidos + ",";
-		consultaSQL += direccion + ",";
-		consultaSQL += telefono + ",";
-		consultaSQL += diaNac + "/" + mesNac + "/" + anyoNac;
+		System.out.println("Introducir fecha de nacimiento en formato dia/mes/año:");
+		String fechaNac = manejador.validarFecha("nacimiento");
+		consultaSQL += "'" + nombre + "'";
+		consultaSQL += ",'" + apellidos + "'";
+		consultaSQL += ",'" + direccion + "'";
+		consultaSQL += ",'" + telefono + "'";
+		consultaSQL += ",'" + fechaNac + "'";
 		
 		if (tipoPersona.equals("cliente")) {
 			System.out.println("Introducir número de cuenta:");
@@ -106,32 +102,26 @@ public class App {
 			String estado = manejador.validarOpcion("estado");
 			System.out.println("Introducir tipo de cliente:");
 			String tipoCliente = manejador.validarOpcion("tipoCliente");
-			consultaSQL += "," + nrocuenta + ",";
-			consultaSQL += estado + ",";
-			consultaSQL += tipoCliente;
-			consultaCompleta = manejador.insertClientes + consultaSQL;
+			String consultaSQLcli = ",'" + nrocuenta + "'";
+			consultaSQLcli += ",'" + estado + "'";
+			consultaSQLcli += ",'" + tipoCliente + "'";
+			consultaCompleta = manejador.insertClientes + consultaSQL + consultaSQLcli;
 		}else if (tipoPersona.equals("funcionario")) {
 			System.out.println("Introducir cargo:");
 			String grupo = manejador.validarOpcion("grupo");
 			System.out.println("Introducir departamento:");
-			int departamento = manejador.validarCodigoDepartamento();
+			String departamento = manejador.validarCodigoDepartamento();
 			String cargo = "(" + grupo + "," + departamento + ")";
 			System.out.println("Introducir fecha de ingreso:");
-			String fecha = manejador.validarFecha();
-//			System.out.println("Introducir dia de ingreso:");
-//			String diaIng = sc.nextLine();
-//			System.out.println("Introducir mes de ingreso");
-//			String mesIng = sc.nextLine();
-//			System.out.println("Introducir año de ingreso:");;
-//			String anyoIng = sc.nextLine();
-			consultaSQL += "," + cargo + ",";
-			consultaSQL += telefono + ",";
-			consultaSQL += fecha;
-			consultaCompleta = manejador.insertFuncionarios + consultaSQL;
+			String fecha = manejador.validarFecha("ingreso");
+			String consultaSQLFunc = ",'" + cargo + "'";
+			consultaSQLFunc += ",'" + telefono + "'";
+			consultaSQLFunc += ",'" + fecha + "'";
+			consultaCompleta = manejador.insertFuncionarios + consultaSQL + consultaSQLFunc;
 		} else {
 			consultaCompleta = manejador.insertPersonas + consultaSQL;
 		}
-		
+
 		return consultaCompleta += ");";
 	}
 	
@@ -140,8 +130,11 @@ public class App {
 	{
 		try {
 			manejador.update( pedirDatosUsuario(manejador, "persona"));
-			System.out.println("Persona insertada con éxito");
+			System.out.println("\n*********************************************");
+			System.out.println("****** Persona insertada con éxito. *********");
+			System.out.println("*********************************************\n");
 		} catch (Exception e) {
+			System.out.println("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 			System.out.println("Ha ocurrido un error, vuelva a intentarlo");
 			System.out.println(e.getMessage());
 		}
@@ -152,8 +145,11 @@ public class App {
 	{
 		try {
 			manejador.update(pedirDatosUsuario(manejador, "cliente"));
-			System.out.println("Cliente insertado con éxito");
+			System.out.println("\n*********************************************");
+			System.out.println("****** Cliente insertado con éxito. ********");
+			System.out.println("*********************************************\n");
 		} catch (Exception e) {
+			System.out.println("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 			System.out.println("Ha ocurrido un error, vuelva a intentarlo");
 			System.out.println(e.getMessage());
 		}
@@ -164,8 +160,11 @@ public class App {
 	{
 		try {
 			manejador.update(pedirDatosUsuario(manejador, "funcionario"));
-			System.out.println("Funcionaro insertado con éxito");
+			System.out.println("\n*********************************************");
+			System.out.println("***** Funcionario insertado con éxito. ******");
+			System.out.println("*********************************************\n");
 		} catch (Exception e) {
+			System.out.println("\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 			System.out.println("Ha ocurrido un error, vuelva a intentarlo");
 			System.out.println(e.getMessage());
 		}
