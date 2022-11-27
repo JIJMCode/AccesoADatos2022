@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,11 +19,19 @@ public class ManejadorBaseDatos {
 	String usuario = "postgres";
 	String password = "postgre";
 	String selectPers = "select * from personas;";
+	String selectPersById = "select * from personas where numero = ";
 	String selectCli = "select * from clientes;";
+	String selectCliById = "select * from clientes where numero = ";
 	String selectFunc = "select * from funcionarios;";
+	String selectFuncById = "select * from funconarios where numero = ";
+	String selectBuscar = "select numero,nombre,apellidos from personas;";
+	String selectGetId = "select MAX(numero) from personas";
 	String insertPersonas = "insert into personas values (nextval('seq_personas'),";
 	String insertClientes = "insert into clientes values (nextval('seq_personas'),";
 	String insertFuncionarios = "insert into funcionarios values (nextval('seq_personas'),";
+	String updatePersonas = "update personas set ";
+	String updateClientes = "update clientes set ";
+	String updateFuncionarios = "update funcionarios set ";
 	
 	public ManejadorBaseDatos() 
 		throws ClassNotFoundException, SQLException
@@ -32,7 +42,7 @@ public class ManejadorBaseDatos {
 	private void checkDataBaseIsCreated() throws 
 		ClassNotFoundException, SQLException {
 		Class.forName("org.postgresql.Driver");
-		String url = "jdbc:postgresql://localhost:5432/gestionpersonal";
+		String url = "jdbc:postgresql://localhost:5432/";
 		String usuario = "postgres";
 		String password = "postgre";
 		
@@ -94,9 +104,33 @@ public class ManejadorBaseDatos {
 					System.out.println("Error de escritura prueba con (si/no)");
 				}
 			}
-			while(!exit);
-			
+			while(!exit);	
 		}
+	}
+	
+	public boolean checkYesNo() {
+		boolean result = false;
+		String answer;
+		do
+		{
+			answer = sc.nextLine().toLowerCase();
+			
+			if (answer.equals("si")) 
+			{
+				result = true;
+			}
+			else if(answer.equals("no"))
+			{
+				result = false;
+			}
+			else
+			{
+				System.out.println("Error de escritura prueba con (si/no)");
+			}
+		}
+		while(!answer.equals("si") && !answer.equals("no"));
+		
+		return result;
 	}
 	
 	private void checkTablesAreCreated() 
@@ -146,20 +180,18 @@ public class ManejadorBaseDatos {
 		 * los tipos de datos que queramos hacer y las tablas heredadas
 		 * Es el Script de creación de nuestra base de datos
 		 */
-		String sentenciaSQL = "CREATE TYPE estadotype AS ENUM ('activo', 'pendiente', 'inactivo');"; 
-		sentenciaSQL += "CREATE TYPE tipoclientetype AS ENUM ('normal', 'premium');";
-		sentenciaSQL += "CREATE TYPE grupotype AS ENUM ('A1', 'A2', 'C1', 'C2', 'AP');";
-		sentenciaSQL += "CREATE TYPE cargotype AS (cargo grupotype,codigo character varying(5));";
+		String sentenciaSQL = "CREATE TYPE estadotype AS ENUM ('activo', 'pendiente', 'inactivo'); "; 
+		sentenciaSQL += "CREATE TYPE tipoclientetype AS ENUM ('normal', 'premium'); ";
+		sentenciaSQL += "CREATE TYPE grupotype AS ENUM ('A1', 'A2', 'C1', 'C2', 'AP'); ";
+		sentenciaSQL += "CREATE TYPE cargotype AS (cargo grupotype,codigo character varying(5)); ";
 		sentenciaSQL += "CREATE TABLE public.personas (numero integer NOT NULL,nombre character varying,"
-				+ "apellidos character varying,direccion character varying,telefono character varying(9),\r\n"
-				+ "fecha_nacim date,PRIMARY KEY (numero));";
-		sentenciaSQL += "CREATE TABLE public.clientes (nroCuenta character varying,estado estadotype,"
-				+ "tipoCliente tipoclientetype) INHERITS (public.personas);";
+				+ "apellidos character varying,direccion character varying,telefono character varying(9), "
+				+ "fecha_nacim date,PRIMARY KEY (numero)); ";
+		sentenciaSQL += "CREATE TABLE public.clientes (nrocuenta character varying,estado estadotype,"
+				+ "tipocliente tipoclientetype) INHERITS (public.personas); ";
 		sentenciaSQL += "CREATE TABLE public.funcionarios (cargo cargotype,departamento character varying,"
-				+ "fecha_ingreso date) INHERITS (public.personas);";
-		sentenciaSQL += "CREATE SEQUENCE public.seq_personas INCREMENT 1 START 1 MINVALUE 1 OWNED BY personas.numero;";
-		sentenciaSQL += "CREATE SEQUENCE public.seq_clientes INCREMENT 1 START 1 MINVALUE 1 OWNED BY clientes.numero;";
-		sentenciaSQL += "CREATE SEQUENCE public.seq_funcionarios INCREMENT 1 START 1 MINVALUE 1 OWNED BY funcionarios.numero;";
+				+ "fecha_ingreso date) INHERITS (public.personas); ";
+		sentenciaSQL += "CREATE SEQUENCE public.seq_personas INCREMENT 1 START 1 MINVALUE 1 OWNED BY personas.numero; ";
 
 		try {
 			statement.executeUpdate(sentenciaSQL);
@@ -178,14 +210,14 @@ public class ManejadorBaseDatos {
 				+ "	VALUES (nextval('seq_personas'), 'Jose', 'López Ponce', 'Calle Mayor 13, 1A', '111222333', '01/05/1970'),"
 				+ " (nextval('seq_personas'), 'Julia', 'Martínez Lugo', 'Calle Pintor Baeza 25, 5H', '444555666', '08/09/1975'),"
 				+ "	(nextval('seq_personas'), 'Lorena', 'Ruiz Esteve', 'Avenida Diagonal 140, 10D', '555666777', '25/11/180');";
-		String pruebaCliente = "INSERT INTO public.clientes (numero, nombre, apellidos, direccion, telefono, fecha_nacim, \"nroCuenta\", estado, \"tipoCliente\")"
-				+ "	VALUES (nextval('seq_clientes'), 'Raúl', 'Montero Tarradellas', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'activo', 'premium'),"
-				+ "(nextval('seq_clientes'), 'Raúl', 'Montero Tarradellas', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'pendiente', 'normal'),"
-				+ "(nextval('seq_clientes'), 'Raúl', 'Montero Tarradellas', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'inactivo', 'normal');";
+		String pruebaCliente = "INSERT INTO public.clientes (numero, nombre, apellidos, direccion, telefono, fecha_nacim, \"nrocuenta\", estado, \"tipocliente\")"
+				+ "	VALUES (nextval('seq_personas'), 'Raúl', 'Montero Tarradellas', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'activo', 'premium'),"
+				+ "(nextval('seq_personas'), 'Luis', 'Lopez Haro', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'pendiente', 'normal'),"
+				+ "(nextval('seq_personas'), 'Verónica', 'Ruiz Sanchez', 'Calle Olvido 4, bajo D', '111555777', '30/12/1968', 'ES0512345678901234567890', 'inactivo', 'normal');";
 		String pruebaFuncionario = "INSERT INTO public.funcionarios(numero, nombre, apellidos, direccion, telefono, fecha_nacim, cargo, departamento, fecha_ingreso)\r\n"
-				+ "VALUES (nextval('seq_funcionarios'), 'Victor', 'Coloma Aniorte', 'Calle Nueva 14, 6D', '444666222', '30/12/1968', ('A2','1234'), 'facturacion', '05/04/2015'),"
-				+ "(nextval('seq_funcionarios'), 'Roberto', 'Garcia Lillo', 'Calle Gerona 30, 9I', '888999333', '30/12/1968', ('C2','4567'), 'ventas', '16/01/2018'),"
-				+ "(nextval('seq_funcionarios'), 'Elisa', 'Cabrera Ortiz', 'Calle Princesa 6, 2A', '777111666', '30/12/1968', ('AP','3247'), 'almacén', '23/09/2013');";
+				+ "VALUES (nextval('seq_personas'), 'Victor', 'Coloma Aniorte', 'Calle Nueva 14, 6D', '444666222', '30/12/1968', ('A2','DT234'), 'facturacion', '05/04/2015'),"
+				+ "(nextval('seq_personas'), 'Roberto', 'Garcia Lillo', 'Calle Gerona 30, 9I', '888999333', '30/12/1968', ('C2','AM567'), 'ventas', '16/01/2018'),"
+				+ "(nextval('seq_personas'), 'Elisa', 'Cabrera Ortiz', 'Calle Princesa 6, 2A', '777111666', '30/12/1968', ('AP','ZZ247'), 'almacén', '23/09/2013');";
 		
 		update(pruebaPersonas);
 		update(pruebaCliente);
@@ -204,7 +236,7 @@ public class ManejadorBaseDatos {
 		case "grupo":
 			sentenciaSQL += "25610;";
 			break;
-		case "tipoCliente":
+		case "tipocliente":
 			sentenciaSQL += "25604;";
 			break;
 		case "estado":
@@ -230,66 +262,105 @@ public class ManejadorBaseDatos {
 		return enumOptions;
 	}
 	
-//	public int validarCodigoDepartamento() {
-//		int codigoDept = -1;
-//		boolean numOk = false;
-//		
-//		while (!numOk) {
-//			try {
-//				System.out.println("El código de departamento debe ser un número entero compuesto por 5 dígitos");
-//				codigoDept = App.sc.nextInt();
-//				if(Integer.toString(codigoDept).length() == 5 && codigoDept>0) {
-//					numOk = true;
-//				}
-//			}catch (Exception e) {
-//				System.out.println("El código no es correcto.");
-//			}
-//		}
-//
-//		return codigoDept;
-//	}
-	
-	public String validarCodigoDepartamento() {
-		String codigoDept = "";
-		boolean deptOk = false;
+	public String validarCodigoCuerpo() {
+		String codigoCuerpo = "";
+		boolean bodyOk = false;
 		
-		while (!deptOk) {
+		while (!bodyOk) {
 			try {
 				System.out.println("El código de departamento debe estar compuesto por 5 caracteres.");
-				codigoDept = App.sc.next();
-				if(codigoDept.length() == 5) {
-					deptOk = true;
+				codigoCuerpo = App.sc.next();
+				if(codigoCuerpo.length() == 5) {
+					bodyOk = true;
 				}
 			}catch (Exception e) {
 				System.out.println("El código no es correcto, vuelva a intentarlo.");
 			}
 		}
 
-		return codigoDept;
+		return codigoCuerpo;
+	}
+	
+	public String validarTelefono() {
+		String telefono = "";
+		boolean telefonoOk = false;
+		
+		while (!telefonoOk) {
+			try {
+				System.out.println("El teléfono debe estar compuesto por 9 caracteres.");
+				telefono = App.sc.next();
+				if(telefono.length() == 9) {
+					telefonoOk = true;
+				}
+			}catch (Exception e) {
+				System.out.println("El código no es correcto, vuelva a intentarlo.");
+			}
+		}
+
+		return telefono;
 	}
 	
 	public String validarFecha(String tipoFecha) {
 		String result = "";
-		
 		boolean fechaOk = false;
+		String error = "";
 		while (!fechaOk) {
-			System.out.println("Introducir dia de " + tipoFecha + ":");
-			int diaNac = sc.nextInt();
-			System.out.println("Introducir mes de " + tipoFecha + ":");
-			int mesNac = sc.nextInt();
-			System.out.println("Introducir año de " + tipoFecha + ":");
-			int anyoNac = sc.nextInt();
+
 	        try{
-	            LocalDate.of(anyoNac, diaNac, mesNac);
+				System.out.println("Introducir fecha de " + tipoFecha + " en formato dia/mes/año:\"");
+
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				String fecha = sc.nextLine();
+				LocalDate localDate = LocalDate.parse(fecha, formatter);
+				
 	            fechaOk = true;
-	            result += diaNac + "/" + mesNac + "/" + anyoNac;
-	        }catch(DateTimeException e) {
+	            result += fecha;
+	        } catch(DateTimeException e) {
 	        	fechaOk = false;
-	        	System.out.println("Formato de fecha incorrecto. Introduzca una nueva fecha con formato dd/mm/aaaa:");
+	        	System.out.println("Formato de fecha incorrecto o fecha no válida.");
 	        }
 		}
 		
 		return result;
+	}
+	
+	public ResultSet validarId(String tipoPers) throws ClassNotFoundException, SQLException {
+		int id = 0;
+		boolean numOk = false;
+		
+		ResultSet rs = select(selectGetId);
+		
+		if(rs.next()) {
+			int maxId = rs.getInt(1); 
+			
+			while (!numOk) {
+				try {
+					System.out.println("Introduzca el código de la persona a modificar:");
+					id = App.sc.nextInt();
+					if(id>0 && id<=maxId) {
+						numOk = true;
+						switch (tipoPers) {
+						case "persona":
+							rs = select(selectPersById + id);
+							break;
+						case "cliente":
+							rs = select(String.format(selectCliById,id));
+							break;
+						case "funcionario":
+							rs = select(String.format(selectFuncById,id));
+							break;
+						default:
+							break;
+						}
+					}
+				}catch (Exception e) {
+					System.out.println("El código no es correcto.");
+					System.out.println("El código debe ser númerico, mayor que 0 y menor o igual a " + maxId + ".");
+				}
+			}
+		}
+
+		return rs;	
 	}
 	
 	public String validarOpcion(String nombreEnum) throws ClassNotFoundException, SQLException {
@@ -316,7 +387,7 @@ public class ManejadorBaseDatos {
 		Class.forName("org.postgresql.Driver");
 		String url = "jdbc:postgresql://localhost:5432/";
 		String usuario = "postgres";
-		String password = "postgres";
+		String password = "postgre";
 		
 		Connection con = DriverManager.getConnection(url, usuario, password);
 		Statement statement = con.createStatement();
@@ -338,15 +409,14 @@ public class ManejadorBaseDatos {
 		
 		createTables();
 	}
-	
+		
 	private Connection conection() throws
 	ClassNotFoundException, SQLException
 	{
 		Class.forName("org.postgresql.Driver");
 		return DriverManager.getConnection(url, usuario, password);
 	}
-	
-	
+		
 	public void update(String sentenceSQL) 
 		throws ClassNotFoundException, SQLException
 	{

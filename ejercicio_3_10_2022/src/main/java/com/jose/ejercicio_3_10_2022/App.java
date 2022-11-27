@@ -9,6 +9,7 @@ public class App {
 	public static Scanner sc = new Scanner(System.in);
 	static String consultaCompleta = "";
 	static String consultaSQL = "";
+	static int numeroPersona = 0;
 	
 	public static void main (String[] args) throws ClassNotFoundException, SQLException{
 		ManejadorBaseDatos manejador = new ManejadorBaseDatos();
@@ -80,14 +81,19 @@ public class App {
 	private static String pedirDatosUsuario (ManejadorBaseDatos manejador, String tipoPersona) throws ClassNotFoundException, SQLException {
 		consultaSQL = "";
 		System.out.println("Introducir nombre:");
+		sc.nextLine();
 		String nombre = sc.nextLine();
 		System.out.println("Introducir apellidos:");
+		sc.nextLine();
 		String apellidos = sc.nextLine();
 		System.out.println("Introducir dirección:");
+		sc.nextLine();
 		String direccion = sc.nextLine();
 		System.out.println("Introducir teléfono:");
-		String telefono = sc.nextLine();
+		sc.nextLine();
+		String telefono = manejador.validarTelefono();
 		System.out.println("Introducir fecha de nacimiento en formato dia/mes/año:");
+		sc.nextLine();
 		String fechaNac = manejador.validarFecha("nacimiento");
 		consultaSQL += "'" + nombre + "'";
 		consultaSQL += ",'" + apellidos + "'";
@@ -97,25 +103,34 @@ public class App {
 		
 		if (tipoPersona.equals("cliente")) {
 			System.out.println("Introducir número de cuenta:");
+			sc.nextLine();
 			String nrocuenta = sc.nextLine();
 			System.out.println("Introducir un estado:");
+			sc.nextLine();
 			String estado = manejador.validarOpcion("estado");
 			System.out.println("Introducir tipo de cliente:");
-			String tipoCliente = manejador.validarOpcion("tipoCliente");
+			sc.nextLine();
+			String tipocliente = manejador.validarOpcion("tipocliente");
 			String consultaSQLcli = ",'" + nrocuenta + "'";
 			consultaSQLcli += ",'" + estado + "'";
-			consultaSQLcli += ",'" + tipoCliente + "'";
+			consultaSQLcli += ",'" + tipocliente + "'";
 			consultaCompleta = manejador.insertClientes + consultaSQL + consultaSQLcli;
 		}else if (tipoPersona.equals("funcionario")) {
 			System.out.println("Introducir cargo:");
+			sc.nextLine();
 			String grupo = manejador.validarOpcion("grupo");
 			System.out.println("Introducir departamento:");
-			String departamento = manejador.validarCodigoDepartamento();
-			String cargo = "(" + grupo + "," + departamento + ")";
+			sc.nextLine();
+			String cuerpo = manejador.validarCodigoCuerpo();
+			String cargo = "(" + grupo + "," + cuerpo + ")";
+			System.out.println("Introducir departamento:");
+			sc.nextLine();
+			String departamento = sc.nextLine();
 			System.out.println("Introducir fecha de ingreso:");
+			sc.nextLine();
 			String fecha = manejador.validarFecha("ingreso");
 			String consultaSQLFunc = ",'" + cargo + "'";
-			consultaSQLFunc += ",'" + telefono + "'";
+			consultaSQLFunc += ",'" + departamento + "'";
 			consultaSQLFunc += ",'" + fecha + "'";
 			consultaCompleta = manejador.insertFuncionarios + consultaSQL + consultaSQLFunc;
 		} else {
@@ -139,7 +154,7 @@ public class App {
 			System.out.println(e.getMessage());
 		}
 	}
-
+	
 	private static void addCliente(ManejadorBaseDatos manejador) 
 		throws ClassNotFoundException, SQLException 
 	{
@@ -170,22 +185,203 @@ public class App {
 		}
 	}
 	
+	private static String pedirDatosModificar(ManejadorBaseDatos manejador,  String tipoPersona) 
+			throws ClassNotFoundException, SQLException
+	{
+		consultaSQL = "";
+		boolean modified = false;
+		System.out.println("¿Desea modificar el nombre? Responda \"si\" o \"no\"");
+		String nombre;
+		if(manejador.checkYesNo()) {
+			System.out.println("Introducir nombre:");
+			sc.nextLine();
+			nombre = sc.nextLine();
+			consultaSQL += "nombre = '" + nombre + "',";
+			modified = true;
+		}
+		System.out.println("¿Desea modificar los apellidos? Responda \"si\" o \"no\"");
+		String apellidos = "";
+		if(manejador.checkYesNo()) {
+			System.out.println("Introducir apellidos:");
+			sc.nextLine();
+			apellidos = sc.nextLine();
+			consultaSQL += "apellidos = '" + apellidos + "',";
+			modified = true;
+		}
+		String direccion;
+		System.out.println("¿Desea modificar la direccion? Responda \"si\" o \"no\"");
+		if(manejador.checkYesNo()) {
+			System.out.println("Introducir dirección:");
+			sc.nextLine();
+			direccion = sc.nextLine();
+			consultaSQL += "direccion = '" + direccion + "',";
+			modified = true;
+		}
+		System.out.println("¿Desea modificar el telefono? Responda \"si\" o \"no\"");
+		String telefono;
+		if(manejador.checkYesNo()) {
+			System.out.println("Introducir telefono:");
+			sc.nextLine();
+			telefono = manejador.validarTelefono();
+			consultaSQL += "telefono = '" + telefono + "',";
+			modified = true;
+		}
+		System.out.println("¿Desea modificar la fecha de nacimiento? Responda \"si\" o \"no\"");
+		String fechaNac;
+		if(manejador.checkYesNo()) {
+			//System.out.println("Introducir fecha de nacimiento en formato dia/mes/año:");
+			//sc.nextLine();
+			fechaNac = manejador.validarFecha("nacimiento");
+			consultaSQL += "fecha_nacim = '" + fechaNac + "',";
+			modified = true;
+		}
+		
+		if(modified) {
+			consultaSQL = consultaSQL.substring(0, consultaSQL.length() - 1);
+			//consultaCompleta = manejador.updatePersonas + consultaSQL;
+		}
+		
+		if (tipoPersona.equals("cliente")) {
+			String consultaSQLcli = "";
+			System.out.println("¿Desea modificar el número de cuenta? Responda \"si\" o \"no\"");
+			String nrocuenta;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir número de cuenta:");
+				sc.nextLine();
+				nrocuenta = sc.nextLine();
+				consultaSQLcli += "nrocuenta = '" + nrocuenta + "',";
+				modified = true;
+			}
+			System.out.println("¿Desea modificar el estado? Responda \"si\" o \"no\"");
+			String estado;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir un estado:");
+				sc.nextLine();
+				estado = manejador.validarOpcion("estado");
+				consultaSQLcli += "estado = '" + estado + "',";
+				modified = true;
+			}
+			System.out.println("¿Desea modificar el tipo de cliente? Responda \"si\" o \"no\"");
+			String tipocliente;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir tipo de cliente:");
+				sc.nextLine();
+				tipocliente = manejador.validarOpcion("tipocliente");
+				consultaSQLcli += "tipocliente = '" + tipocliente + "',";
+				modified = true;
+			}
+			
+			if(modified && !consultaSQLcli.isBlank())
+				consultaSQLcli = consultaSQLcli.substring(0, consultaSQLcli.length() - 1);
+			
+			consultaCompleta = manejador.updateClientes + consultaSQL + consultaSQLcli;
+		}else if (tipoPersona.equals("funcionario")) {
+			String consultaSQLFunc = "";
+			System.out.println("¿Desea modificar el cargo? Responda \"si\" o \"no\"");
+			String tipocliente;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir grupo:");
+				sc.nextLine();
+				String grupo = manejador.validarOpcion("grupo");
+				System.out.println("Introducir código del cuerpo:");
+				sc.nextLine();
+				String cuerpo = manejador.validarCodigoCuerpo();
+				String cargo = "('" + grupo + "','" + cuerpo + "')";
+				consultaSQLFunc += "cargo = " + cargo + ",";
+				modified = true;
+			}
+
+			System.out.println("¿Desea modificar el departamento? Responda \"si\" o \"no\"");
+			String departamento;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir departamento:");
+				sc.nextLine();
+				departamento = sc.next();
+				consultaSQLFunc += "departamento = '" + departamento + "',";
+				modified = true;
+			}
+	
+			System.out.println("¿Desea modificar la fecha de ingreso? Responda \"si\" o \"no\"");
+			String fecha;
+			if(manejador.checkYesNo()) {
+				System.out.println("Introducir fecha de ingreso:");
+				sc.nextLine();
+				fecha = manejador.validarFecha("ingreso");
+				consultaSQLFunc += "tipocliente = '" + fecha + "',";
+				modified = true;
+			}
+			
+			if(modified && !consultaSQLFunc.isBlank())
+				consultaSQLFunc = consultaSQLFunc.substring(0, consultaSQLFunc.length() - 1);
+			
+			consultaCompleta = manejador.updateFuncionarios + consultaSQL + consultaSQLFunc;
+		}
+
+		if (modified) {
+			return consultaCompleta;
+		} else {
+			return "";
+		}
+	}
+	
 	private static void modifyPersona(ManejadorBaseDatos manejador) 
 		throws ClassNotFoundException, SQLException 
 	{
-
+		ResultSet rsPersona = manejador.validarId("persona");
+		
+		if(rsPersona.next()) {
+			String consultaUpdate = pedirDatosModificar(manejador, "persona");
+			
+			if(consultaUpdate.isBlank())
+				System.out.println("No se ha realizado ningún cambio. No procede actualización.");
+			else {
+				consultaUpdate += " where numero = " + rsPersona.getInt(1);
+				manejador.update(consultaUpdate);
+				System.out.println("Registro actualizado correctamente.");
+			}
+		}else {
+			System.out.println("No existen personas que coincidan con los datos aportados.");
+		}
 	}
 	
 	private static void modifyCliente(ManejadorBaseDatos manejador) 
 		throws ClassNotFoundException, SQLException 
 	{
-
+		ResultSet rsPersona = manejador.validarId("cliente");
+		
+		if(rsPersona.next()) {
+			String consultaUpdate = pedirDatosModificar(manejador, "cliente");
+			
+			if(consultaUpdate.isBlank())
+				System.out.println("No se ha realizado ningún cambio. No procede actualización.");
+			else {
+				consultaUpdate += " where numero = " + rsPersona.getInt(1);
+				manejador.update(consultaUpdate);
+				System.out.println("Registro actualizado correctamente.");
+			}
+		}else {
+			System.out.println("No existen clientes que coincidan con los datos aportados.");
+		}
 	}
 	
 	private static void modifyFuncionario(ManejadorBaseDatos manejador) 
 		throws ClassNotFoundException, SQLException 
 	{
-
+		ResultSet rsPersona = manejador.validarId("funcionario");
+		
+		if(rsPersona.next()) {
+			String consultaUpdate = pedirDatosModificar(manejador, "funcionario");
+			
+			if(consultaUpdate.isBlank())
+				System.out.println("No se ha realizado ningún cambio. No procede actualización.");
+			else {
+				consultaUpdate += " where numero = " + rsPersona.getInt(1);
+				manejador.update(consultaUpdate);
+				System.out.println("Registro actualizado correctamente.");
+			}
+		}else {
+			System.out.println("No existen funcionarios que coincidan con los datos aportados.");
+		}
 	}
 	
 	private static void showPersonas(ManejadorBaseDatos manejador) 
