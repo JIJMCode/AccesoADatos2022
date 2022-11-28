@@ -1,5 +1,6 @@
 package com.jose.ejercicio_3_10_2022;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,7 +24,7 @@ public class ManejadorBaseDatos {
 	String selectCli = "select * from clientes;";
 	String selectCliById = "select * from clientes where numero = ";
 	String selectFunc = "select * from funcionarios;";
-	String selectFuncById = "select * from funconarios where numero = ";
+	String selectFuncById = "select * from funcionarios where numero = ";
 	String selectBuscar = "select numero,nombre,apellidos from personas;";
 	String selectGetId = "select MAX(numero) from personas";
 	String insertPersonas = "insert into personas values (nextval('seq_personas'),";
@@ -230,17 +231,18 @@ public class ManejadorBaseDatos {
 		
 		List<String> enumOptions = new ArrayList<>();
 		
-		String sentenciaSQL = "select enumlabel from pg_enum where enumtypid = ";
+		//String sentenciaSQL = "select enumlabel from pg_enum where enumtypid = ";
+		String sentenciaSQL = "SELECT e.enumlabel FROM pg_enum e JOIN pg_type t ON e.enumtypid = t.oid WHERE t.typname = ";
 		
 		switch (nombreEnum) {
 		case "grupo":
-			sentenciaSQL += "25610;";
+			sentenciaSQL += "'grupotype'";
 			break;
 		case "tipocliente":
-			sentenciaSQL += "25604;";
+			sentenciaSQL += "'tipoclientetype'";
 			break;
 		case "estado":
-			sentenciaSQL += "25596;";
+			sentenciaSQL += "'estadotype'";
 			break;
 		default:
 			break;
@@ -268,7 +270,7 @@ public class ManejadorBaseDatos {
 		
 		while (!bodyOk) {
 			try {
-				System.out.println("El código de departamento debe estar compuesto por 5 caracteres.");
+				System.out.println("El código de cuerpo debe estar compuesto por 5 caracteres.");
 				codigoCuerpo = App.sc.next();
 				if(codigoCuerpo.length() == 5) {
 					bodyOk = true;
@@ -279,6 +281,59 @@ public class ManejadorBaseDatos {
 		}
 
 		return codigoCuerpo;
+	}
+	
+	public String validarIban() {
+		boolean esValido = false;
+		int i = 2;
+		int caracterASCII = 0; 
+		int resto = 0;
+		int dc = 0;
+		String cadenaDc = "";
+		BigInteger cuentaNumero = new BigInteger("0"); 
+		BigInteger modo = new BigInteger("97");
+		String cuenta = "";
+		do {
+			App.sc.nextLine();
+			System.out.println("Introducir número de cuenta:");
+			
+			cuenta = App.sc.nextLine();
+
+			if(cuenta.length() == 24 && cuenta.substring(0,1).toUpperCase().equals("E") 
+					&& cuenta.substring(1,2).toUpperCase().equals("S")) {
+
+					do {
+						caracterASCII = cuenta.codePointAt(i);
+						esValido = (caracterASCII > 47 && caracterASCII < 58);
+						i++;
+					}
+					while(i < cuenta.length() && esValido); 
+				
+				
+					if(esValido) {
+						cuentaNumero = new BigInteger(cuenta.substring(4,24) + "142800");
+						resto = cuentaNumero.mod(modo).intValue();
+						dc = 98 - resto;
+						cadenaDc = String.valueOf(dc);
+					}	
+					
+					if(dc < 10) {
+						cadenaDc = "0" + cadenaDc;
+					} 
+
+					// Comparamos los caracteres 2 y 3 de la cuenta (dígito de control IBAN) con cadenaDc
+					if(cuenta.substring(2,4).equals(cadenaDc)) {
+						esValido = true;
+					} else {
+						esValido = false;
+					}
+				} else {
+					System.out.println("Numero de cuenta erronea. Lacuenta debe ser en formato IBAN.");
+				}
+
+		} while (!esValido);
+		
+		return cuenta;
 	}
 	
 	public String validarTelefono() {
@@ -307,7 +362,7 @@ public class ManejadorBaseDatos {
 		while (!fechaOk) {
 
 	        try{
-				System.out.println("Introducir fecha de " + tipoFecha + " en formato dia/mes/año:\"");
+				System.out.println("Introducir fecha de " + tipoFecha + " en formato dia/mes/año:");
 
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 				String fecha = sc.nextLine();
@@ -344,10 +399,10 @@ public class ManejadorBaseDatos {
 							rs = select(selectPersById + id);
 							break;
 						case "cliente":
-							rs = select(String.format(selectCliById,id));
+							rs = select(selectCliById + id);
 							break;
 						case "funcionario":
-							rs = select(String.format(selectFuncById,id));
+							rs = select(selectFuncById + id);
 							break;
 						default:
 							break;
@@ -368,7 +423,13 @@ public class ManejadorBaseDatos {
 		List<String> opcionesEnum = opcionesEnum(nombreEnum);
 		System.out.println("Elija una de las siguientes opciones");
 		opcionesEnum.forEach(x-> {System.out.println("- " + x);});
-		result = App.sc.nextLine().toUpperCase();
+		
+		if (nombreEnum.equals("grupo")) {
+			result = App.sc.nextLine().toUpperCase();
+		} else {
+			result = App.sc.nextLine().toLowerCase();
+		}
+		
 		while (!opcionesEnum.contains(result)) {
 			System.out.println("El valor introducido no es correcto.");
 			System.out.println("Elija una de las siguientes opciones");

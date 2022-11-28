@@ -2,7 +2,6 @@ package com.jose.ejercicio_3_10_2022;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -81,19 +80,13 @@ public class App {
 	private static String pedirDatosUsuario (ManejadorBaseDatos manejador, String tipoPersona) throws ClassNotFoundException, SQLException {
 		consultaSQL = "";
 		System.out.println("Introducir nombre:");
-		sc.nextLine();
 		String nombre = sc.nextLine();
 		System.out.println("Introducir apellidos:");
-		sc.nextLine();
 		String apellidos = sc.nextLine();
 		System.out.println("Introducir dirección:");
-		sc.nextLine();
 		String direccion = sc.nextLine();
 		System.out.println("Introducir teléfono:");
-		sc.nextLine();
 		String telefono = manejador.validarTelefono();
-		System.out.println("Introducir fecha de nacimiento en formato dia/mes/año:");
-		sc.nextLine();
 		String fechaNac = manejador.validarFecha("nacimiento");
 		consultaSQL += "'" + nombre + "'";
 		consultaSQL += ",'" + apellidos + "'";
@@ -103,13 +96,10 @@ public class App {
 		
 		if (tipoPersona.equals("cliente")) {
 			System.out.println("Introducir número de cuenta:");
-			sc.nextLine();
-			String nrocuenta = sc.nextLine();
+			String nrocuenta = manejador.validarIban();		
 			System.out.println("Introducir un estado:");
-			sc.nextLine();
 			String estado = manejador.validarOpcion("estado");
 			System.out.println("Introducir tipo de cliente:");
-			sc.nextLine();
 			String tipocliente = manejador.validarOpcion("tipocliente");
 			String consultaSQLcli = ",'" + nrocuenta + "'";
 			consultaSQLcli += ",'" + estado + "'";
@@ -119,15 +109,12 @@ public class App {
 			System.out.println("Introducir cargo:");
 			sc.nextLine();
 			String grupo = manejador.validarOpcion("grupo");
-			System.out.println("Introducir departamento:");
-			sc.nextLine();
+			System.out.println("Introducir código de cuerpo:");
 			String cuerpo = manejador.validarCodigoCuerpo();
 			String cargo = "(" + grupo + "," + cuerpo + ")";
 			System.out.println("Introducir departamento:");
 			sc.nextLine();
 			String departamento = sc.nextLine();
-			System.out.println("Introducir fecha de ingreso:");
-			sc.nextLine();
 			String fecha = manejador.validarFecha("ingreso");
 			String consultaSQLFunc = ",'" + cargo + "'";
 			consultaSQLFunc += ",'" + departamento + "'";
@@ -184,7 +171,7 @@ public class App {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+
 	private static String pedirDatosModificar(ManejadorBaseDatos manejador,  String tipoPersona) 
 			throws ClassNotFoundException, SQLException
 	{
@@ -203,7 +190,6 @@ public class App {
 		String apellidos = "";
 		if(manejador.checkYesNo()) {
 			System.out.println("Introducir apellidos:");
-			sc.nextLine();
 			apellidos = sc.nextLine();
 			consultaSQL += "apellidos = '" + apellidos + "',";
 			modified = true;
@@ -212,7 +198,6 @@ public class App {
 		System.out.println("¿Desea modificar la direccion? Responda \"si\" o \"no\"");
 		if(manejador.checkYesNo()) {
 			System.out.println("Introducir dirección:");
-			sc.nextLine();
 			direccion = sc.nextLine();
 			consultaSQL += "direccion = '" + direccion + "',";
 			modified = true;
@@ -221,7 +206,6 @@ public class App {
 		String telefono;
 		if(manejador.checkYesNo()) {
 			System.out.println("Introducir telefono:");
-			sc.nextLine();
 			telefono = manejador.validarTelefono();
 			consultaSQL += "telefono = '" + telefono + "',";
 			modified = true;
@@ -229,8 +213,6 @@ public class App {
 		System.out.println("¿Desea modificar la fecha de nacimiento? Responda \"si\" o \"no\"");
 		String fechaNac;
 		if(manejador.checkYesNo()) {
-			//System.out.println("Introducir fecha de nacimiento en formato dia/mes/año:");
-			//sc.nextLine();
 			fechaNac = manejador.validarFecha("nacimiento");
 			consultaSQL += "fecha_nacim = '" + fechaNac + "',";
 			modified = true;
@@ -238,7 +220,6 @@ public class App {
 		
 		if(modified) {
 			consultaSQL = consultaSQL.substring(0, consultaSQL.length() - 1);
-			//consultaCompleta = manejador.updatePersonas + consultaSQL;
 		}
 		
 		if (tipoPersona.equals("cliente")) {
@@ -246,9 +227,7 @@ public class App {
 			System.out.println("¿Desea modificar el número de cuenta? Responda \"si\" o \"no\"");
 			String nrocuenta;
 			if(manejador.checkYesNo()) {
-				System.out.println("Introducir número de cuenta:");
-				sc.nextLine();
-				nrocuenta = sc.nextLine();
+				nrocuenta = manejador.validarIban();
 				consultaSQLcli += "nrocuenta = '" + nrocuenta + "',";
 				modified = true;
 			}
@@ -256,7 +235,6 @@ public class App {
 			String estado;
 			if(manejador.checkYesNo()) {
 				System.out.println("Introducir un estado:");
-				sc.nextLine();
 				estado = manejador.validarOpcion("estado");
 				consultaSQLcli += "estado = '" + estado + "',";
 				modified = true;
@@ -265,7 +243,6 @@ public class App {
 			String tipocliente;
 			if(manejador.checkYesNo()) {
 				System.out.println("Introducir tipo de cliente:");
-				sc.nextLine();
 				tipocliente = manejador.validarOpcion("tipocliente");
 				consultaSQLcli += "tipocliente = '" + tipocliente + "',";
 				modified = true;
@@ -278,13 +255,11 @@ public class App {
 		}else if (tipoPersona.equals("funcionario")) {
 			String consultaSQLFunc = "";
 			System.out.println("¿Desea modificar el cargo? Responda \"si\" o \"no\"");
-			String tipocliente;
 			if(manejador.checkYesNo()) {
 				System.out.println("Introducir grupo:");
 				sc.nextLine();
 				String grupo = manejador.validarOpcion("grupo");
 				System.out.println("Introducir código del cuerpo:");
-				sc.nextLine();
 				String cuerpo = manejador.validarCodigoCuerpo();
 				String cargo = "('" + grupo + "','" + cuerpo + "')";
 				consultaSQLFunc += "cargo = " + cargo + ",";
@@ -307,7 +282,7 @@ public class App {
 				System.out.println("Introducir fecha de ingreso:");
 				sc.nextLine();
 				fecha = manejador.validarFecha("ingreso");
-				consultaSQLFunc += "tipocliente = '" + fecha + "',";
+				consultaSQLFunc += "fecha_ingreso = '" + fecha + "',";
 				modified = true;
 			}
 			
@@ -315,6 +290,8 @@ public class App {
 				consultaSQLFunc = consultaSQLFunc.substring(0, consultaSQLFunc.length() - 1);
 			
 			consultaCompleta = manejador.updateFuncionarios + consultaSQL + consultaSQLFunc;
+		} else if (tipoPersona.equals("persona")) {
+			consultaCompleta = manejador.updatePersonas + consultaSQL;
 		}
 
 		if (modified) {
@@ -337,7 +314,9 @@ public class App {
 			else {
 				consultaUpdate += " where numero = " + rsPersona.getInt(1);
 				manejador.update(consultaUpdate);
-				System.out.println("Registro actualizado correctamente.");
+				System.out.println("\n******************************************");
+				System.out.println("***** Persona modificada con éxito. ******");
+				System.out.println("*******************************************\n");
 			}
 		}else {
 			System.out.println("No existen personas que coincidan con los datos aportados.");
@@ -357,7 +336,9 @@ public class App {
 			else {
 				consultaUpdate += " where numero = " + rsPersona.getInt(1);
 				manejador.update(consultaUpdate);
-				System.out.println("Registro actualizado correctamente.");
+				System.out.println("\n*********************************************");
+				System.out.println("***** Cliente modificado con éxito. ******");
+				System.out.println("*********************************************\n");
 			}
 		}else {
 			System.out.println("No existen clientes que coincidan con los datos aportados.");
@@ -377,7 +358,9 @@ public class App {
 			else {
 				consultaUpdate += " where numero = " + rsPersona.getInt(1);
 				manejador.update(consultaUpdate);
-				System.out.println("Registro actualizado correctamente.");
+				System.out.println("\n*********************************************");
+				System.out.println("***** Funcionario modificado con éxito. *****");
+				System.out.println("*********************************************\n");
 			}
 		}else {
 			System.out.println("No existen funcionarios que coincidan con los datos aportados.");
