@@ -10,5 +10,10 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.default_schema">public</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <mapping class="com.jose.ejercicio_4_06_2022.Entidades.Categories"/>
+        <mapping class="com.jose.ejercicio_4_06_2022.Entidades.Flags"/>
+        <mapping class="com.jose.ejercicio_4_06_2022.Entidades.Jokes"/>
+        <mapping class="com.jose.ejercicio_4_06_2022.Entidades.Language"/>
+        <mapping class="com.jose.ejercicio_4_06_2022.Entidades.Types"/>
     </session-factory>
 </hibernate-configuration>

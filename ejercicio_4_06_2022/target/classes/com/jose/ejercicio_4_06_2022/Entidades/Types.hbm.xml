@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 24 dic 2022 11:16:20 by Hibernate Tools 4.3.6.Final -->
+<hibernate-mapping>
+    <class name="com.jose.ejercicio_4_06_2022.Entidades.Types" table="types" optimistic-lock="version">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="assigned" />
+        </id>
+        <property name="type" type="string">
+            <column name="type" not-null="true" />
+        </property>
+        <set name="jokeses" table="jokes" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="type_id" />
+            </key>
+            <one-to-many class="com.jose.ejercicio_4_06_2022.Entidades.Jokes" />
+        </set>
+    </class>
+</hibernate-mapping>
