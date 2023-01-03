@@ -116,5 +116,14 @@ public class Jokes implements java.io.Serializable {
 	public void setFlagses(Set<Flags> flagses) {
 		this.flagses = flagses;
 	}
+
+	@Override
+	public String toString() {
+		String text2validated = text2 != null && !text2.equals("null") ? "\ntext2=" + text2 : "";
+		return "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\nJoke (id=" + id + ")\n category=" + categories.getCategory() + ", language=" + language.getLanguage() + ", type=" + types.getType()
+				+ ",\n text1=" + text1 + text2validated + "\n" ;
+	}
+	
+	
 }
 

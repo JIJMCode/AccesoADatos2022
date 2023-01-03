@@ -13,7 +13,7 @@ import org.hibernate.cfg.Configuration;
 public class HibernateUtils {
 	
 	static SessionFactory  sessionFactory;
-	static Session session;
+	public static Session session;
 	
 	/**
 	 * Abre una conexión con la base de datos
@@ -48,6 +48,7 @@ public class HibernateUtils {
 	 * @param clase Clase pasada
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	public static List<?> devolverListaObjetos(String clase) {		
 		return session.createQuery("FROM " + clase).list();
 	}
@@ -127,9 +128,11 @@ public class HibernateUtils {
 	 * @return n si borra n registros, 0 si no borra ningún registro, -1 en caso de error.
 	 * (e.g) deleteAll(NombreClase.class,"campo='A'")
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> int deleteAll(Class<T> clase, String where) {
 		Transaction trans = null;
 		try {
+			@SuppressWarnings("deprecation")
 			List<T> resultado = session.createQuery("FROM " + clase.getName() + " WHERE " + where).list();
 			trans = session.beginTransaction();
 			resultado.forEach(e->session.remove(e));  // anteriormente delete
@@ -168,6 +171,7 @@ public class HibernateUtils {
 	public static <T> boolean update(Class<T> clase, String where, T datos) {
 		Transaction trans = null;
 		try {
+			@SuppressWarnings("deprecation")
 			List<T> resultados = session.createQuery("FROM " + clase.getSimpleName() + " WHERE " + where).list();
 			trans = session.beginTransaction();
 			Arrays.asList(clase.getDeclaredFields()).forEach(f -> {
@@ -209,6 +213,7 @@ public class HibernateUtils {
 		Transaction trans = null;
 		try {
 			
+			@SuppressWarnings("deprecation")
 			List<T> resultados = session.createQuery("FROM " + clase.getSimpleName() + " WHERE " + where).list();
 			trans = session.beginTransaction();
 
