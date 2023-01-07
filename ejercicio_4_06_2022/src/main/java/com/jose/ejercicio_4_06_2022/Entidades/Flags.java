@@ -5,10 +5,12 @@ import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -39,7 +41,8 @@ public class Flags implements java.io.Serializable {
 	}
 
 	@Id
-
+	@SequenceGenerator(name="seqFlag", sequenceName="seq_flags", allocationSize=1, initialValue = 1)
+	@GeneratedValue(generator="seqFlag")
 	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;

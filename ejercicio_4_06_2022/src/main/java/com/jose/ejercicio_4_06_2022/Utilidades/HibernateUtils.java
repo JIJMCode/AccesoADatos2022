@@ -8,7 +8,10 @@ import java.util.Map;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration; 
+import org.hibernate.cfg.Configuration;
+
+import com.jose.ejercicio_4_06_2022.Entidades.Categories;
+import com.jose.ejercicio_4_06_2022.Entidades.Language; 
 
 public class HibernateUtils {
 	
@@ -64,6 +67,48 @@ public class HibernateUtils {
 		//return session.createQuery("from " + clase.getName()).list();
 		return session.createSelectionQuery("from " + clase.getName(),clase).list();
 	}
+	
+	/**
+	 * Dado un texto devuelve una lista con todas las categorías que contienen
+	 * ese texto en su descripción.
+	 * 
+	 * @param text -> Texto a buscar
+	 * @return
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	public static List<Categories> searchCategoriesNativeQuery(String text) {
+		return session.createNativeQuery(
+    			"SELECT * FROM categories WHERE LOWER(category) LIKE :text")
+    			.addEntity(Categories.class)
+    			.setParameter(text, "%" + text + "%")
+    			.list();
+    }
+    
+	/**
+	 * Devuelve una lista con todas las categorías.
+	 * 
+	 * @return
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	public static List<Categories> allCategoriesNativeQuery() {
+		return session.createNativeQuery(
+    			"SELECT * FROM categories")
+    			.addEntity(Categories.class)
+    			.list();
+    }
+    
+	/**
+	 * Devuelve una lista con todas los idiomas.
+	 * 
+	 * @return
+	 */
+
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public static List<Language> allLanguagesNamedQuery() {
+		return session.getNamedNativeQuery(
+    			"find_language_id_and_language")
+    			.list();
+    }
 	
 	/**
 	 * Inserta los registros en sus tablas correspondientes de la base de datos.
@@ -171,7 +216,7 @@ public class HibernateUtils {
 	public static <T> boolean update(Class<T> clase, String where, T datos) {
 		Transaction trans = null;
 		try {
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings({ "deprecation", "unchecked" })
 			List<T> resultados = session.createQuery("FROM " + clase.getSimpleName() + " WHERE " + where).list();
 			trans = session.beginTransaction();
 			Arrays.asList(clase.getDeclaredFields()).forEach(f -> {

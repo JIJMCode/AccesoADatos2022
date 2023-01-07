@@ -6,8 +6,10 @@ import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -41,7 +43,8 @@ public class Categories implements java.io.Serializable {
 	}
 
 	@Id
-
+	@SequenceGenerator(name="seqCat", sequenceName="seq_categories", allocationSize=1, initialValue = 1)
+	@GeneratedValue(generator="seqCat")
 	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
@@ -71,8 +74,7 @@ public class Categories implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		String resultado = "";
-		resultado += "Id: "  + id  + "\n";
+		String resultado = "Id: "  + id  + "\n";
 		resultado += "Categoría: "  + category  + "\n";
 		if (jokeses.size()>0) {
 			resultado += "Listado de Id's:\n";

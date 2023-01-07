@@ -25,9 +25,16 @@ public class Literals {
 	public static String tipos_consulta = "Elegir tipo de consulta:";
 	public static String joke_by_text = "1. Buscar Joke por texto";
 	public static String joke_search_text = "Introducir texto a buscar: ";
-	public static String joke_whitout_flags = "2. Buscar Joke sin flags";
-	
+	public static String joke_without_flags = "2. Buscar Joke sin flags";
+	public static String category_by_text = "1. Buscar Categoría por texto";
+	public static String show_all = "2. Mostrar todo";
+	public static String categories_result = "Categorías que contienen ";
+	public static String flag_by_text = "1. Buscar Flag por texto";
+	public static String flags_without_jokes = "2. Buscar flags sin chistes";
+	public static String laguage_by_text = "1. Buscar Idiomas por texto";
+	public static String laguage_without_jokes = "2. Buscar Idiomas sin chistes";
 	public static String new_joke = "Insertar chiste nuevo\n";
+	public static String new_category = "Insertar nueva categoría: ";
 	public static String new_joke_category = "Escriba el número de la categoría elegida:";	
 	public static String new_joke_type = "Escriba el número del tipo elegido:";
 	public static String new_joke_language = "Escriba el número del idioma elegido:";
@@ -36,52 +43,17 @@ public class Literals {
 	public static String new_joke_delivery = "Escriba la segunda parte del chiste:";
 	public static String search_joke_by_text = "Escriba el texto que debe contener el chiste:";
 	public static String new_flag_question = "¿El chiste se puede considerar de temática %s?";
-	
-	/*RESET BDD*/
-	public static String vaciarBddSQL = "delete from public.jokes_flags;\n" + "delete from public.jokes;" + "delete from public.categories;\n" + "delete from public.types;\n" + "delete from public.language;\n" + "delete from public.flags;\n" + 
-							            "alter sequence seq_categories restart;" + "alter sequence seq_flags restart;" + "alter sequence seq_types restart;" + "alter sequence seq_languages restart;" + "alter sequence seq_jokes restart;";
-										//"alter sequence seq_jokes;"
-	public static String bdd_empty = "\nBase de datos reseteada.";
-	
-	/*FILL BDD*/
-	public static String url_get_categories = "https://v2.jokeapi.dev/info";
-	public static String url_get_languages = "https://v2.jokeapi.dev/languages";
-	public static String url_get_joke = "https://v2.jokeapi.dev/joke/Any?idRange=%s&lang=%s";
-    public static String scriptInsertCategory = "insert into public.categories values ";
-    public static String scriptCategory = "(nextval('seq_categories'),'%s')";
-    public static String scriptInsertFlag = "insert into public.flags values ";
-    public static String scriptFlag = "(nextval('seq_flags'),'%s')";
-    public static String scriptInsertType = "insert into public.types values ";
-    public static String scriptType = "(nextval('seq_types'),'%s')";
-    public static String scriptInsertLanguage = "insert into public.language values ";
-    public static String scriptLanguage = "(nextval('seq_languages'),'%s','%s')";
-    public static String scriptInsertJoke = "insert into public.jokes values (nextval('seq_jokes')," //id
-											+ "(select id from public.categories where category = '%s')," //category
-											+ "(select id from public.types where type = '%s')," //type
-											+ "'%s'," //joke
-											+ "'%s'," //setup
-											+ "'%s'," //delivery
-											+ "(select id from public.language where code = '%s'));"; //language
-    public static String scriptInsertNewJoke = "insert into jokes values (nextval('seq_jokes')," //id
-											+ "%d," /*category*/ + "%d," /*type*/
-											+ "'%s'," //joke
-											+ "'%s'," //setup
-											+ "'%s'," //delivery
-											+ "%d);"; //language
-    public static String scriptInsertNewJokePs = "insert into jokes values (nextval('seq_jokes')," //id
-												+ "?," /*category*/ + "?," /*type*/
-												+ "?," //joke
-												+ "?," //setup
-												+ "?," //delivery
-												+ "?);"; //language
-    public static String jokePs = "Chiste añadido correctamente con PreparedStatement.";
-    public static String jokeSt = "Chiste añadido correctamente con Statement.";
-    public static String addedJoke = "Chistes añadidos: ";
-    public static String addedCat = "Categorías añadidas: ";
-    public static String addedLang = "Idiomas añadidos: ";
-    public static String addedTypes = "Tipos añadidos: ";
-    public static String addedFlags = "Flags añadidos: ";
+		
+
+    public static String jokeSt = "Chiste añadido correctamente.";
+    public static String addedCat = "Categoría añadida.";
+    public static String addedLang = "Idioma añadido.";
+    public static String addedTypes = "Tipo añadido.";
+    public static String addedFlags = "Flag añadido.";
     public static String jokeNotAdded = "No se ha podido añadir el chiste.";
+    public static String categoryNotAdded = "No se ha podido añadir la categoría.";
+    public static String languageNotAdded = "No se ha podido añadir la categoría.";
+    public static String flagNotAdded = "No se ha podido añadir el flag.";
     public static String scriptNewJokeId = "select * from public.jokes order by id desc limit 1";
     public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'));"; 
     public static String scriptInsertFlags = "insert into public.jokes_flags values ((select MAX(id) from jokes),(select id from public.flags where flag = ?));"; 

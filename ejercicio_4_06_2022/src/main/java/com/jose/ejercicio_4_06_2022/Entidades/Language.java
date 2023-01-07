@@ -2,11 +2,16 @@ package com.jose.ejercicio_4_06_2022.Entidades;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.hibernate.annotations.NamedNativeQuery;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -14,6 +19,10 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "language")
+@NamedNativeQuery(
+	    name = "find_language_id_and_language",
+	    query = "SELECT id, language " + "FROM Language "
+	)
 public class Language implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -37,7 +46,8 @@ public class Language implements java.io.Serializable {
 	}
 
 	@Id
-
+	@SequenceGenerator(name="seqLang", sequenceName="seq_languages", allocationSize=1, initialValue = 1)
+	@GeneratedValue(generator="seqLang")
 	@Column(name = "id", unique = true, nullable = false)
 	public int getId() {
 		return this.id;
