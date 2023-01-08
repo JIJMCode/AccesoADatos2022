@@ -73,4 +73,9 @@ public class Flags implements java.io.Serializable {
 		this.jokeses = jokeses;
 	}
 
+	@Override
+	public String toString() {
+		return "Flag ID= " + id + " => " + flag;
+	}
+
 }
