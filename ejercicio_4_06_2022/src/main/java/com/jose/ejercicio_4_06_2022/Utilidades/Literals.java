@@ -10,7 +10,7 @@ public class Literals {
     public static String menu_2 = "2. Gestión de categories";
     public static String menu_3 = "3. Gestión de leguajes";
     public static String menu_4 = "4. Gestion de flags";
-    public static String menu_exit = "0. Salir"; 
+    public static String menu_exit = "0. Salir";
 	public static String subMenu_title = "\nOpciones para ";
     public static String subMenu_1 = "1. Consultas";
     public static String subMenu_2 = "2. Insertar ";
@@ -57,6 +57,7 @@ public class Literals {
     public static String selectFlag = "Seleccionar un ID de flag para modificar:";
     public static String selectLanguage = "Seleccionar un ID de flag para modificar:";
     public static String selectCategories = "Seleccionar un ID de flag para modificar:";
+    public static String jokesList = "Listado de Jokes:";
     public static String selectJoke = "Seleccionar un ID de joke para modificar:";
     public static String newDescription = "Introducir nueva descripción:";
     public static String itemUpdated = "Elemento actualizado correctamente";

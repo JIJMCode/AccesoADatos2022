@@ -74,6 +74,10 @@ public class App
 	    	case 4:
 	    		mostrarSubmenu1("flag");
 	    		break;
+	    	case 0:
+	    		System.out.println(Literals.app_closed);
+	    		System.exit(0);
+	    		break;
 	    	default:
 	            System.out.println(Literals.choose_option);
 	            mostrarMenuPrincipal();
@@ -132,6 +136,9 @@ public class App
 	    		break;
 	    	case 4:
 	    		//mostrarsubmenu2("joke");
+	    		break;
+	    	case 0:
+	    		mostrarMenuPrincipal();
 	    		break;
 	    	default:
 	            System.out.println(Literals.choose_option);
@@ -280,7 +287,7 @@ public class App
         try {
         	HibernateUtils.abrirConexion();
         	if (categorias.size()==0)	
-        		categorias = HibernateUtils.allCategoriesNativeQuery();
+        		categorias = (List<Categories>) HibernateUtils.devolverListaObjetos("Categories");
         	
         	if (flags.size()==0)
         		flags = (List<Flags>) HibernateUtils.devolverListaObjetos("Flags");
@@ -289,7 +296,7 @@ public class App
         		types = (List<Types>) HibernateUtils.devolverListaObjetos("Types");
         	
         	if (idiomas.size()==0)
-        		idiomas = HibernateUtils.allLanguagesNamedQuery();
+        		idiomas = (List<Language>) HibernateUtils.devolverListaObjetos("Language");
 
 		} catch (Exception e) {
 			System.out.println("No se han podido cargar las listas.");
@@ -428,12 +435,12 @@ public class App
     			newJoke = oldJoke;
     			System.out.println("Categoría actual: " + oldJoke.getCategories().getCategory());
     			System.out.println("¿Quiere modificar la categoría?");
+
     			modify = ValidateUtils.checkTrueFalse(teclado);
 			}
     		
     		if (modify) {
 	         	menu_count = 0;
-    	    	System.out.println(Literals.new_joke); 
     	        System.out.println(Literals.new_joke_category);
     	        categorias.forEach(e-> {
     	        	menu_count++;
@@ -497,8 +504,16 @@ public class App
          	String delivery = "";
          	
     		if (oldJoke != null) {
-    			System.out.println("Tipo actual: " + oldJoke.getTypes().getType());
-    			System.out.println("¿Quiere modificar el tipo?");
+    			System.out.println("Chiste actual: " );
+    			String part1 = oldJoke.getText1() != null ? oldJoke.getText1() : "";
+    			String part2 = oldJoke.getText2() != null ? oldJoke.getText2() : "";
+    			if(!part1.equals(""))
+    				System.out.println(part1);
+    			if(!part2.equals(""))
+    				System.out.println(part2);
+    			if(part1.equals("") && part2.equals(""))
+    				System.out.println("chiste vacío");
+    			System.out.println("¿Quiere modificar el chiste?");
     			modify = ValidateUtils.checkTrueFalse(teclado);
 			}
     		
@@ -539,13 +554,16 @@ public class App
     	
     	try {
     		HibernateUtils.abrirConexion();
+    		
+    		cargarOpciones();
 
     		List<Jokes> chistes = (List<Jokes>) HibernateUtils.devolverListaObjetos("Jokes");
     		// Pedir al usuario id del elemento a actualizar
-    		System.out.println(Literals.selectCategories);
+    		System.out.println(Literals.jokesList);
     		chistes.stream()
     		.sorted(Comparator.comparingDouble(Jokes::getId))
     		.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(Literals.selectJoke);
     		int idToUpdate = teclado.nextInt();
     		// Buscar el chiste seleccionado
 			Query<Categories> consulta = HibernateUtils.session.createQuery("from Jokes where id=" + idToUpdate);
@@ -565,7 +583,7 @@ public class App
 				System.out.println(Literals.wrongId);
 			}
 			HibernateUtils.cerrarConexion();
-			mostrarSubmenu1("categoria");
+			mostrarSubmenu1("joke");
     		
     	} catch (Exception e) {
     		System.err.println(e.getMessage());
