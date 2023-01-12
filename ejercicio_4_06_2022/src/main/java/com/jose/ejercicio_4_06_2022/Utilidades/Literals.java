@@ -10,7 +10,7 @@ public class Literals {
     public static String menu_2 = "2. Gestión de categories";
     public static String menu_3 = "3. Gestión de leguajes";
     public static String menu_4 = "4. Gestion de flags";
-    public static String menu_exit = "0. Salir"; 
+    public static String menu_exit = "0. Salir";
 	public static String subMenu_title = "\nOpciones para ";
     public static String subMenu_1 = "1. Consultas";
     public static String subMenu_2 = "2. Insertar ";
@@ -54,13 +54,13 @@ public class Literals {
     public static String categoryNotAdded = "No se ha podido añadir la categoría.";
     public static String languageNotAdded = "No se ha podido añadir la categoría.";
     public static String flagNotAdded = "No se ha podido añadir el flag.";
-    public static String scriptNewJokeId = "select * from public.jokes order by id desc limit 1";
-    public static String scriptInsertJokesFlags = "insert into public.jokes_flags values (%d,(select id from public.flags where flag = '%s'));"; 
-    public static String scriptInsertFlags = "insert into public.jokes_flags values ((select MAX(id) from jokes),(select id from public.flags where flag = ?));"; 
-	public static String bdd_full = "\nBase de datos cargada.";
-	public static String jokeContains = "\nHay %d chistes que contienen la cadena '%s'.";
-	public static String jokesNoFlags = "\nHay %d chistes sin Flags.";
-	public static String func_jokesContainss = "JokesContains(?::varchar)";
-	public static String func_jokesNoFlags = "JokesNoFlags2()";
-
+    public static String selectFlag = "Seleccionar un ID de flag para modificar:";
+    public static String selectLanguage = "Seleccionar un ID de flag para modificar:";
+    public static String selectCategories = "Seleccionar un ID de flag para modificar:";
+    public static String jokesList = "Listado de Jokes:";
+    public static String selectJoke = "Seleccionar un ID de joke para modificar:";
+    public static String newDescription = "Introducir nueva descripción:";
+    public static String itemUpdated = "Elemento actualizado correctamente";
+    public static String wrongId = "No existe elemento con esa ID";
+    
 }

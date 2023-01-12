@@ -11,11 +11,13 @@ public class ValidateUtils {
 	 * y que sea el 1 o el 2, y devuelve la opción booleana elegida.
 	 */
 	public static boolean checkTrueFalse(Scanner teclado) {
-	 	int num = -1;
+	 	int num = 0;
 	 	boolean option = false;
         do {
         	try {
-        		num = teclado.nextInt();;
+    			System.out.println(Literals.menu_yes_no);
+    			teclado = new Scanner(System.in);
+        		num = teclado.nextInt();
         		if (num==1) {
 		        	option = true;
 				} else if(num==2) {

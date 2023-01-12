@@ -123,9 +123,14 @@ public class Jokes implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		String text2validated = text2 != null && !text2.equals("null") ? "\ntext2=" + text2 : "";
-		return "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\nJoke (id=" + id + ")\n category=" + categories.getCategory() + ", language=" + language.getLanguage() + ", type=" + types.getType()
-				+ ",\n text1=" + text1 + text2validated + "\n" ;
+		String categoriesValidated = this.categories != null ? this.categories.getCategory() : "sin datos";
+		String languageValidated = this.language != null ? this.language.getLanguage() : "sin datos";
+		String typeValidated = this.types != null ? this.language.getLanguage() : "sin datos";
+		String text1validated = text1 != null ? text1 : "sin datos";
+		String text2validated = text2 != null ? text2 : "sin datos";
+		return "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\nJoke (id=" + id + ")\ncategory=" + categoriesValidated +
+				", language=" + languageValidated + ", type=" + typeValidated
+				+ ",\ntext1=" + text1validated + ",\ntext2=" + text2validated + "\n" ;
 	}
 	
 	
