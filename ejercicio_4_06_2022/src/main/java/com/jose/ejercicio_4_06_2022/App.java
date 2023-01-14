@@ -30,6 +30,7 @@ public class App
     static List<Flags> flags = new ArrayList<>();
     static List<Types> types = new ArrayList<>();
     static List<Language> idiomas = new ArrayList<>();
+    static Jokes newJoke;
     
 	public static void main( String[] args )
     {
@@ -180,31 +181,33 @@ public class App
     			Jokes joke = resultados.get(0);
     			
     			if (joke.getFlagses().size()>0) {
-    				System.out.println("Este chiste contiene flags \n¿confirma que desea eliminar el chiste y todos sus flags?");
+    				System.out.println(String.format(Literals.deleteFlagsConfirm, joke.getFlagses().size()));
+//    				System.out.println("Este chiste contiene " + joke.getFlagses().size() + " flags \n¿confirma que desea eliminar el chiste y todos sus flags?");
     				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
     				if (borrar) {
     					joke.getFlagses().clear();
     					HibernateUtils.session.update(joke);
     					HibernateUtils.session.delete(joke);
-    					System.out.println("Elemento actualizado correctamente");
+    					System.out.println(Literals.itemDeleted);
     				} else {
-    					transaction.rollback();
-    					System.out.println("Borrado cancelado");
-    		    		volver("Joke");
+    					transaction.rollback(); // Deshago los cambios en la base de datos
+    					System.out.println(Literals.deleteCanceled);
     				}
     			} else {
 					HibernateUtils.session.delete(joke);
     			}
 				transaction.commit(); // Confirmo el cambio en la base de datos
+				volver("Joke");
     		} else {
-    			System.out.println("No existe elemento con esa ID");
+    			System.out.println(Literals.wrongId);
         		volver("Joke");
     		}
     		HibernateUtils.cerrarConexion();
 		} catch (Exception e2) {
+			transaction.rollback(); // Deshago los cambios en la base de datos
 			HibernateUtils.cerrarConexion();
 			System.out.println(e2.getMessage());
-			System.out.println("No se ha podido borrar el elemento");
+			System.out.println(Literals.deleteError);
 		}		
 	}
 
@@ -418,60 +421,6 @@ public class App
     private static void insertarJoke() {
     	 try {
     		cargarOpciones();
-//         	Jokes newJoke = new Jokes();
-// 	    //solicitar categoría
-//         	menu_count = 0;
-// 	    	System.out.println(Literals.new_joke); 
-// 	        System.out.println(Literals.new_joke_category);
-// 	        categorias.forEach(e-> {
-// 	        	menu_count++;
-// 	        	System.out.println(menu_count + "-. " + e.getCategory());
-// 	        	});
-//         	int new_category = ValidateUtils.isNum(teclado, categorias.size());
-//         	newJoke.setCategories(categorias.get(new_category-1));
-//     	//Solicitar idioma
-//         	menu_count = 0;
-// 	        System.out.println(Literals.new_joke_language);
-// 	        idiomas.forEach(e-> {
-// 	        	menu_count++;
-// 	        	System.out.println(menu_count + "-. " + e.getLanguage());
-// 	        	});
-//         	int new_lang = ValidateUtils.isNum(teclado, idiomas.size());
-//         	newJoke.setLanguage(idiomas.get(new_lang-1));
-//         //Solicitar tipo
-//         	menu_count = 0;
-// 	        System.out.println(Literals.new_joke_type);
-// 	        types.forEach(e-> {
-// 	        	menu_count++;
-// 	        	System.out.println(menu_count + "-. " + e.getType());
-// 	        	});
-//         	int new_type = ValidateUtils.isNum(teclado, types.size());
-//         	newJoke.setTypes(types.get(new_type-1));
-// 	        flags.forEach(e -> {
-// 		        System.out.println(String.format(Literals.new_flag_question,e.getFlag()));
-// 		        System.out.println(Literals.menu_yes_no);
-// 		        if (ValidateUtils.checkTrueFalse(teclado)) {newJoke.getFlagses().add(e);}
-// 	        });
-//         	
-//         //solicitar chiste
-//         	menu_count = 0;
-//         	String chiste;
-//         	String setup;
-//         	String delivery;
-//         	do {
-//             	if (new_type == 1) {
-//         	        System.out.println(Literals.new_joke_joke);
-//                 	chiste = br.readLine();
-//                 	newJoke.setText1(chiste);
-//     			} else {
-//         	        System.out.println(Literals.new_joke_setup);
-//         	        setup = br.readLine();
-//         	       newJoke.setText1(setup);
-//         	        System.out.println(Literals.new_joke_delivery);
-//         	        delivery = br.readLine();
-//         	        newJoke.setText2(delivery);
-//     			}
-// 			} while (new_type < 1 || new_type > 2);
     		Jokes newJoke = pedirDatosJoke(null);
          //almacenar chiste
 			if(HibernateUtils.save(newJoke))
@@ -480,7 +429,7 @@ public class App
 				System.out.println(Literals.jokeNotAdded);
 	
 			HibernateUtils.cerrarConexion();
-
+			volver("joke");
          }catch (Exception e) {
          	System.out.println(e.getMessage());
          }  	
@@ -491,7 +440,6 @@ public class App
 	 */
     @SuppressWarnings("unused")
 	private static Jokes pedirDatosJoke(Jokes oldJoke) {
-    	Jokes newJoke = null;
     	boolean modify = true;
     	try {
     		newJoke = new Jokes();
@@ -536,6 +484,12 @@ public class App
     		} else {
 				newJoke.setLanguage(oldJoke.getLanguage());
 			}
+         //solicitar flags     
+	        flags.forEach(e -> {
+		        System.out.println(String.format(Literals.new_flag_question,e));
+		        //System.out.println(Literals.menu_yes_no);
+		        if (ValidateUtils.checkTrueFalse(teclado)) {newJoke.getFlagses().add(e);}
+	        });
          //Solicitar tipo
     		modify = true;
     		int new_type = 0;
@@ -603,11 +557,11 @@ public class App
          	        newJoke.setText2(delivery);
      			}
     		}
+    		return newJoke;
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
+			return null;
 		}
-     	
-     	return newJoke;
     }
     
 	/**
@@ -671,7 +625,6 @@ public class App
         try {
         	opcion = Integer.parseInt(teclado.next());       	
             HibernateUtils.abrirConexion();
-            //List<Categories> listaCategorias = new ArrayList<>();
             switch (opcion) {
     	        case 1:
     	        	System.out.println( Literals.joke_search_text);
@@ -917,4 +870,59 @@ public class App
 			.forEach(c->System.out.println(c));
 		HibernateUtils.cerrarConexion();
 	}
+	
+// 	Jokes newJoke = new Jokes();
+// //solicitar categoría
+// 	menu_count = 0;
+// 	System.out.println(Literals.new_joke); 
+//     System.out.println(Literals.new_joke_category);
+//     categorias.forEach(e-> {
+//     	menu_count++;
+//     	System.out.println(menu_count + "-. " + e.getCategory());
+//     	});
+// 	int new_category = ValidateUtils.isNum(teclado, categorias.size());
+// 	newJoke.setCategories(categorias.get(new_category-1));
+//	//Solicitar idioma
+// 	menu_count = 0;
+//     System.out.println(Literals.new_joke_language);
+//     idiomas.forEach(e-> {
+//     	menu_count++;
+//     	System.out.println(menu_count + "-. " + e.getLanguage());
+//     	});
+// 	int new_lang = ValidateUtils.isNum(teclado, idiomas.size());
+// 	newJoke.setLanguage(idiomas.get(new_lang-1));
+// //Solicitar tipo
+// 	menu_count = 0;
+//     System.out.println(Literals.new_joke_type);
+//     types.forEach(e-> {
+//     	menu_count++;
+//     	System.out.println(menu_count + "-. " + e.getType());
+//     	});
+// 	int new_type = ValidateUtils.isNum(teclado, types.size());
+// 	newJoke.setTypes(types.get(new_type-1));
+//     flags.forEach(e -> {
+//	        System.out.println(String.format(Literals.new_flag_question,e.getFlag()));
+//	        System.out.println(Literals.menu_yes_no);
+//	        if (ValidateUtils.checkTrueFalse(teclado)) {newJoke.getFlagses().add(e);}
+//     });
+// 	
+// //solicitar chiste
+// 	menu_count = 0;
+// 	String chiste;
+// 	String setup;
+// 	String delivery;
+// 	do {
+//     	if (new_type == 1) {
+// 	        System.out.println(Literals.new_joke_joke);
+//         	chiste = br.readLine();
+//         	newJoke.setText1(chiste);
+//			} else {
+// 	        System.out.println(Literals.new_joke_setup);
+// 	        setup = br.readLine();
+// 	       newJoke.setText1(setup);
+// 	        System.out.println(Literals.new_joke_delivery);
+// 	        delivery = br.readLine();
+// 	        newJoke.setText2(delivery);
+//			}
+//		} while (new_type < 1 || new_type > 2);
 }

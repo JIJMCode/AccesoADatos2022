@@ -5,7 +5,7 @@ public class Literals {
     public static String usuario = "postgres";
     public static String password = "postgre";
 	/*MENU*/
-	public static String menu_title = "\nMenú (Selecione una opción)";
+	public static String menu_title = "\nMenú Principal (Selecione una opción)";
     public static String menu_1 = "1. Gestión de Jokes";
     public static String menu_2 = "2. Gestión de categories";
     public static String menu_3 = "3. Gestión de leguajes";
@@ -61,6 +61,10 @@ public class Literals {
     public static String selectJoke = "Seleccionar un ID de joke para modificar:";
     public static String newDescription = "Introducir nueva descripción:";
     public static String itemUpdated = "Elemento actualizado correctamente";
+    public static String itemDeleted = "Elemento actualizado correctamente";
+    public static String deleteCanceled = "Borrado cancelado.";
     public static String wrongId = "No existe elemento con esa ID";
+    public static String deleteError = "No se ha podido borrar el elemento";
+    public static String deleteFlagsConfirm = "Este chiste contiene %d flags.\n¿confirma que desea eliminar el chiste y todos sus flags?";
     
 }
