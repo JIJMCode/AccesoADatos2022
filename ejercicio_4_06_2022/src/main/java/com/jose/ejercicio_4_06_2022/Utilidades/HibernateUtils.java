@@ -9,6 +9,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+
 import com.jose.ejercicio_4_06_2022.Entidades.Categories;
 import com.jose.ejercicio_4_06_2022.Entidades.Language; 
 
@@ -200,6 +202,36 @@ public class HibernateUtils {
 	public static <T> int deleteById(Class<T> clase, String where) {
 		return deleteAll(clase,where);
 	}
+	
+//	@SuppressWarnings({ "deprecation", "unchecked" })
+//	public static <T> void ejemploBorrar(Class<T> clase, int id) {
+//		Transaction transaction = null;
+//		
+//		try {
+//			Query<T> consulta = session.createQuery("from Libros where id=" + id); // Obtiene el dato
+//			List<T> resultados = consulta.list();
+//			if(resultados.size()>0) {
+//				T element = resultados.get(0);
+//				if (element) {
+//					
+//				} else {
+//
+//				}
+//				
+//				transaction = session.beginTransaction();
+//				session.delete(resultados.get(0));						// Actualizo el objeto
+//				transaction.commit();							// Confirmo el cambio en la base de datos
+//				System.out.println("Elemento borrado correctamente");
+//			}
+//			else {
+//				System.out.println("No existe elemento con esa ID");
+//			}
+//		} catch (Exception e) {
+//			transaction.rollback();
+//			System.out.println("No se ha podido borrar el elemento");
+//			e.printStackTrace();
+//		}
+//	}
 	
 	/**
 	 * Método que actualiza un registro de la base de datos mediante Hibernate a

@@ -135,18 +135,80 @@ public class App
 	        		modificarFlag();
 	    		break;
 	    	case 4:
-	    		//mostrarsubmenu2("joke");
+	        	if (tipo.equals("joke"))
+	        		borrarJoke();
+	        	if (tipo.equals("categoria"))
+	        		//borrarCategoría();
+	        	if (tipo.equals("lenguaje"))
+	        		//borrarLenguaje();
+	        	if (tipo.equals("flag"))
+	        		//borrarFlag();
+	    		break;
 	    		break;
 	    	case 0:
 	    		mostrarMenuPrincipal();
 	    		break;
 	    	default:
-	            System.out.println(Literals.choose_option);
-	            mostrarSubmenu1(tipo);
+//	            System.out.println(Literals.choose_option);
+//	            mostrarSubmenu1(tipo);
+	    		volver(tipo);
         }
     }
     
+    private static void volver(String tipo) throws IOException {
+        System.out.println(Literals.choose_option);
+        mostrarSubmenu1(tipo);
+    }
+       
     @SuppressWarnings({ "unchecked", "deprecation" })
+	private static void borrarJoke() throws IOException {
+    	Transaction transaction = null; 	
+    	try {
+        	HibernateUtils.abrirConexion();
+    		List<Jokes> chistes = (List<Jokes>) HibernateUtils.devolverListaObjetos("Jokes");
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.jokesList);
+    		chistes.stream()
+    			.sorted(Comparator.comparingDouble(Jokes::getId))
+    			.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(Literals.selectJoke);
+    		int idToUpdate = teclado.nextInt();   		
+    		Query<Jokes> consulta = HibernateUtils.session.createQuery("from Jokes where id=" + idToUpdate); // Obtiene el dato
+    		List<Jokes> resultados = consulta.list();    		
+    		if (resultados.size()>0) {
+    			transaction = HibernateUtils.session.beginTransaction();
+    			Jokes joke = resultados.get(0);
+    			
+    			if (joke.getFlagses().size()>0) {
+    				System.out.println("Este chiste contiene flags \n¿confirma que desea eliminar el chiste y todos sus flags?");
+    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
+    				if (borrar) {
+    					joke.getFlagses().clear();
+    					HibernateUtils.session.update(joke);
+    					HibernateUtils.session.delete(joke);
+    					System.out.println("Elemento actualizado correctamente");
+    				} else {
+    					transaction.rollback();
+    					System.out.println("Borrado cancelado");
+    		    		volver("Joke");
+    				}
+    			} else {
+					HibernateUtils.session.delete(joke);
+    			}
+				transaction.commit(); // Confirmo el cambio en la base de datos
+    		} else {
+    			System.out.println("No existe elemento con esa ID");
+        		volver("Joke");
+    		}
+    		HibernateUtils.cerrarConexion();
+		} catch (Exception e2) {
+			HibernateUtils.cerrarConexion();
+			System.out.println(e2.getMessage());
+			System.out.println("No se ha podido borrar el elemento");
+		}		
+	}
+
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private static void modificarFlag() {
     	Transaction transaction = null;
     	
@@ -424,6 +486,9 @@ public class App
          }  	
 	}
     
+	/**
+	 * Método que pide datos usuario para intertar o modificar chiste
+	 */
     @SuppressWarnings("unused")
 	private static Jokes pedirDatosJoke(Jokes oldJoke) {
     	Jokes newJoke = null;
