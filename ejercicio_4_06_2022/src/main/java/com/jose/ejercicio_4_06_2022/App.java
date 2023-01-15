@@ -67,7 +67,7 @@ public class App
 	        	mostrarSubmenu1("joke");
 	    		break;
 	    	case 2:
-	    		mostrarSubmenu1("categoría");
+	    		mostrarSubmenu1("categoria");
 	    		break;
 	    	case 3:
 	    		mostrarSubmenu1("lenguaje");
@@ -119,7 +119,7 @@ public class App
 	        	if (tipo.equals("joke"))
 	        		insertarJoke();
 	        	if (tipo.equals("categoria"))
-	        		insertarCategoría();
+	        		insertarCategoria();
 	        	if (tipo.equals("lenguaje"))
 	        		insertarLenguaje();
 	        	if (tipo.equals("flag"))
@@ -129,7 +129,7 @@ public class App
 	        	if (tipo.equals("joke"))
 	        		modificarJoke();
 	        	if (tipo.equals("categoria"))
-	        		modificarCategoría();
+	        		modificarcategoria();
 	        	if (tipo.equals("lenguaje"))
 	        		modificarLenguaje();
 	        	if (tipo.equals("flag"))
@@ -139,210 +139,28 @@ public class App
 	        	if (tipo.equals("joke"))
 	        		borrarJoke();
 	        	if (tipo.equals("categoria"))
-	        		//borrarCategoría();
+	        		borrarCategories();
 	        	if (tipo.equals("lenguaje"))
-	        		//borrarLenguaje();
+	        		borrarLanguage();
 	        	if (tipo.equals("flag"))
-	        		//borrarFlag();
-	    		break;
+	        		borrarFlags();
 	    		break;
 	    	case 0:
 	    		mostrarMenuPrincipal();
 	    		break;
 	    	default:
-//	            System.out.println(Literals.choose_option);
-//	            mostrarSubmenu1(tipo);
 	    		volver(tipo);
         }
     }
     
+	/**
+	 * Método que vuelve al submenú del tipo tratado
+	 */
     private static void volver(String tipo) throws IOException {
         System.out.println(Literals.choose_option);
         mostrarSubmenu1(tipo);
     }
-       
-    @SuppressWarnings({ "unchecked", "deprecation" })
-	private static void borrarJoke() throws IOException {
-    	Transaction transaction = null; 	
-    	try {
-        	HibernateUtils.abrirConexion();
-    		List<Jokes> chistes = (List<Jokes>) HibernateUtils.devolverListaObjetos("Jokes");
-    		// Pedir al usuario id del elemento a actualizar
-    		System.out.println(Literals.jokesList);
-    		chistes.stream()
-    			.sorted(Comparator.comparingDouble(Jokes::getId))
-    			.forEach(e->{System.out.println(e.toString());});
-    		System.out.println(Literals.selectJoke);
-    		int idToUpdate = teclado.nextInt();   		
-    		Query<Jokes> consulta = HibernateUtils.session.createQuery("from Jokes where id=" + idToUpdate); // Obtiene el dato
-    		List<Jokes> resultados = consulta.list();    		
-    		if (resultados.size()>0) {
-    			transaction = HibernateUtils.session.beginTransaction();
-    			Jokes joke = resultados.get(0);
-    			
-    			if (joke.getFlagses().size()>0) {
-    				System.out.println(String.format(Literals.deleteFlagsConfirm, joke.getFlagses().size()));
-//    				System.out.println("Este chiste contiene " + joke.getFlagses().size() + " flags \n¿confirma que desea eliminar el chiste y todos sus flags?");
-    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
-    				if (borrar) {
-    					joke.getFlagses().clear();
-    					HibernateUtils.session.update(joke);
-    					HibernateUtils.session.delete(joke);
-    					System.out.println(Literals.itemDeleted);
-    				} else {
-    					transaction.rollback(); // Deshago los cambios en la base de datos
-    					System.out.println(Literals.deleteCanceled);
-    				}
-    			} else {
-					HibernateUtils.session.delete(joke);
-    			}
-				transaction.commit(); // Confirmo el cambio en la base de datos
-				volver("Joke");
-    		} else {
-    			System.out.println(Literals.wrongId);
-        		volver("Joke");
-    		}
-    		HibernateUtils.cerrarConexion();
-		} catch (Exception e2) {
-			transaction.rollback(); // Deshago los cambios en la base de datos
-			HibernateUtils.cerrarConexion();
-			System.out.println(e2.getMessage());
-			System.out.println(Literals.deleteError);
-		}		
-	}
-
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static void modificarFlag() {
-    	Transaction transaction = null;
-    	
-    	try {
-    		HibernateUtils.abrirConexion();
-
-    		if (flags.size()==0) {
-    			flags = (List<Flags>) HibernateUtils.devolverListaObjetos("Flags");
-    		}
-    		System.out.println(Literals.selectFlag);
-    		flags.stream()
-    		.sorted(Comparator.comparingDouble(Flags::getId))
-    		.forEach(e->{System.out.println(e.toString());});
-    		// Pedir al usuario id del elemento a actualizar
-    		System.out.println(Literals.selectFlag);
-    		int flagToUpdate = teclado.nextInt();
-			Query<Flags> consulta = HibernateUtils.session.createQuery("from Flags where id=" + flagToUpdate);
-			List<?> lista = consulta.list();
-			if (lista.size()>0) {			
-				// Pedir al usuario nueva descricpión
-				System.out.println(Literals.newDescription);
-				String newDescription = teclado.next();
-				transaction = HibernateUtils.session.beginTransaction();
-	    		// Seleccionar el objeto a modificar
-				Flags flag = (Flags) lista.get(0);
-	    		// Modificación objeto
-				flag.setFlag(newDescription);
-	    		 // Actualizar el objeto
-	    		HibernateUtils.session.update(flag);
-	    		// Confirmación del cambio en la base de datos
-	    		transaction.commit();
-				System.out.println(Literals.itemUpdated);
-			} else {
-				System.out.println(Literals.wrongId);
-			}
-			HibernateUtils.cerrarConexion();
-			mostrarSubmenu1("flag");
-    		
-    	} catch (Exception e) {
-    		System.err.println(e.getMessage());
-    	}
-    }
-
-	@SuppressWarnings({ "deprecation", "unchecked" })
-	private static void modificarLenguaje() {
-    	Transaction transaction = null;
-    	
-    	try {
-    		HibernateUtils.abrirConexion();
-
-    		if (idiomas.size()==0) {
-    			idiomas = (List<Language>) HibernateUtils.devolverListaObjetos("Language");
-    		}
-    		System.out.println(Literals.selectLanguage);
-    		idiomas.stream()
-    		.sorted(Comparator.comparingDouble(Language::getId))
-    		.forEach(e->{System.out.println(e.toString());});
-    		// Pedir al usuario id del elemento a actualizar
-    		System.out.println(Literals.selectFlag);
-    		int idToUpdate = teclado.nextInt();
-			Query<Language> consulta = HibernateUtils.session.createQuery("from Language where id=" + idToUpdate);
-			List<?> lista = consulta.list();
-			if (lista.size()>0) {			
-				// Pedir al usuario nueva descricpión
-				System.out.println(Literals.newDescription);
-				String newDescription = teclado.next();
-				transaction = HibernateUtils.session.beginTransaction();
-	    		// Seleccionar el objeto a modificar
-				Language lang = (Language) lista.get(0);
-	    		// Modificación objeto
-				lang.setLanguage(newDescription);
-	    		 // Actualizar el objeto
-	    		HibernateUtils.session.update(lang);
-	    		// Confirmación del cambio en la base de datos
-	    		transaction.commit();
-				System.out.println(Literals.itemUpdated);
-			} else {
-				System.out.println(Literals.wrongId);
-			}
-			HibernateUtils.cerrarConexion();
-			mostrarSubmenu1("lenguaje");
-    		
-    	} catch (Exception e) {
-    		System.err.println(e.getMessage());
-    	}
-	}
-
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static void modificarCategoría() {
-    	Transaction transaction = null;
-    	
-    	try {
-    		HibernateUtils.abrirConexion();
-
-    		if (categorias.size()==0) {
-    			categorias = (List<Categories>) HibernateUtils.devolverListaObjetos("Categories");
-    		}
-    		System.out.println(Literals.selectFlag);
-    		categorias.stream()
-    		.sorted(Comparator.comparingDouble(Categories::getId))
-    		.forEach(e->{System.out.println(e.toString());});
-    		// Pedir al usuario id del elemento a actualizar
-    		System.out.println(Literals.selectCategories);
-    		int idToUpdate = teclado.nextInt();
-			Query<Categories> consulta = HibernateUtils.session.createQuery("from Categories where id=" + idToUpdate);
-			List<?> lista = consulta.list();
-			if (lista.size()>0) {			
-				// Pedir al usuario nueva descricpión
-				System.out.println(Literals.newDescription);
-				String newDescription = teclado.next();
-				transaction = HibernateUtils.session.beginTransaction();
-	    		// Seleccionar el objeto a modificar
-				Categories cat = (Categories) lista.get(0);
-	    		// Modificación objeto
-				cat.setCategory(newDescription);
-	    		 // Actualizar el objeto
-	    		HibernateUtils.session.update(cat);
-	    		// Confirmación del cambio en la base de datos
-	    		transaction.commit();
-				System.out.println(Literals.itemUpdated);
-			} else {
-				System.out.println(Literals.wrongId);
-			}
-			HibernateUtils.cerrarConexion();
-			mostrarSubmenu1("categoria");
-    		
-    	} catch (Exception e) {
-    		System.err.println(e.getMessage());
-    	}
-	}
-
+    
 	/**
 	 * Método que rellena las listas de flags, idiomjas, categorias y tipos
 	 * en caso de que estén vacías
@@ -367,88 +185,19 @@ public class App
 			System.out.println("No se han podido cargar las listas.");
 		}
     }
-      
-	/**
-	 * Método ofrece la posibilidad de buscar jokes sin flags o
-	 * jokes que contengan un texto determinado por el usuario
-	 * @throws IOException 
-	 */
-    @SuppressWarnings({ "unchecked", "deprecation" }) 
-    private static void consultasJoke() throws IOException {
-    	System.out.println( Literals.tipos_consulta);
-    	System.out.println( Literals.joke_by_text);
-        System.out.println( Literals.joke_without_flags);
-        System.out.println( Literals.menu_exit );
-        
-        try {
-        	opcion = Integer.parseInt(teclado.next());       	
-            HibernateUtils.abrirConexion();
-            List<Jokes> jokesList;
-            switch (opcion) {
-    	        case 1:
-    	        	System.out.println( Literals.joke_search_text);
-    	        	String text = br.readLine().toLowerCase();
-    	            Query<Jokes> jokesTextquery = HibernateUtils.session
-    	            	.createQuery("FROM Jokes WHERE LOWER(text1) LIKE '%" + text + "%' OR LOWER(text2) LIKE '%" + text + "%'");
-    	            jokesList = jokesTextquery.list();
-    	            jokesList.stream().forEach(e->{System.out.println(e.toString());});
-    	    		break;
-    	    	case 2:
-    	            Query<Jokes> jokesSinFlagsquery = HibernateUtils.session
-	            	.createQuery("FROM Jokes");
-		            jokesList = jokesSinFlagsquery.list();
-		            jokesList.stream()
-		            	.filter(e->!e.getFlagses().isEmpty())
-			            .forEach(e->{System.out.println(e.toString());});
-		            System.out.println("Total chistes sin flags = " + jokesList.size());
-    	    		break;
-    	    	case 0:
-    	    		mostrarSubmenu1("joke");
-    	    		break;
-    	    	default:
-    	            System.out.println(Literals.choose_option);
-    	            consultasJoke();
-            }
-        }catch (Exception e) {
-        	System.out.println(Literals.error_no_num);
-        	System.out.println(e.getMessage());
-        }               
-    }
-    
-	/**
-	 * Método ofrece la posibilidad de insertar un nuevo chiste
-	 */
-    private static void insertarJoke() {
-    	 try {
-    		cargarOpciones();
-    		Jokes newJoke = pedirDatosJoke(null);
-         //almacenar chiste
-			if(HibernateUtils.save(newJoke))
-				System.out.println(Literals.jokeSt);
-			else
-				System.out.println(Literals.jokeNotAdded);
-	
-			HibernateUtils.cerrarConexion();
-			volver("joke");
-         }catch (Exception e) {
-         	System.out.println(e.getMessage());
-         }  	
-	}
-    
+       
 	/**
 	 * Método que pide datos usuario para intertar o modificar chiste
 	 */
-    @SuppressWarnings("unused")
-	private static Jokes pedirDatosJoke(Jokes oldJoke) {
+    private static Jokes pedirDatosJoke(Jokes oldJoke) {
     	boolean modify = true;
     	try {
     		newJoke = new Jokes();
-        	//solicitar categoría
+        	//solicitar categoria
     		if (oldJoke != null) {
     			newJoke = oldJoke;
-    			System.out.println("Categoría actual: " + oldJoke.getCategories().getCategory());
-    			System.out.println("¿Quiere modificar la categoría?");
-
+    			System.out.println("categoria actual: " + oldJoke.getCategories().getCategory());
+    			System.out.println("¿Quiere modificar la categoria?");
     			modify = ValidateUtils.checkTrueFalse(teclado);
 			}
     		
@@ -563,19 +312,83 @@ public class App
 			return null;
 		}
     }
+     
+	/**
+	 * Método ofrece la posibilidad de buscar jokes sin flags o
+	 * jokes que contengan un texto determinado por el usuario
+	 * @throws IOException 
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" }) 
+    private static void consultasJoke() throws IOException {
+    	System.out.println( Literals.tipos_consulta);
+    	System.out.println( Literals.joke_by_text);
+        System.out.println( Literals.joke_without_flags);
+        System.out.println( Literals.menu_exit );
+        
+        try {
+        	opcion = Integer.parseInt(teclado.next());       	
+            HibernateUtils.abrirConexion();
+            List<Jokes> jokesList;
+            switch (opcion) {
+    	        case 1:
+    	        	System.out.println( Literals.joke_search_text);
+    	        	String text = br.readLine().toLowerCase();
+    	            Query<Jokes> jokesTextquery = HibernateUtils.session
+    	            	.createQuery("FROM Jokes WHERE LOWER(text1) LIKE '%" + text + "%' OR LOWER(text2) LIKE '%" + text + "%'");
+    	            jokesList = jokesTextquery.list();
+    	            jokesList.stream().forEach(e->{System.out.println(e.toString());});
+    	    		break;
+    	    	case 2:
+    	            Query<Jokes> jokesSinFlagsquery = HibernateUtils.session
+	            	.createQuery("FROM Jokes");
+		            jokesList = jokesSinFlagsquery.list();
+		            jokesList.stream()
+		            	.filter(e->!e.getFlagses().isEmpty())
+			            .forEach(e->{System.out.println(e.toString());});
+		            System.out.println("Total chistes sin flags = " + jokesList.size());
+    	    		break;
+    	    	case 0:
+    	    		mostrarSubmenu1("joke");
+    	    		break;
+    	    	default:
+    	            System.out.println(Literals.choose_option);
+    	            consultasJoke();
+            }
+        }catch (Exception e) {
+        	System.out.println(Literals.error_no_num);
+        	System.out.println(e.getMessage());
+        }               
+    }
     
+	/**
+	 * Método ofrece la posibilidad de insertar un nuevo chiste
+	 */
+    private static void insertarJoke() {
+    	 try {
+    		cargarOpciones();
+    		Jokes newJoke = pedirDatosJoke(null);
+         //almacenar chiste
+			if(HibernateUtils.save(newJoke))
+				System.out.println(Literals.jokeSt);
+			else
+				System.out.println(Literals.jokeNotAdded);
+	
+			HibernateUtils.cerrarConexion();
+			volver("joke");
+         }catch (Exception e) {
+         	System.out.println(e.getMessage());
+         }  	
+	}
+  
 	/**
 	 * Método ofrece la posibilidad de modificar un chiste existente
 	 */
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	private static void modificarJoke() {
     	Transaction transaction = null;
-    	
     	try {
     		HibernateUtils.abrirConexion();
-    		
     		cargarOpciones();
-
     		List<Jokes> chistes = (List<Jokes>) HibernateUtils.devolverListaObjetos("Jokes");
     		// Pedir al usuario id del elemento a actualizar
     		System.out.println(Literals.jokesList);
@@ -593,7 +406,7 @@ public class App
 				Jokes joke = (Jokes) lista.get(0);
 	    		// Modificación objeto
 				joke = pedirDatosJoke(joke);
-	    		 // Actualizar el objeto
+	    		// Actualizar el objeto
 	    		HibernateUtils.session.update(joke);
 	    		// Confirmación del cambio en la base de datos
 	    		transaction.commit();
@@ -602,17 +415,66 @@ public class App
 				System.out.println(Literals.wrongId);
 			}
 			HibernateUtils.cerrarConexion();
-			mostrarSubmenu1("joke");
-    		
+			mostrarSubmenu1("joke");   		
     	} catch (Exception e) {
     		System.err.println(e.getMessage());
-    	}
-
-		
+    	}	
 	}
     
 	/**
-	 * Método ofrece la posibilidad de buscar todas las categorías o
+	 * Método que que permite eliminar un chiste
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	private static void borrarJoke() throws IOException {
+    	Transaction transaction = null; 	
+    	try {
+        	HibernateUtils.abrirConexion();
+    		List<Jokes> chistes = (List<Jokes>) HibernateUtils.devolverListaObjetos("Jokes");
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.jokesList);
+    		chistes.stream()
+    			.sorted(Comparator.comparingDouble(Jokes::getId))
+    			.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(Literals.selectJoke);
+    		int idToUpdate = teclado.nextInt();   		
+    		Query<Jokes> consulta = HibernateUtils.session.createQuery("from Jokes where id=" + idToUpdate); // Obtiene el dato
+    		List<Jokes> resultados = consulta.list();    		
+    		if (resultados.size()>0) {
+    			transaction = HibernateUtils.session.beginTransaction();
+    			Jokes joke = resultados.get(0);
+    			
+    			if (joke.getFlagses().size()>0) {
+    				System.out.println(String.format(Literals.deleteFlagsConfirm, joke.getFlagses().size()));
+    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
+    				if (borrar) {
+    					joke.getFlagses().clear();
+    					HibernateUtils.session.update(joke);
+    					HibernateUtils.session.delete(joke);
+    					System.out.println(Literals.itemDeleted);
+    				} else {
+    					transaction.rollback(); // Deshago los cambios en la base de datos
+    					System.out.println(Literals.deleteCanceled);
+    				}
+    			} else {
+					HibernateUtils.session.delete(joke);
+    			}
+				transaction.commit(); // Confirmo el cambio en la base de datos
+				volver("Joke");
+    		} else {
+    			System.out.println(Literals.wrongId);
+        		volver("Joke");
+    		}
+    		HibernateUtils.cerrarConexion();
+		} catch (Exception e2) {
+			transaction.rollback(); // Deshago los cambios en la base de datos
+			HibernateUtils.cerrarConexion();
+			System.out.println(e2.getMessage());
+			System.out.println(Literals.deleteError);
+		}		
+	}
+   
+	/**
+	 * Método ofrece la posibilidad de buscar todas las categorias o
 	 * caegorías que contengan un texto determinado por el usuario
 	 * @throws IOException 
 	 */
@@ -654,8 +516,9 @@ public class App
     
 	/**
 	 * Método ofrece la posibilidad de insertar un nuevo chiste
+	 * @throws IOException 
 	 */
-    private static void insertarCategoría() {
+    private static void insertarCategoria() throws IOException {
     	try {
 			HibernateUtils.abrirConexion();
 			Categories newCategory = new Categories();
@@ -670,12 +533,115 @@ public class App
 				System.out.println(Literals.categoryNotAdded);
 			
 			HibernateUtils.cerrarConexion();
-
          }catch (Exception e) {
+        	HibernateUtils.cerrarConexion();
          	System.out.println(e.getMessage());
-         }  	
+         }  
+    	volver("categoria");
 	}
+   
+	/**
+	 * Método que que permite modificar la descripción de una categoria
+	 */
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	private static void modificarcategoria() {
+    	Transaction transaction = null;
+    	
+    	try {
+    		HibernateUtils.abrirConexion();
 
+    		if (categorias.size()==0) {
+    			categorias = (List<Categories>) HibernateUtils.devolverListaObjetos("Categories");
+    		}
+    		System.out.println(Literals.selectFlag);
+    		categorias.stream()
+    		.sorted(Comparator.comparingDouble(Categories::getId))
+    		.forEach(e->{System.out.println(e.toString());});
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.selectCategories);
+    		int idToUpdate = teclado.nextInt();
+			Query<Categories> consulta = HibernateUtils.session.createQuery("from Categories where id=" + idToUpdate);
+			List<?> lista = consulta.list();
+			if (lista.size()>0) {			
+				// Pedir al usuario nueva descricpión
+				System.out.println(Literals.newDescription);
+				String newDescription = teclado.next();
+				transaction = HibernateUtils.session.beginTransaction();
+	    		// Seleccionar el objeto a modificar
+				Categories cat = (Categories) lista.get(0);
+	    		// Modificación objeto
+				cat.setCategory(newDescription);
+	    		 // Actualizar el objeto
+	    		HibernateUtils.session.update(cat);
+	    		// Confirmación del cambio en la base de datos
+	    		transaction.commit();
+				System.out.println(Literals.itemUpdated);
+			} else {
+				System.out.println(Literals.wrongId);
+			}
+			HibernateUtils.cerrarConexion();
+			mostrarSubmenu1("categoria");    		
+    	} catch (Exception e) {
+    		System.err.println(e.getMessage());
+    	}
+	}
+    
+	/**
+	 * Método que que permite eliminar una categoria
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+    private static void borrarCategories() throws IOException {
+    	Transaction transaction = null;
+    	String clase = "Categories";
+    	String tipo = "categoria";
+    	try {
+    		HibernateUtils.abrirConexion();
+    		List<Categories> registros = (List<Categories>) HibernateUtils.devolverListaObjetos(clase);
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.categoriesList);
+    		registros.stream()
+    		.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(String.format(Literals.selectGeneric,tipo));
+    		int idToUpdate = teclado.nextInt();  		
+    		Query<Categories> consulta = HibernateUtils.session.createQuery("from " + clase + " where id=" + idToUpdate); // Obtiene el dato
+    		List<Categories> resultados = consulta.list();
+    		if (resultados.size()>0) {
+    			transaction = HibernateUtils.session.beginTransaction();
+    			Categories element = resultados.get(0);
+    			
+    			if (element.getJokeses().size()>0) {
+    				List<Jokes> chistes = new ArrayList<Jokes>(element.getJokeses());
+    				System.out.println(String.format(Literals.deleteJokesConfirm, element.getJokeses().size(), tipo, tipo));
+    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
+    				if (borrar) {
+    					chistes.forEach(e -> {
+    	        			e.setCategories(null);
+    						HibernateUtils.session.update(e);
+    					});
+    					HibernateUtils.session.delete(element);
+    					System.out.println(Literals.itemDeleted);
+    				} else {
+    					transaction.rollback(); // Deshago los cambios en la base de datos
+    					System.out.println(Literals.deleteCanceled);
+    				}
+    			} else {
+    				HibernateUtils.session.delete(element);
+    			}
+    			transaction.commit(); // Confirmo el cambio en la base de datos
+    		} else {
+    			System.out.println(Literals.wrongId);
+    		}
+    		HibernateUtils.cerrarConexion();
+    		volver(tipo);
+    	} catch (Exception e2) {
+    		transaction.rollback(); // Deshago los cambios en la base de datos
+    		HibernateUtils.cerrarConexion();
+    		System.out.println(e2.getMessage());
+    		System.out.println(Literals.deleteError);
+    		volver(tipo);
+    	}		
+    }
+    
 	/**
 	 * Método ofrece la posibilidad de buscar todos los idiomas o aquellos
 	 * idomas que contengan un texto determinado por el usuario
@@ -722,15 +688,19 @@ public class App
     
 	/**
 	 * Método ofrece la posibilidad de insertar un nuevo chiste
+	 * @throws IOException 
 	 */
-    private static void insertarLenguaje() {
+    private static void insertarLenguaje() throws IOException {
     	try {
 			HibernateUtils.abrirConexion();
 			Language newLanguage = new Language();
 		 	menu_count = 0;
-			System.out.println(Literals.new_category); 
+			System.out.println(Literals.new_language); 
 		 	String new_language = br.readLine();
 		 	newLanguage.setLanguage(new_language);
+			System.out.println(Literals.new_language_code); 
+		 	String new_code_language = br.readLine();
+		 	newLanguage.setCode(new_code_language);
 		//almacenar idioma
 			if(HibernateUtils.save(newLanguage))
 				System.out.println(Literals.addedLang);
@@ -738,12 +708,115 @@ public class App
 				System.out.println(Literals.languageNotAdded);
 			
 			HibernateUtils.cerrarConexion();
-
          }catch (Exception e) {
+ 			HibernateUtils.cerrarConexion();
          	System.out.println(e.getMessage());
-         }  	
+         }
+    	volver("lenguaje");
 	}
 
+	/**
+	 * Método que que permite modificar la descripción de un idioma
+	 */
+	@SuppressWarnings({ "deprecation", "unchecked" })
+	private static void modificarLenguaje() {
+    	Transaction transaction = null;
+    	
+    	try {
+    		HibernateUtils.abrirConexion();
+
+    		if (idiomas.size()==0) {
+    			idiomas = (List<Language>) HibernateUtils.devolverListaObjetos("Language");
+    		}
+    		System.out.println(Literals.selectLanguage);
+    		idiomas.stream()
+    		.sorted(Comparator.comparingDouble(Language::getId))
+    		.forEach(e->{System.out.println(e.toString());});
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.selectFlag);
+    		int idToUpdate = teclado.nextInt();
+			Query<Language> consulta = HibernateUtils.session.createQuery("from Language where id=" + idToUpdate);
+			List<?> lista = consulta.list();
+			if (lista.size()>0) {			
+				// Pedir al usuario nueva descricpión
+				System.out.println(Literals.newDescription);
+				String newDescription = teclado.next();
+				transaction = HibernateUtils.session.beginTransaction();
+	    		// Seleccionar el objeto a modificar
+				Language lang = (Language) lista.get(0);
+	    		// Modificación objeto
+				lang.setLanguage(newDescription);
+	    		 // Actualizar el objeto
+	    		HibernateUtils.session.update(lang);
+	    		// Confirmación del cambio en la base de datos
+	    		transaction.commit();
+				System.out.println(Literals.itemUpdated);
+			} else {
+				System.out.println(Literals.wrongId);
+			}
+			HibernateUtils.cerrarConexion();
+			mostrarSubmenu1("lenguaje");
+    		
+    	} catch (Exception e) {
+    		System.err.println(e.getMessage());
+    	}
+	}
+
+	/**
+	 * Método que que permite eliminar un idioma
+	 */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+    private static void borrarLanguage() throws IOException {
+    	Transaction transaction = null;
+    	String clase = "Language";
+    	String tipo = "lenguaje";
+    	try {
+    		HibernateUtils.abrirConexion();
+    		List<Language> registros = (List<Language>) HibernateUtils.devolverListaObjetos(clase);
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.languagesList);
+    		registros.stream()
+    		.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(String.format(Literals.selectGeneric,tipo));
+    		int idToUpdate = teclado.nextInt();  		
+    		Query<Language> consulta = HibernateUtils.session.createQuery("from " + clase + " where id=" + idToUpdate); // Obtiene el dato
+    		List<Language> resultados = consulta.list();
+    		if (resultados.size()>0) {
+    			transaction = HibernateUtils.session.beginTransaction();
+    			Language element = resultados.get(0);
+    			List<Jokes> chistes = new ArrayList<Jokes>(element.getJokeses());
+    			if (element.getJokeses().size()>0) {
+    				System.out.println(String.format(Literals.deleteJokesConfirm, element.getJokeses().size(), tipo, tipo));
+    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
+    				if (borrar) {
+    					chistes.forEach(e -> {
+    	        			e.setLanguage(null);
+    						HibernateUtils.session.update(e);
+    					});
+    					HibernateUtils.session.delete(element);
+    					System.out.println(Literals.itemDeleted);
+    				} else {
+    					transaction.rollback(); // Deshago los cambios en la base de datos
+    					System.out.println(Literals.deleteCanceled);
+    				}
+    			} else {
+    				HibernateUtils.session.delete(element);
+    			}
+    			transaction.commit(); // Confirmo el cambio en la base de datos
+    		} else {
+    			System.out.println(Literals.wrongId);
+    		}
+    		HibernateUtils.cerrarConexion();
+    		volver(tipo);
+    	} catch (Exception e2) {
+    		transaction.rollback(); // Deshago los cambios en la base de datos
+    		HibernateUtils.cerrarConexion();
+    		System.out.println(e2.getMessage());
+    		System.out.println(Literals.deleteError);
+    		volver(tipo);
+    	}		
+    }
+	
 	/**
 	 * Método ofrece la posibilidad de buscar todas los flags o
 	 * flags que contengan un texto determinado por el usuario
@@ -792,8 +865,9 @@ public class App
     
 	/**
 	 * Método ofrece la posibilidad de insertar un nuevo chiste
+	 * @throws IOException 
 	 */
-    private static void insertarFlag() {
+    private static void insertarFlag() throws IOException {
     	try {
 			HibernateUtils.abrirConexion();
 			Flags newFlag = new Flags();
@@ -810,119 +884,108 @@ public class App
 			HibernateUtils.cerrarConexion();
 
          }catch (Exception e) {
+        	 HibernateUtils.cerrarConexion();
          	System.out.println(e.getMessage());
-         }  	
+         }
+    	volver("flag");
 	}
-  
+    
 	/**
-	 * Método ofrece la posibilidad de volver al menú principal o salir de la aplicación,
-	 * tras cada consulta
-	 * @throws IOException 
+	 * Método que que permite modificar la descripción de un flag
 	 */
-    @SuppressWarnings("unused")
-	private static void repetir() throws IOException {
-    	System.out.println();
-		System.out.println(Literals.repeat_title);
-		//Scanner teclado = new Scanner(System.in);
-		String seleccion = teclado.next();
-		char caracter = seleccion.charAt(0);
-		
-		while (caracter != 'c' && caracter != 's') {
-			System.out.println(Literals.choose_option);
-			System.out.println(Literals.repeat_title);
-			caracter = teclado.next().charAt(0);
-		}
-		
-		if (caracter == 'c') {
-			try {
-				mostrarMenuPrincipal();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		}else {
-			teclado.close();
-			br.close();
-			System.out.println(Literals.app_closed);
-			System.exit(0);
-		}
-	}
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	private static void modificarFlag() {
+    	Transaction transaction = null;
+    	try {
+    		HibernateUtils.abrirConexion();
 
-	/**
-	 * Ejemplo de como probar la conexión con la BDD
-	 */
-	public static void probarConexion() {
-		if(HibernateUtils.abrirConexion()) {
-			System.out.println("Conexión establecida correctamente");
+    		if (flags.size()==0) {
+    			flags = (List<Flags>) HibernateUtils.devolverListaObjetos("Flags");
+    		}
+    		System.out.println(Literals.selectFlag);
+    		flags.stream()
+    		.sorted(Comparator.comparingDouble(Flags::getId))
+    		.forEach(e->{System.out.println(e.toString());});
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.selectFlag);
+    		int flagToUpdate = teclado.nextInt();
+			Query<Flags> consulta = HibernateUtils.session.createQuery("from Flags where id=" + flagToUpdate);
+			List<?> lista = consulta.list();
+			if (lista.size()>0) {			
+				// Pedir al usuario nueva descricpión
+				System.out.println(Literals.newDescription);
+				String newDescription = teclado.next();
+				transaction = HibernateUtils.session.beginTransaction();
+	    		// Seleccionar el objeto a modificar
+				Flags flag = (Flags) lista.get(0);
+	    		// Modificación objeto
+				flag.setFlag(newDescription);
+	    		 // Actualizar el objeto
+	    		HibernateUtils.session.update(flag);
+	    		// Confirmación del cambio en la base de datos
+	    		transaction.commit();
+				System.out.println(Literals.itemUpdated);
+			} else {
+				System.out.println(Literals.wrongId);
+			}
 			HibernateUtils.cerrarConexion();
-		} else {
-			System.out.println("Fallo al establecer la conexión");
-		}
-	}
-	
+			mostrarSubmenu1("flag");
+    		
+    	} catch (Exception e) {
+    		System.err.println(e.getMessage());
+    	}
+    }
+    
 	/**
-	 * Ejemplo de como acceder a la lista de elementos de una clase
-	 * En el ejemplo categories y recorrerla
+	 * Método que que permite eliminar un flag
 	 */
-	public static void listarCategorias() {
-		HibernateUtils.abrirConexion();
-		HibernateUtils.devolverListaObjetos(Categories.class)
-			.forEach(c->System.out.println(c));
-		HibernateUtils.cerrarConexion();
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	private static void borrarFlags() throws IOException {
+    	Transaction transaction = null;
+    	String clase = "Flags";
+    	String tipo = "flag";
+    	try {
+        	HibernateUtils.abrirConexion();
+    		List<Flags> registros = (List<Flags>) HibernateUtils.devolverListaObjetos(clase);
+    		// Pedir al usuario id del elemento a actualizar
+    		System.out.println(Literals.flagsList);
+    		registros.stream()
+    			.forEach(e->{System.out.println(e.toString());});
+    		System.out.println(String.format(Literals.selectGeneric,"Flags"));
+    		int idToUpdate = teclado.nextInt();   		
+    		Query<Flags> consulta = HibernateUtils.session.createQuery("from " + clase + " where id=" + idToUpdate); // Obtiene el dato
+    		List<Flags> resultados = consulta.list();
+    		Flags element = resultados.get(0);
+    		if (resultados.size()>0) {
+    			transaction = HibernateUtils.session.beginTransaction();
+    			if (element.getJokeses().size()>0) {
+    				System.out.println(String.format(Literals.deleteFlagsConfirm, element.getJokeses().size(), tipo, tipo));
+    				boolean borrar = ValidateUtils.checkTrueFalse(teclado);
+    				if (borrar) {
+						element.getJokeses().clear();
+						HibernateUtils.session.update(element);
+						HibernateUtils.session.delete(element);
+						System.out.println(Literals.itemDeleted);
+    				} else {
+					transaction.rollback(); // Deshago los cambios en la base de datos
+					System.out.println(Literals.deleteCanceled);
+    				}
+				} else {
+					transaction.rollback(); // Deshago los cambios en la base de datos
+					System.out.println(Literals.deleteCanceled);
+				}
+			} else {
+				HibernateUtils.session.delete(element);
+			}
+			transaction.commit(); // Confirmo el cambio en la base de datos
+    		HibernateUtils.cerrarConexion();
+			volver(tipo);
+		} catch (Exception e2) {
+			transaction.rollback(); // Deshago los cambios en la base de datos
+			HibernateUtils.cerrarConexion();
+			System.out.println(e2.getMessage());
+			System.out.println(Literals.deleteError);
+			volver(tipo);
+		}		
 	}
-	
-// 	Jokes newJoke = new Jokes();
-// //solicitar categoría
-// 	menu_count = 0;
-// 	System.out.println(Literals.new_joke); 
-//     System.out.println(Literals.new_joke_category);
-//     categorias.forEach(e-> {
-//     	menu_count++;
-//     	System.out.println(menu_count + "-. " + e.getCategory());
-//     	});
-// 	int new_category = ValidateUtils.isNum(teclado, categorias.size());
-// 	newJoke.setCategories(categorias.get(new_category-1));
-//	//Solicitar idioma
-// 	menu_count = 0;
-//     System.out.println(Literals.new_joke_language);
-//     idiomas.forEach(e-> {
-//     	menu_count++;
-//     	System.out.println(menu_count + "-. " + e.getLanguage());
-//     	});
-// 	int new_lang = ValidateUtils.isNum(teclado, idiomas.size());
-// 	newJoke.setLanguage(idiomas.get(new_lang-1));
-// //Solicitar tipo
-// 	menu_count = 0;
-//     System.out.println(Literals.new_joke_type);
-//     types.forEach(e-> {
-//     	menu_count++;
-//     	System.out.println(menu_count + "-. " + e.getType());
-//     	});
-// 	int new_type = ValidateUtils.isNum(teclado, types.size());
-// 	newJoke.setTypes(types.get(new_type-1));
-//     flags.forEach(e -> {
-//	        System.out.println(String.format(Literals.new_flag_question,e.getFlag()));
-//	        System.out.println(Literals.menu_yes_no);
-//	        if (ValidateUtils.checkTrueFalse(teclado)) {newJoke.getFlagses().add(e);}
-//     });
-// 	
-// //solicitar chiste
-// 	menu_count = 0;
-// 	String chiste;
-// 	String setup;
-// 	String delivery;
-// 	do {
-//     	if (new_type == 1) {
-// 	        System.out.println(Literals.new_joke_joke);
-//         	chiste = br.readLine();
-//         	newJoke.setText1(chiste);
-//			} else {
-// 	        System.out.println(Literals.new_joke_setup);
-// 	        setup = br.readLine();
-// 	       newJoke.setText1(setup);
-// 	        System.out.println(Literals.new_joke_delivery);
-// 	        delivery = br.readLine();
-// 	        newJoke.setText2(delivery);
-//			}
-//		} while (new_type < 1 || new_type > 2);
 }

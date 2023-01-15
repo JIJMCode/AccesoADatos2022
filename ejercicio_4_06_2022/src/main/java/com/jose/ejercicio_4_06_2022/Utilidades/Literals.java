@@ -35,6 +35,8 @@ public class Literals {
 	public static String laguage_without_jokes = "2. Buscar Idiomas sin chistes";
 	public static String new_joke = "Insertar chiste nuevo\n";
 	public static String new_category = "Insertar nueva categoría: ";
+	public static String new_language = "Insertar nuevo idioma: ";
+	public static String new_language_code = "Insertar nuevo código de idioma: ";
 	public static String new_joke_category = "Escriba el número de la categoría elegida:";	
 	public static String new_joke_type = "Escriba el número del tipo elegido:";
 	public static String new_joke_language = "Escriba el número del idioma elegido:";
@@ -58,13 +60,18 @@ public class Literals {
     public static String selectLanguage = "Seleccionar un ID de flag para modificar:";
     public static String selectCategories = "Seleccionar un ID de flag para modificar:";
     public static String jokesList = "Listado de Jokes:";
+    public static String flagsList = "Listado de Flags:";
+    public static String languagesList = "Listado de Idiomas:";
+    public static String categoriesList = "Listado de categorías:";
     public static String selectJoke = "Seleccionar un ID de joke para modificar:";
+    public static String selectGeneric = "Seleccionar un ID de %s para modificar:";
     public static String newDescription = "Introducir nueva descripción:";
     public static String itemUpdated = "Elemento actualizado correctamente";
-    public static String itemDeleted = "Elemento actualizado correctamente";
+    public static String itemDeleted = "Elemento eliminado correctamente";
     public static String deleteCanceled = "Borrado cancelado.";
     public static String wrongId = "No existe elemento con esa ID";
     public static String deleteError = "No se ha podido borrar el elemento";
     public static String deleteFlagsConfirm = "Este chiste contiene %d flags.\n¿confirma que desea eliminar el chiste y todos sus flags?";
+    public static String deleteJokesConfirm = "Hay %d chiste con este %s.\n¿confirma que desea eliminar el %s de todos los chistes que lo contienen?";
     
 }

@@ -84,5 +84,10 @@ public class Language implements java.io.Serializable {
 		this.jokeses = jokeses;
 	}
 
+	@Override
+	public String toString() {
+		return "Id=" + id + " => " + language;
+	}
+
 }
 
