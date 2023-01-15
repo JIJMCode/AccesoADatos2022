@@ -77,7 +77,7 @@ public class Categories implements java.io.Serializable {
 		String resultado = "Id: "  + id  + "\n";
 		resultado += "Categoría: "  + category  + "\n";
 		if (jokeses.size()>0) {
-			resultado += "Listado de Id's:\n";
+			resultado += "Listado de Id's de jokes con categoría " + category + ":\n";
 			for (Jokes joke : jokeses) {
 				resultado += joke.getId() + "\n";
 			} 

@@ -76,11 +76,26 @@ public class HibernateUtils {
 	 * @return
 	 */
     @SuppressWarnings({ "unchecked", "deprecation" })
-	public static List<Categories> searchCategoriesNativeQuery(String text) {
+	public static List<Categories> searchCategoriesNativeQuery(String textFilter) {
 		return session.createNativeQuery(
     			"SELECT * FROM categories WHERE LOWER(category) LIKE :text")
     			.addEntity(Categories.class)
-    			.setParameter(text, "%" + text + "%")
+    			.setParameter("text", "%" + textFilter + "%")
+    			.list();
+    }
+    
+    /**
+     * Dado un texto devuelve una lista con todas las categorías que contienen
+     * ese texto en su descripción.
+     * 
+     * @param text -> Texto a buscar
+     * @return
+     */
+    @SuppressWarnings({ "unchecked", "deprecation" })
+    public static List<Categories> searchAllCategoriesNativeQuery() {
+    	return session.createNativeQuery(
+    			"SELECT * FROM categories")
+    			.addEntity(Categories.class)
     			.list();
     }
     

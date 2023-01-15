@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 @Table(name = "language")
 @NamedNativeQuery(
 	    name = "find_language_id_and_language",
-	    query = "SELECT * " + "FROM Language "
+	    query = "SELECT * FROM Language "
 	)
 public class Language implements java.io.Serializable {
 

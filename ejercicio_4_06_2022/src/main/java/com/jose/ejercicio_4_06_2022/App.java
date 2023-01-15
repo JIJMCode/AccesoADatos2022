@@ -31,6 +31,8 @@ public class App
     static List<Types> types = new ArrayList<>();
     static List<Language> idiomas = new ArrayList<>();
     static Jokes newJoke;
+    static List<Categories> catList;
+    static String result;
     
 	public static void main( String[] args )
     {
@@ -179,10 +181,12 @@ public class App
         		types = (List<Types>) HibernateUtils.devolverListaObjetos("Types");
         	
         	if (idiomas.size()==0)
-        		idiomas = (List<Language>) HibernateUtils.devolverListaObjetos("Language");
+        		idiomas = (List<Language>)HibernateUtils.allLanguagesNamedQuery();
 
+        	HibernateUtils.cerrarConexion();
 		} catch (Exception e) {
 			System.out.println("No se han podido cargar las listas.");
+			HibernateUtils.cerrarConexion();
 		}
     }
        
@@ -354,9 +358,13 @@ public class App
     	            System.out.println(Literals.choose_option);
     	            consultasJoke();
             }
+            HibernateUtils.cerrarConexion();
+            volver("joke");
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
         	System.out.println(e.getMessage());
+        	HibernateUtils.cerrarConexion();
+        	volver("joke");
         }               
     }
     
@@ -472,7 +480,7 @@ public class App
 			System.out.println(Literals.deleteError);
 		}		
 	}
-   
+     
 	/**
 	 * Método ofrece la posibilidad de buscar todas las categorias o
 	 * caegorías que contengan un texto determinado por el usuario
@@ -497,10 +505,32 @@ public class App
     	        	categorias.clear();
     	    		break;
     	    	case 2:
-    	        	if (categorias.size()==0)	
-    	        		categorias = HibernateUtils.allCategoriesNativeQuery();
-    	        	System.out.println( Literals.categories_result + ":\n");
-    	        	categorias.stream().forEach(e->{System.out.println(e.toString());});
+    	    		categorias = (List<Categories>) HibernateUtils.searchAllCategoriesNativeQuery();
+    	    		catList = new ArrayList<Categories>();
+    	    		catList.add(new Categories());
+    	    		categorias.stream()
+		            	.filter(e->!e.getJokeses().isEmpty())
+			            .forEach(e->{
+			            	if (e.getJokeses().size()>catList.get(0).getJokeses().size()) {
+			            		catList.clear();
+			            		catList.add(e);
+							} else if (e.getJokeses().size()==catList.get(0).getJokeses().size()) {
+								catList.add(e);
+							}
+			            });
+    	    		if (catList.size()==1) {
+    	    			System.out.println("La categoría " + Literals.one_category_max + catList.get(0).getCategory() +
+    	    								Literals.one_repetition + catList.get(0).getJokeses().size() + " chistes.");
+					} else if (catList.size()>1) {
+						result = "Las categorías " + Literals.various_categories_max;
+						catList.forEach(e-> {
+							result += e.getCategory() + ",";
+						});
+						result += catList.get(0).getCategory() +",\naparecen en un total de " + catList.get(0).getJokeses().size() + " chistes.";
+					} else {
+						System.out.println(Literals.no_used_categories);
+					}
+    	    		
     	    		break;
     	    	case 0:
     	    		mostrarSubmenu1("categoria");
@@ -509,8 +539,12 @@ public class App
     	            System.out.println(Literals.choose_option);
     	            consultasCategorias();
             }
+            HibernateUtils.cerrarConexion();
+            volver("categoria");
         }catch (Exception e) {
         	System.out.println(e.getMessage());
+        	HibernateUtils.cerrarConexion();
+        	volver("categoria");
         }
     }
     
@@ -669,7 +703,7 @@ public class App
     	    		break;
     	    	case 2:
     	    		idiomas.stream()
-		            	.filter(e->!e.getJokeses().isEmpty())
+		            	.filter(e->e.getJokeses().isEmpty())
 			            .forEach(e->{System.out.println(e.toString());});
 		            System.out.println("Total idiomas sin chistes = " + idiomas.size());
     	    		break;
@@ -680,9 +714,13 @@ public class App
     	            System.out.println(Literals.choose_option);
     	            consultasLenguajes();
             }
+            HibernateUtils.cerrarConexion();
+            volver("lenguaje");
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
         	System.out.println(e.getMessage());
+        	HibernateUtils.cerrarConexion();
+        	volver("lenguaje");
         }
     }
     
@@ -822,10 +860,11 @@ public class App
 	 * flags que contengan un texto determinado por el usuario
 	 * @throws IOException 
 	 */
-    private static void consultasFlags() throws IOException {
+    @SuppressWarnings({ "unchecked", "deprecation" })
+	private static void consultasFlags() throws IOException {
     	System.out.println( Literals.tipos_consulta);
     	System.out.println( Literals.flag_by_text);
-        System.out.println( Literals.flags_without_jokes);
+        System.out.println( Literals.flags_more_used);
         System.out.println( Literals.menu_exit );
         
         try {
@@ -836,30 +875,52 @@ public class App
     	        case 1:
     	        	System.out.println( Literals.joke_search_text);
     	        	String text = br.readLine().toLowerCase();
-    	            @SuppressWarnings({ "unchecked", "deprecation" }) Query<Flags> flagsTextquery = HibernateUtils.session
+    	            Query<Flags> flagsTextquery = HibernateUtils.session
     	            	.createQuery("FROM Flags WHERE LOWER(flag) LIKE '%" + text + "%' OR LOWER(text2) LIKE '%" + text + "%'");
     	            flagsList = flagsTextquery.list();
     	            flagsList.stream().forEach(e->{System.out.println(e.toString());});
     	    		break;
     	    	case 2:
-    	            @SuppressWarnings({ "unchecked", "deprecation" }) Query<Flags> flagsSinJokesquery = HibernateUtils.session
-	            	.createQuery("FROM Flags");
-    	    		flagsList = flagsSinJokesquery.list();
-		            flagsList.stream()
+    	    		flags = (List<Flags>) HibernateUtils.devolverListaObjetos("Flags");
+    	    		flagsList = new ArrayList<Flags>();
+    	    		flagsList.add(new Flags());
+    	    		flags.stream()
 		            	.filter(e->!e.getJokeses().isEmpty())
-			            .forEach(e->{System.out.println(e.toString());});
-		            System.out.println("Total flags sin chistes = " + flagsList.size());
+			            .forEach(e->{
+			            	if (e.getJokeses().size()>flagsList.get(0).getJokeses().size()) {
+			            		flagsList.clear();
+			            		flagsList.add(e);
+							} else if (e.getJokeses().size()==flagsList.get(0).getJokeses().size()) {
+								flagsList.add(e);
+							}
+			            });
+    	    		if (flagsList.size()==1) {
+    	    			System.out.println(Literals.one_flag_max + flagsList.get(0).getFlag() +
+    	    					Literals.one_repetition + flagsList.get(0).getJokeses().size() + " chistes.");
+					} else if (flagsList.size()>1) {
+						result = Literals.various_flag_max;
+						flagsList.forEach(e-> {
+							result += e.getFlag() + ",";
+						});
+						result += flagsList.get(0).getFlag() + Literals.various_repetition + flagsList.get(0).getJokeses().size() + " chistes.";
+					} else {
+						System.out.println(Literals.no_used_flags);
+					}
     	    		break;
     	    	case 0:
-    	    		mostrarSubmenu1("flag");
+    	    		volver("flag");
     	    		break;
     	    	default:
     	            System.out.println(Literals.choose_option);
     	            consultasFlags();
             }
+            HibernateUtils.cerrarConexion();
+            volver("flag");
         }catch (Exception e) {
         	System.out.println(Literals.error_no_num);
         	System.out.println(e.getMessage());
+        	HibernateUtils.cerrarConexion();
+        	volver("flag");
         } 
     }
     
