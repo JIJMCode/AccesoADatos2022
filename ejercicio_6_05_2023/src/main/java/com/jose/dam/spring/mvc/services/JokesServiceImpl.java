@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jose.dam.spring.mvc.dao.IJokesDAO;
+import com.jose.dam.spring.mvc.dto.DtoProfile;
 import com.jose.dam.spring.mvc.dto.JokesDto;
 import com.jose.dam.spring.mvc.entity.Jokes;
 
@@ -23,7 +24,7 @@ public class JokesServiceImpl implements IJokesService {
 		List<Jokes> jokes = (List<Jokes>) jokesDao.findAll();
 		List<JokesDto> jokesDto = new ArrayList<>();
 		jokes.forEach(e-> {
-			JokesDto jokeDto = new JokesDto(e);
+			JokesDto jokeDto = DtoProfile.mapJokesToJokesDto(e);
 			jokesDto.add(jokeDto);
 		});
 		return jokesDto;
@@ -32,7 +33,7 @@ public class JokesServiceImpl implements IJokesService {
 	@Override
 	public JokesDto getById(int id) {
 		Jokes joke = jokesDao.findById(id).orElse(null);
-		JokesDto jokeDto = new JokesDto(joke);
+		JokesDto jokeDto = DtoProfile.mapJokesToJokesDto(joke);
 		return jokeDto;
 	}
 

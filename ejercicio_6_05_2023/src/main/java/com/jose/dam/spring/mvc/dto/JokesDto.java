@@ -14,17 +14,16 @@ public class JokesDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public int id;
 	public CategoriesDto categories;
-	public Language language;
-	public Types types;
+	public LanguageDto language;
+	public TypesDto types;
 	public String text1;
 	public String text2;
 	public List<FlagsDto> flagsesDto;
 
 	public JokesDto() {
-		this.flagsesDto = new ArrayList<>();
 	}
 
-	public JokesDto(int id, CategoriesDto categories, Language language, Types types, String text1, String text2) {
+	public JokesDto(int id, CategoriesDto categories, LanguageDto language, TypesDto types, String text1, String text2) {
 		this.id = id;
 		this.categories = categories;
 		this.language = language;
@@ -70,19 +69,19 @@ public class JokesDto implements Serializable {
 		this.categories = categories;
 	}
 
-	public Language getLanguage() {
+	public LanguageDto getLanguage() {
 		return this.language;
 	}
 
-	public void setLanguage(Language language) {
+	public void setLanguage(LanguageDto language) {
 		this.language = language;
 	}
 
-	public Types getTypes() {
+	public TypesDto getTypes() {
 		return this.types;
 	}
 
-	public void setTypes(Types types) {
+	public void setTypes(TypesDto types) {
 		this.types = types;
 	}
 

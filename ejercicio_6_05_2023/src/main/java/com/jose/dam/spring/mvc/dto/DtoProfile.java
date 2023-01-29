@@ -7,6 +7,8 @@ import java.util.Set;
 import com.jose.dam.spring.mvc.entity.Categories;
 import com.jose.dam.spring.mvc.entity.Flags;
 import com.jose.dam.spring.mvc.entity.Jokes;
+import com.jose.dam.spring.mvc.entity.Language;
+import com.jose.dam.spring.mvc.entity.Types;
 
 public class DtoProfile {
 
@@ -15,8 +17,18 @@ public class DtoProfile {
 	*/
 	public static JokesDto mapJokesToJokesDto(Jokes joke) {
 		JokesDto jokeDto = new JokesDto(joke);
-		jokeDto.flagsesDto = mapFlagsesToflagsesDto(joke.flagses);
+		if (joke.getCategories() != null) {
+			jokeDto.categories = new CategoriesDto(joke.getCategories());
+		}
+		if (joke.getLanguage() != null) {
+			jokeDto.language = new LanguageDto(joke.getLanguage());
+		}
+		if (joke.getTypes() != null) {
+			jokeDto.types = new TypesDto(joke.getTypes());
+		}
 		
+		jokeDto.flagsesDto = mapFlagsesToflagsesDto(joke.getFlagses());
+
 		return jokeDto;
 	}
 	
@@ -41,6 +53,26 @@ public class DtoProfile {
 	}
 	
 	/*
+	 * Mapeo de Language 
+	*/
+	public static LanguageDto mapLanguageToLanguageDto(Language language) {
+		LanguageDto languageDto = new LanguageDto(language);
+		languageDto.jokesesDto = mapJokesesToJokesesDto(language.getJokeses());
+		
+		return languageDto;
+	}
+	
+	/*
+	 * Mapeo de Types 
+	*/
+	public static TypesDto mapTypesToTypesDto(Types type) {
+		TypesDto typeDto = new TypesDto(type);
+		typeDto.jokesesDto = mapJokesesToJokesesDto(type.getJokeses());
+		
+		return typeDto;
+	}
+	
+	/*
 	 * Mapeo de Listas
 	 */
 	public static List<FlagsDto> mapFlagsesToflagsesDto (Set<Flags> flagses) {
@@ -56,9 +88,18 @@ public class DtoProfile {
 	
 	public static List<JokesDto> mapJokesesToJokesesDto (Set<Jokes> jokeses) {
 		List<JokesDto> jokesesDto = new ArrayList<>();
-		
 		jokeses.forEach(e-> {
-			JokesDto jokeDto = new JokesDto(e);
+			JokesDto jokeDto = mapJokesToJokesDto(e);
+			if (e.getCategories() != null) {
+				jokeDto.categories = new CategoriesDto(e.getCategories());
+			}
+			if (e.getLanguage() != null) {
+				jokeDto.language = new LanguageDto(e.getLanguage());
+			}
+			if (e.getTypes() != null) {
+				jokeDto.types = new TypesDto(e.getTypes());
+			}
+
 			jokesesDto.add(jokeDto);
 		});
 		
