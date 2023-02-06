@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+<head>
+<meta charset="UTF-8">
+<title th:text="${titulo_flags}"></title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><span th:text="${titulo_navBar}"></span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="@{/jokes}">Jokes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="@{/flags}">Flags</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="languages">Languages</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="categories">Categories</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="types">Types</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+	<div class="container text-center">
+		<h1 class="text-center my-5" th:text="${titulo_jokes}"></h1>
+	
+		<div class="accordion" id="accordionExample">
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="headingOne">
+		      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+		        <strong>Listar Flags</strong>
+		      </button>
+		    </h2>
+		    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+		      <div class="accordion-body">
+		        <table th:if="${not allFlags.isEmpty()}" class="table table-striped">
+				  	<thead>
+				  		<tr>
+				  			<th>Id</th>
+				  			<th>Flag</th>
+				  			<th>Nº Apariciones</th>
+				  		</tr>
+				  	</thead>
+				  	<tbody>
+				  		<tr th:each="flag: ${allFlags}">
+				  			<td th:text="${flag.id}"></td>
+				  			<td th:text="${flag.flag}"></td>
+				  			<td th:text="${flag.jokeses.size()}"></td>
+				  		</tr>
+				  	</tbody>
+				</table>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="headingTwo">
+		      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+		        <strong>Añadir Flag</strong>
+		      </button>
+		    </h2>
+		    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+		      <div class="accordion-body">
+					<h2>Nuevo Flag</h2>
+					<form class="col-lg-4 mx-auto mt-3">
+						<div class="input-group mb-3">
+						  <input type="text" class="form-control" placeholder="Flag's name" aria-label="Flag's name" aria-describedby="button-new">
+						  <button class="btn btn-outline-info" type="button" id="button-new">Guardar</button>
+						</div>
+					</form>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="headingThree">
+		      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+		        <strong>Modificar Flag</strong>
+		      </button>
+		    </h2>
+		    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+		      <div class="accordion-body">
+				<fieldset class="col-lg-4 mx-auto mt-3">
+					<div class="input-group mb-3">
+						<h3 class="col-lg-12 text-center">Buscar Flag por ID</h3>
+					  <form th:action="@{/flags/update}" th:object="${flag}" method="post">
+						  <input type="text" class="form-control" placeholder="Flag's ID" aria-label="Flag's ID" aria-describedby="button-update-id"
+						  		id="id" name="id"  th:field="*{id}">
+						  <button class="btn btn-outline-warning" type="submit" >Buscar</button>
+					</form>
+						<div class="input-group my-3">
+						  <span class="input-group-text" id="inputGroup-sizing-default">Flag actual</span>
+						  <label class="form-control" th:text="${flag.flag}"></label>
+						</div>
+						<h3 class="col-lg-12 text-center">Introducir nuevo</h3>
+					  <input type="text" class="form-control" placeholder="Flag's name" aria-label="Flag's name" aria-describedby="button-update">
+					  <button class="btn btn-outline-info" type="button" id="button-update">Modificar</button>
+					</div>
+				</fieldset>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="accordion-item">
+		    <h2 class="accordion-header" id="headingFour">
+		      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+		        <strong>Eliminar Flag</strong>
+		      </button>
+		    </h2>
+		    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+		      <div class="accordion-body">
+				<form class="col-lg-4 mx-auto mt-3">
+					  <h3 class="col-lg-12 text-center">Eliminar Flag por ID</h3>
+					 
+					 <div class="input-group my-3">
+						  <input type="text" class="form-control" placeholder="ID for delete" aria-label="ID for delete" aria-describedby="button-delete-id">
+						  <button class="btn btn-outline-warning" type="button" id="button-delete-id">Buscar</button>
+					</div>
+					
+					<div class="input-group my-3">
+					  <span class="input-group-text" id="inputGroup-sizing-default">Flag actual</span>
+					  <input type="text" class="form-control" aria-label="Sizing example input"
+					  		 aria-describedby="inputGroup-sizing-default" disabled readonly>
+					</div>
+					
+					<button type="button" class="btn btn-outline-danger mx-auto" id="button-delete">Eliminar</button>
+					</div>
+				</form>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
